@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CHAIR — run the money machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EEE0;      /* banknote cream */
+    --paper-2:#EFE7D4;
+    --ink:#1E3A2F;        /* deep vault green ink */
+    --vault:#0F6B4A;      /* money green */
+    --vault-d:#0A4E36;
+    --gold:#D9A521;       /* bullion */
+    --gold-d:#B8860B;
+    --mint:#39C08C;       /* flowing money */
+    --danger:#D6483B;     /* alert red */
+    --danger-d:#A8321f;
+    --sky:#2E7CC4;        /* fiscal / treasury blue */
+    --line:#D8CDB4;
+    --shadow:rgba(31,58,47,.16);
+    --disp:'Fredoka',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{overscroll-behavior:none}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #FBF6EA 0%, var(--paper) 55%, var(--paper-2) 100%);
+    color:var(--ink);
+    font-family:var(--disp);
+    line-height:1.35;
+    max-width:520px;margin:0 auto;
+    padding:14px 13px 40px;
+    min-height:100vh;
+    user-select:none;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:12px;
+  }
+  .brand{display:flex;align-items:center;gap:9px}
+  .seal{
+    width:38px;height:38px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--gold),var(--gold-d));
+    display:grid;place-items:center;color:#4a3402;font-weight:700;font-size:17px;
+    box-shadow:0 2px 0 var(--gold-d),0 4px 10px var(--shadow);
+    border:2px solid #EED9A0;
+  }
+  .brand h1{font-size:19px;font-weight:700;letter-spacing:.5px;line-height:1}
+  .brand .tag{font-size:10px;font-weight:500;color:var(--vault);letter-spacing:1.5px;text-transform:uppercase}
+  .clock{text-align:right;font-family:var(--mono);}
+  .clock .q{font-size:15px;font-weight:800;color:var(--vault-d)}
+  .clock .lbl{font-size:9px;letter-spacing:1px;color:#9a8f75;text-transform:uppercase}
+
+  /* ---------- credibility bar ---------- */
+  .cred{
+    background:var(--ink);border-radius:14px;padding:11px 14px;margin-bottom:12px;
+    display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 3px 0 #16281f,0 6px 14px var(--shadow);position:relative;overflow:hidden;
+  }
+  .cred .c-l{color:#CFE9DC}
+  .cred .c-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#7FB79D;font-weight:500}
+  .cred .c-num{font-family:var(--mono);font-size:26px;font-weight:800;color:#fff;line-height:1}
+  .cred .c-num .pt{font-size:12px;color:var(--gold);margin-left:3px}
+  .cred .streak{text-align:right;font-size:11px;color:#8FCFB2;font-family:var(--mono)}
+  .cred .streak b{color:var(--gold);font-size:15px;display:block;font-weight:800}
+  .cred .cflash{position:absolute;inset:0;background:var(--mint);opacity:0;pointer-events:none}
+
+  /* ---------- gauges ---------- */
+  .gauges{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+  .gauge{
+    background:#fff;border:2px solid var(--line);border-radius:14px;padding:11px 12px 12px;
+    box-shadow:0 3px 0 #E4DAC2;position:relative;overflow:hidden;transition:border-color .3s,transform .1s;
+  }
+  .gauge.wide{grid-column:1/-1}
+  .gauge .g-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+  .gauge .g-name{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#8a7f66;display:flex;align-items:center;gap:5px}
+  .gauge .g-name .dot{width:8px;height:8px;border-radius:50%;background:var(--muted,#bbb)}
+  .gauge .g-val{font-family:var(--mono);font-size:23px;font-weight:800;line-height:1;color:var(--ink)}
+  .gauge .g-val .u{font-size:11px;color:#a99;font-weight:600}
+  .gauge .g-target{font-size:9.5px;color:#a89c80;font-family:var(--mono);margin-top:2px}
+  .track{height:8px;border-radius:6px;background:var(--paper-2);margin-top:9px;overflow:hidden;position:relative}
+  .track .fill{height:100%;border-radius:6px;width:50%;transition:width .5s cubic-bezier(.4,0,.2,1),background .4s}
+  .track .zone{position:absolute;top:0;bottom:0;background:rgba(15,107,74,.16);border-left:1px dashed var(--vault);border-right:1px dashed var(--vault)}
+  .gauge.danger{border-color:var(--danger);animation:shake .4s}
+  .gauge.danger .g-val{color:var(--danger)}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  .pulse{animation:pulse .5s}
+  @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+  /* ---------- plumbing strip (unlockable) ---------- */
+  .plumb{
+    background:linear-gradient(180deg,#fff,#FBF7EC);border:2px solid var(--line);border-radius:14px;
+    padding:10px 12px;margin-bottom:12px;box-shadow:0 3px 0 #E4DAC2;display:none;
+  }
+  .plumb.show{display:block;animation:drop .5s}
+  @keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .plumb h3{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8a7f66;margin-bottom:8px;font-weight:600}
+  .plumb-rows{display:grid;gap:6px}
+  .prow{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:12.5px}
+  .prow .pk{display:flex;align-items:center;gap:6px;color:#7a715c;font-weight:600}
+  .prow .pk .sq{width:9px;height:9px;border-radius:2px}
+  .prow .pv{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .prow .pv.flash{animation:vflash .7s}
+  @keyframes vflash{0%{color:var(--mint);transform:scale(1.15)}100%{}}
+
+  /* ---------- log ---------- */
+  .log{
+    background:var(--ink);border-radius:12px;padding:9px 12px;margin-bottom:14px;
+    min-height:44px;display:flex;align-items:center;gap:9px;box-shadow:inset 0 2px 6px rgba(0,0,0,.3);
+  }
+  .log .lg-tag{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.5px;padding:3px 6px;border-radius:5px;flex-shrink:0;text-transform:uppercase}
+  .log .lg-txt{color:#DCEFE5;font-size:12.5px;line-height:1.3}
+  .log .lg-txt b{color:var(--gold)}
+
+  /* ---------- tools ---------- */
+  .tools h3{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8a7f66;margin:0 2px 9px;font-weight:600}
+  .rate-panel{
+    background:#fff;border:2px solid var(--line);border-radius:16px;padding:13px;margin-bottom:11px;
+    box-shadow:0 3px 0 #E4DAC2;
+  }
+  .rate-panel .r-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .rate-panel .r-lbl{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#8a7f66}
+  .rate-panel .r-val{font-family:var(--mono);font-size:30px;font-weight:800;color:var(--vault-d);line-height:1}
+  .rate-panel .r-val .u{font-size:14px;color:#b0a488}
+  .rate-panel .r-stance{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:99px;font-weight:700}
+  .r-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .bigbtn{
+    font-family:var(--disp);font-weight:600;font-size:16px;
+    border:none;border-radius:13px;padding:15px 10px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+    box-shadow:0 4px 0 var(--bs,#0002);transition:transform .06s,box-shadow .06s,filter .15s;
+    color:#fff;position:relative;
+  }
+  .bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--bs,#0002)}
+  .bigbtn .sub{font-size:10px;font-weight:500;opacity:.85;font-family:var(--mono);letter-spacing:.3px}
+  .bigbtn:disabled{filter:grayscale(.6) opacity(.5);cursor:not-allowed}
+  .btn-cut{background:linear-gradient(180deg,#39C08C,#2AA576);--bs:#1c7a56}
+  .btn-hike{background:linear-gradient(180deg,#E06254,#C43F32);--bs:#8f2a20}
+  .btn-qe{background:linear-gradient(180deg,#E9B53C,#CF9518);--bs:#9c6f0e;color:#3a2a02}
+  .btn-qt{background:linear-gradient(180deg,#6B93B8,#4E7BA6);--bs:#37587a}
+  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px}
+  .tool-panel{display:none}
+  .tool-panel.show{display:block;animation:drop .5s}
+
+  .hintline{font-size:11.5px;color:#9a8f75;text-align:center;margin-top:4px;font-weight:500;padding:0 8px}
+
+  /* ---------- event modal ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(15,30,24,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .scrim.show{display:flex;animation:fade .25s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{
+    background:var(--paper);border-radius:20px;max-width:460px;width:100%;
+    border:3px solid var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.4);overflow:hidden;
+    animation:pop .3s cubic-bezier(.3,1.3,.5,1);
+  }
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal .m-head{padding:15px 18px;color:#fff;display:flex;align-items:center;gap:10px}
+  .modal .m-head .m-ico{font-size:24px}
+  .modal .m-head .m-kick{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;opacity:.85;font-weight:500}
+  .modal .m-head .m-title{font-size:19px;font-weight:700;line-height:1.1}
+  .modal .m-body{padding:15px 18px 18px}
+  .modal .m-desc{font-size:14px;color:var(--ink);margin-bottom:14px;line-height:1.45}
+  .modal .m-choices{display:grid;gap:9px}
+  .choice{
+    text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;
+    padding:12px 13px;cursor:pointer;font-family:var(--disp);transition:border-color .15s,transform .06s,background .15s;
+    box-shadow:0 3px 0 #E4DAC2;
+  }
+  .choice:active{transform:translateY(2px);box-shadow:0 1px 0 #E4DAC2}
+  .choice:hover{border-color:var(--vault)}
+  .choice .ch-t{font-size:14.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:7px}
+  .choice .ch-d{font-size:11.5px;color:#8a7f66;margin-top:3px;font-family:var(--mono);line-height:1.35}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;left:50%;top:16px;transform:translateX(-50%) translateY(-140%);
+    background:var(--gold);color:#3a2a02;font-weight:700;font-size:14px;
+    padding:12px 20px;border-radius:14px;z-index:60;box-shadow:0 6px 20px rgba(0,0,0,.3);
+    border:2px solid #f0d98a;transition:transform .4s cubic-bezier(.3,1.3,.5,1);text-align:center;
+    max-width:90%;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast .t-sub{font-size:11px;font-weight:500;opacity:.8;display:block;margin-top:1px}
+
+  /* floating particles */
+  .float{position:fixed;font-family:var(--mono);font-weight:800;font-size:15px;pointer-events:none;z-index:55;animation:floatup 1s ease-out forwards}
+  @keyframes floatup{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-46px) scale(1.2)}}
+
+  /* footer */
+  .foot{margin-top:18px;text-align:center;font-size:10px;color:#b3a888;line-height:1.5;font-family:var(--mono)}
+  .foot button{background:none;border:1px solid var(--line);color:#9a8f75;font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:8px;cursor:pointer;margin-top:8px}
+
+  .btn-fiscal{background:linear-gradient(180deg,#4E9BD6,#2E7CC4);--bs:#1d5a94}
+  .btn-tax{background:linear-gradient(180deg,#8B7BC4,#6B5BA6);--bs:#4a3d7a}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="seal">₣</div>
+      <div>
+        <h1>CHAIR</h1>
+        <div class="tag">run the money machine</div>
+      </div>
+    </div>
+    <div class="clock">
+      <div class="q" id="clockQ">Y1 · Q1</div>
+      <div class="lbl">term clock</div>
+    </div>
+  </div>
+
+  <div class="cred" id="credCard">
+    <div class="c-l">
+      <div class="c-lbl">Credibility</div>
+      <div class="c-num"><span id="credNum">50</span><span class="pt" id="credRate">+0/q</span></div>
+    </div>
+    <div class="streak">
+      mandate streak
+      <b id="streak">0</b>
+    </div>
+    <div class="cflash" id="cflash"></div>
+  </div>
+
+  <div class="gauges" id="gauges">
+    <div class="gauge wide" id="gInf" style="--muted:var(--danger)">
+      <div class="g-top">
+        <div class="g-name"><span class="dot"></span>Inflation</div>
+        <div><span class="g-val" id="infVal">2.0</span><span class="u">%</span></div>
+      </div>
+      <div class="g-target">target 2.0% &nbsp;·&nbsp; keep it in the green band</div>
+      <div class="track"><div class="zone" id="infZone"></div><div class="fill" id="infFill"></div></div>
+    </div>
+
+    <div class="gauge" id="gUnemp" style="--muted:var(--sky);display:none">
+      <div class="g-top">
+        <div class="g-name"><span class="dot"></span>Unemploy.</div>
+      </div>
+      <div><span class="g-val" id="unempVal">4.0</span><span class="u">%</span></div>
+      <div class="g-target">target ≈4%</div>
+      <div class="track"><div class="fill" id="unempFill"></div></div>
+    </div>
+
+    <div class="gauge" id="gGrowth" style="--muted:var(--vault);display:none">
+      <div class="g-top"><div class="g-name"><span class="dot"></span>Growth</div></div>
+      <div><span class="g-val" id="growthVal">2.5</span><span class="u">%</span></div>
+      <div class="g-target">healthy &gt; 1%</div>
+      <div class="track"><div class="fill" id="growthFill"></div></div>
+    </div>
+
+    <div class="gauge wide" id="gStress" style="--muted:var(--gold);display:none">
+      <div class="g-top">
+        <div class="g-name"><span class="dot"></span>Financial stress</div>
+        <div><span class="g-val" id="stressVal">0</span></div>
+      </div>
+      <div class="g-target">reserves too low → stress climbs → credit crunch at 100</div>
+      <div class="track"><div class="fill" id="stressFill"></div></div>
+    </div>
+  </div>
+
+  <div class="plumb" id="plumbStrip">
+    <h3>The plumbing · every $ reconciles</h3>
+    <div class="plumb-rows">
+      <div class="prow"><span class="pk"><span class="sq" style="background:var(--gold)"></span>Bank reserves</span><span class="pv" id="pRes">3,000</span></div>
+      <div class="prow" id="pTgaRow" style="display:none"><span class="pk"><span class="sq" style="background:var(--sky)"></span>Treasury acct (TGA)</span><span class="pv" id="pTga">800</span></div>
+      <div class="prow" id="pDebtRow" style="display:none"><span class="pk"><span class="sq" style="background:var(--ink)"></span>National debt</span><span class="pv" id="pDebt">30,000</span></div>
+      <div class="prow"><span class="pk"><span class="sq" style="background:var(--mint)"></span>Bank deposits (public $)</span><span class="pv" id="pDep">10,000</span></div>
+    </div>
+  </div>
+
+  <div class="log">
+    <span class="lg-tag" id="logTag" style="background:var(--vault);color:#fff">START</span>
+    <span class="lg-txt" id="logTxt">You're the Fed Chair. Inflation is your first job. Nudge rates and watch what happens — <b>effects lag by a few quarters</b>, so don't overcorrect.</span>
+  </div>
+
+  <div class="tools">
+    <h3>Policy tools</h3>
+
+    <div class="rate-panel">
+      <div class="r-top">
+        <div>
+          <div class="r-lbl">Policy rate</div>
+          <div class="r-val"><span id="rateVal">2.50</span><span class="u">%</span></div>
+        </div>
+        <div class="r-stance" id="stancePill">NEUTRAL</div>
+      </div>
+      <div class="r-btns">
+        <button class="bigbtn btn-cut" id="btnCut">Cut −0.25%<span class="sub">stimulate ↑ growth</span></button>
+        <button class="bigbtn btn-hike" id="btnHike">Hike +0.25%<span class="sub">cool ↓ inflation</span></button>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="reservePanel">
+      <div class="tool-grid">
+        <button class="bigbtn btn-qe" id="btnQE">QE +$100B<span class="sub">buy bonds · add reserves</span></button>
+        <button class="bigbtn btn-qt" id="btnQT">QT −$100B<span class="sub">sell bonds · drain reserves</span></button>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="fiscalPanel">
+      <div class="tool-grid">
+        <button class="bigbtn btn-fiscal" id="btnSpend">Gov. Spend<span class="sub">+growth now · +debt +inflation</span></button>
+        <button class="bigbtn btn-tax" id="btnTax">Raise Taxes<span class="sub">−inflation · −growth · −deficit</span></button>
+      </div>
+    </div>
+
+    <div class="hintline" id="hint">Tip: one 25bp move at a time. Give it 2–3 quarters to land before moving again.</div>
+  </div>
+
+  <div class="foot">
+    Accounting is real — reserves, TGA &amp; debt reconcile every tick. The economy's <em>reactions</em> are tuned for play, directionally honest, not sourced forecasts.
+    <br><button id="resetBtn">↺ new term</button>
+  </div>
+
+  <div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+  const $=id=>document.getElementById(id);
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const fmt=n=>Math.round(n).toLocaleString('en-US');
+  const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // ---- GAME STATE ----
+  let S;
+  function fresh(){
+    return {
+      // clock
+      tick:0, year:1, quarter:1,
+      // macro (%). directionally-honest, game-tuned.
+      inflation:2.0, unemployment:4.0, growth:2.5,
+      rate:2.50, neutral:2.50,
+      transmitted:0,          // lagged stance = rate-neutral, chased slowly (THE LAG)
+      supplyShock:0,          // stagflation driver, decays
+      fiscalImpulse:0,        // from spending/taxes, decays
+      // plumbing ($B) — honest double entry
+      fedTsy:5000, reserves:3000, tga:800,
+      bankTsy:2000, loans:8000, deposits:10000,
+      debt:30000,
+      stress:0,
+      // meta
+      cred:50, credRate:0, streak:0,
+      // unlocks
+      unlocked:{unemp:false,reserves:false,fiscal:false,stress:false},
+      milestone:0,            // progression gate
+      onMandateTicks:0,
+      firedEvents:{},
+      paused:false, gameover:false, pendingEvent:false,
+      lastCred:50
+    };
+  }
+
+  // ---- JUICE ----
+  function toast(t,sub){
+    const el=$('toast');
+    el.innerHTML=t+(sub?`<span class="t-sub">${sub}</span>`:'');
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t=setTimeout(()=>el.classList.remove('show'),2600);
+  }
+  function floatText(x,y,txt,color){
+    if(reduce)return;
+    const f=document.createElement('div');
+    f.className='float';f.textContent=txt;f.style.left=x+'px';f.style.top=y+'px';f.style.color=color;
+    document.body.appendChild(f);setTimeout(()=>f.remove(),1000);
+  }
+  function flashRow(id){const el=$(id);el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+  function log(tag,txt,color){
+    $('logTag').textContent=tag;$('logTag').style.background=color||'var(--vault)';
+    $('logTag').style.color=(color==='var(--gold)')?'#3a2a02':'#fff';
+    $('logTxt').innerHTML=txt;
+  }
+
+  // ---- ACCOUNTING OPERATIONS (double entry; identities preserved) ----
+  function opQE(x){ // Fed buys bonds from banks
+    S.fedTsy+=x; S.reserves+=x; S.bankTsy-=x;
+    S.stress=clamp(S.stress-14,0,140);
+  }
+  function opQT(x){
+    if(S.reserves<x){x=S.reserves;} // can't drain below zero
+    S.fedTsy-=x; S.reserves-=x; S.bankTsy+=x;
+  }
+  function opIssue(x){ // Treasury issues bonds, banks pay reserves -> TGA. reserves drain.
+    const d=Math.min(x,S.reserves);
+    S.reserves-=d; S.bankTsy+=d; S.tga+=x; S.debt+=x;
+  }
+  function opSpend(x){ // TGA -> reserves + deposits (money into economy)
+    const d=Math.min(x,S.tga);
+    S.tga-=d; S.reserves+=d; S.deposits+=d;
+  }
+  function opTax(x){ // deposits + reserves -> TGA (drain from economy)
+    const d=Math.min(x,Math.min(S.deposits,S.reserves));
+    S.deposits-=d; S.reserves-=d; S.tga+=d;
+  }
+  function opLend(x){ // banks create loans + deposits (no reserves move)
+    S.loans+=x; S.deposits+=x;
+  }
+
+  // ---- MACRO TICK (tuned, directionally honest) ----
+  function macroTick(){
+    // 1. lag: transmitted stance chases actual stance slowly => "long & variable lags"
+    const stance = S.rate - S.neutral;
+    S.transmitted += (stance - S.transmitted)*0.16;
+
+    // 2. shocks decay
+    S.supplyShock *= 0.90;
+    S.fiscalImpulse *= 0.82;
+
+    // 3. targets that the economy drifts toward
+    const noise=()=> (Math.random()-0.5)*0.10;
+    // restrictive stance (positive) cools inflation, raises unemployment, cuts growth (all lagged)
+    const infTarget = 2.0 - S.transmitted*0.75 + S.supplyShock*1.0 + S.fiscalImpulse*0.5;
+    const unempTarget = 4.0 + S.transmitted*0.65 + S.supplyShock*0.55 - S.fiscalImpulse*0.5;
+    const growthTarget = 2.5 - S.transmitted*0.9 - S.supplyShock*0.7 + S.fiscalImpulse*0.9;
+
+    S.inflation    += (infTarget    - S.inflation)*0.22 + noise();
+    S.unemployment += (unempTarget  - S.unemployment)*0.20 + noise();
+    S.growth       += (growthTarget - S.growth)*0.24 + noise();
+    S.inflation=clamp(S.inflation,-2,18);
+    S.unemployment=clamp(S.unemployment,2,16);
+    S.growth=clamp(S.growth,-8,8);
+
+    // 4. banks lend when growth is decent & rates not punishing => creates deposits (broad money)
+    if(S.unlocked.reserves){
+      const willingness = clamp((S.growth) - Math.max(0,S.transmitted)*1.2, -2, 3);
+      if(willingness>0) opLend(willingness*8);
+      else if(willingness<0) { S.loans=Math.max(0,S.loans+willingness*6); S.deposits=Math.max(0,S.deposits+willingness*6); }
+    }
+
+    // 5. reserve scarcity -> financial stress (the non-linear threshold lesson)
+    if(S.unlocked.stress){
+      const scarce = 1200 - S.reserves;          // below ~1200 reserves get tight
+      if(scarce>0) S.stress=clamp(S.stress + scarce*0.010, 0, 140);
+      else S.stress=clamp(S.stress - 6, 0, 140);
+      if(S.stress>=100){ triggerCrunch(); }
+    }
+
+    // 6. autonomous Treasury (once fiscal unlocked): runs a deficit, issues to fund, spends
+    if(S.unlocked.fiscal && S.tick%2===0){
+      opIssue(120);   // fund the deficit -> drains reserves
+      opSpend(150);   // spend -> releases reserves + adds deposits
+    }
+  }
+
+  function triggerCrunch(){
+    if(S.firedEvents.crunchCooldown && S.tick<S.firedEvents.crunchCooldown) return;
+    S.firedEvents.crunchCooldown=S.tick+8;
+    S.unemployment=clamp(S.unemployment+2.2,2,16);
+    S.growth=clamp(S.growth-2.5,-8,8);
+    S.cred=clamp(S.cred-8,0,999);
+    S.stress=70;
+    log('CRUNCH','<b>Credit crunch!</b> Reserves ran dry, banks froze lending, unemployment jumped. Inject reserves with <b>QE</b> to relieve stress.','var(--danger)');
+    toast('💥 CREDIT CRUNCH','reserves too scarce — hit QE');
+  }
+
+  // ---- CREDIBILITY / SCORING ----
+  function scoreTick(){
+    let s=0;
+    s += Math.max(0, 6 - Math.abs(S.inflation-2)*2.2);
+    if(S.unlocked.unemp) s += Math.max(0, 4 - Math.abs(S.unemployment-4)*1.4);
+    if(S.inflation>6||S.inflation<0) s-=5;
+    if(S.unlocked.unemp&&S.unemployment>7) s-=4;
+    s = s/2 - 2;                       // net: near-target gains, off-target drains
+    S.credRate = Math.round(s*10)/10;
+    S.cred = clamp(S.cred + s, 0, 999);
+
+    const onMandate = Math.abs(S.inflation-2)<0.7 && (!S.unlocked.unemp || Math.abs(S.unemployment-4)<1.2);
+    if(onMandate){S.streak++; S.onMandateTicks++;}
+    else S.streak=0;
+
+    if(S.cred<=0 && !S.gameover){ endGame(false); }
+    if(S.cred>=200 && !S.gameover){ endGame(true); }
+  }
+
+  // ---- PROGRESSION / UNLOCKS ----
+  function checkUnlocks(){
+    // M1: stabilize inflation once -> unlock dual mandate
+    if(S.milestone===0 && S.onMandateTicks>=3){
+      S.milestone=1; S.unlocked.unemp=true;
+      $('gUnemp').style.display=''; $('gGrowth').style.display='';
+      unlockToast('🎯 DUAL MANDATE','Now unemployment counts too. Hiking cools inflation but throws people out of work — welcome to the Fed\'s real dilemma.');
+      log('UNLOCK','<b>Dual mandate unlocked.</b> You now juggle inflation AND jobs. They fight each other. Find the balance.','var(--sky)');
+    }
+    // M2: reach 80 cred -> unlock reserves/QE + plumbing + stress
+    else if(S.milestone===1 && S.cred>=80){
+      S.milestone=2; S.unlocked.reserves=true; S.unlocked.stress=true;
+      $('plumbStrip').classList.add('show'); $('reservePanel').classList.add('show'); $('gStress').style.display='';
+      unlockToast('🏦 THE PLUMBING','QE & QT unlocked. You can now create/destroy bank reserves directly. Watch the ledger — it always balances.');
+      log('UNLOCK','<b>Reserves unlocked.</b> QE adds reserves, QT drains them. If reserves get too low, <b>financial stress</b> climbs toward a crunch.','var(--gold)');
+      queueEvent('reserveSqueeze', 4);
+    }
+    // M3: reach 120 cred -> unlock Treasury/fiscal
+    else if(S.milestone===2 && S.cred>=120){
+      S.milestone=3; S.unlocked.fiscal=true;
+      $('fiscalPanel').classList.add('show'); $('pTgaRow').style.display=''; $('pDebtRow').style.display='';
+      unlockToast('🏛️ THE TREASURY','Fiscal policy is live. The government now issues bonds (drains reserves) and spends (adds them). You feel monetary + fiscal collide.');
+      log('UNLOCK','<b>Treasury unlocked.</b> Issuance drains reserves into the TGA; spending pushes them back out. You now run both sides.','var(--sky)');
+      queueEvent('stimulus', 5);
+    }
+    // M4: after fiscal, once cred>=150 -> the stagflation capstone
+    else if(S.milestone===3 && S.cred>=150 && !S.firedEvents.stagflation){
+      S.milestone=4;
+      queueEvent('stagflation', 2);
+    }
+  }
+  function unlockToast(t,sub){toast(t,sub);}
+
+  // ---- EVENTS ----
+  const EVENTS={
+    reserveSqueeze:{
+      color:'var(--gold)',ico:'🚱',kick:'liquidity event',title:'Reserves running low',
+      desc:'Banks are scrambling to settle payments — reserves are getting scarce and stress is building. Left alone, this tips into a credit crunch.',
+      choices:[
+        {t:'Launch QE (+$300B reserves)',d:'floods reserves in · relieves stress fast',fn:()=>{opQE(300);S.stress=clamp(S.stress-40,0,140);log('QE','You injected <b>$300B</b> of reserves. Stress relieved — banks can settle again. This is the lender-of-last-resort move.','var(--gold)');}},
+        {t:'Hold — let banks sort it out',d:'risky · stress keeps climbing',fn:()=>{S.stress=clamp(S.stress+25,0,140);log('HOLD','You held back. Stress is still climbing — if reserves stay scarce, a crunch is coming.','var(--danger)');}}
+      ]
+    },
+    stimulus:{
+      color:'var(--sky)',ico:'🏛️',kick:'fiscal request',title:'Congress wants stimulus',
+      desc:'A big spending package is on the table. It would boost growth and cut unemployment now — but widen the deficit and push inflation up later. As Treasury, your call.',
+      choices:[
+        {t:'Approve the package',d:'+growth −unemployment now · +inflation +debt later',fn:()=>{S.fiscalImpulse+=2.4;opIssue(400);opSpend(400);log('STIMULUS','Approved. Growth gets a jolt and jobs improve — but watch inflation and the debt over the next few quarters.','var(--sky)');}},
+        {t:'Decline — hold the line on debt',d:'protects inflation & deficit · no growth boost',fn:()=>{S.cred=clamp(S.cred+4,0,999);log('DECLINE','You declined. Deficit and inflation stay contained — a disciplined call, and credibility ticks up.','var(--vault)');}}
+      ]
+    },
+    stagflation:{
+      color:'var(--danger)',ico:'🔥',kick:'supply shock',title:'Stagflation strikes',
+      desc:'An oil shock hits. Inflation is spiking AND unemployment is rising — at the same time. Your usual move doesn\'t work: cutting rates fights unemployment but feeds inflation; hiking fights inflation but deepens the recession. There is no clean answer. Pick your poison.',
+      choices:[
+        {t:'Hike hard — kill inflation first',d:'inflation ↓ · but unemployment spikes (Volcker\'s choice)',fn:()=>{S.rate=clamp(S.rate+1.0,0,20);S.supplyShock+=1.2;S.unemployment+=1.5;log('HIKE','You chose price stability. Rates up hard — inflation will break, but expect a painful jobs recession first. This is the Volcker playbook.','var(--danger)');}},
+        {t:'Cut — protect jobs first',d:'unemployment ↓ · but inflation rips higher',fn:()=>{S.rate=clamp(S.rate-0.75,0,20);S.supplyShock+=2.2;S.inflation+=1.5;log('CUT','You chose jobs. Rates down — but with a supply shock, inflation is about to rip. This is the 1970s mistake that let inflation entrench.','var(--danger)');}},
+        {t:'Hold & ride it out',d:'no relief either way · slow grind',fn:()=>{S.supplyShock+=1.6;log('HOLD','You held steady and let the shock work through. Slow, grinding pain on both fronts — sometimes the least-bad option, sometimes indecision.','var(--gold)');}}
+      ]
+    }
+  };
+  let eventQueue=[];
+  function queueEvent(key,delay){eventQueue.push({key,at:S.tick+delay});}
+  function checkEventQueue(){
+    if(S.pendingEvent||S.gameover)return;
+    for(let i=0;i<eventQueue.length;i++){
+      if(S.tick>=eventQueue[i].at){
+        const e=eventQueue.splice(i,1)[0];
+        if(S.firedEvents[e.key]&&e.key==='stagflation')return;
+        S.firedEvents[e.key]=true;
+        showEvent(e.key);return;
+      }
+    }
+  }
+  function showEvent(key){
+    const e=EVENTS[key];if(!e)return;
+    S.pendingEvent=true;S.paused=true;
+    const m=$('modal');
+    m.innerHTML=`
+      <div class="m-head" style="background:${e.color}">
+        <span class="m-ico">${e.ico}</span>
+        <div><div class="m-kick">${e.kick}</div><div class="m-title">${e.title}</div></div>
+      </div>
+      <div class="m-body">
+        <div class="m-desc">${e.desc}</div>
+        <div class="m-choices" id="mChoices"></div>
+      </div>`;
+    const cc=m.querySelector('#mChoices');
+    e.choices.forEach((c,i)=>{
+      const b=document.createElement('button');b.className='choice';
+      b.innerHTML=`<div class="ch-t">${c.t}</div><div class="ch-d">${c.d}</div>`;
+      b.onclick=()=>{c.fn();closeEvent();};
+      cc.appendChild(b);
+    });
+    $('scrim').classList.add('show');
+  }
+  function closeEvent(){
+    $('scrim').classList.remove('show');
+    S.pendingEvent=false;S.paused=false;
+    render();
+  }
+
+  // ---- END ----
+  function endGame(win){
+    S.gameover=true;S.paused=true;
+    const m=$('modal');
+    const yrs=`${S.year}y ${S.quarter}q`;
+    m.innerHTML=`
+      <div class="m-head" style="background:${win?'var(--vault)':'var(--danger)'}">
+        <span class="m-ico">${win?'🏆':'📉'}</span>
+        <div><div class="m-kick">term over · ${yrs}</div><div class="m-title">${win?'Legendary Chair':'Removed from office'}</div></div>
+      </div>
+      <div class="m-body">
+        <div class="m-desc">${win
+          ? 'You held the dual mandate through supply shocks, fiscal fights and liquidity scares. Inflation anchored, jobs protected, the plumbing intact. Greenspan wishes.'
+          : 'Credibility hit zero. Either inflation ran away or the economy cratered on your watch. The plumbing kept reconciling — the politics did not. Try a new term.'}</div>
+        <div class="m-choices"><button class="choice" onclick="location.reload()"><div class="ch-t">↺ Start a new term</div><div class="ch-d">fresh economy, same machine</div></button></div>
+      </div>`;
+    $('scrim').classList.add('show');
+  }
+
+  // ---- RENDER ----
+  function render(){
+    $('clockQ').textContent=`Y${S.year} · Q${S.quarter}`;
+    $('credNum').textContent=Math.round(S.cred);
+    $('credRate').textContent=(S.credRate>=0?'+':'')+S.credRate+'/q';
+    $('credRate').style.color=S.credRate>=0?'var(--gold)':'#ff9b8f';
+    $('streak').textContent=S.streak;
+
+    // inflation
+    $('infVal').textContent=S.inflation.toFixed(1);
+    const infPct=clamp((S.inflation+2)/12*100,2,100);
+    const infFill=$('infFill');infFill.style.width=infPct+'%';
+    const infOff=Math.abs(S.inflation-2);
+    infFill.style.background=infOff<0.7?'var(--vault)':infOff<2.5?'var(--gold)':'var(--danger)';
+    $('gInf').classList.toggle('danger',S.inflation>6||S.inflation<0);
+    // green band zone (0.6%..3.4% mapped)
+    const z0=clamp((1.3+2)/12*100,0,100), z1=clamp((2.7+2)/12*100,0,100);
+    $('infZone').style.left=z0+'%';$('infZone').style.width=(z1-z0)+'%';
+
+    if(S.unlocked.unemp){
+      $('unempVal').textContent=S.unemployment.toFixed(1);
+      const uFill=$('unempFill');uFill.style.width=clamp(S.unemployment/12*100,3,100)+'%';
+      uFill.style.background=S.unemployment<5?'var(--vault)':S.unemployment<7?'var(--gold)':'var(--danger)';
+      $('gUnemp').classList.toggle('danger',S.unemployment>7);
+      $('growthVal').textContent=S.growth.toFixed(1);
+      const gFill=$('growthFill');gFill.style.width=clamp((S.growth+2)/8*100,3,100)+'%';
+      gFill.style.background=S.growth>1?'var(--vault)':S.growth>-0.5?'var(--gold)':'var(--danger)';
+      $('gGrowth').classList.toggle('danger',S.growth<-0.5);
+    }
+    if(S.unlocked.stress){
+      $('stressVal').textContent=Math.round(S.stress);
+      const sFill=$('stressFill');sFill.style.width=clamp(S.stress/140*100,0,100)+'%';
+      sFill.style.background=S.stress<40?'var(--vault)':S.stress<80?'var(--gold)':'var(--danger)';
+      $('gStress').classList.toggle('danger',S.stress>=100);
+    }
+
+    // rate
+    $('rateVal').textContent=S.rate.toFixed(2);
+    const st=S.rate-S.neutral;
+    const pill=$('stancePill');
+    if(st>0.1){pill.textContent='RESTRICTIVE';pill.style.background='rgba(214,72,59,.15)';pill.style.color='var(--danger)';}
+    else if(st<-0.1){pill.textContent='EASY';pill.style.background='rgba(57,192,140,.18)';pill.style.color='var(--vault)';}
+    else{pill.textContent='NEUTRAL';pill.style.background='#eee6d2';pill.style.color='#8a7f66';}
+
+    // plumbing
+    if(S.unlocked.reserves){
+      $('pRes').textContent=fmt(S.reserves);
+      $('pDep').textContent=fmt(S.deposits);
+      if(S.unlocked.fiscal){$('pTga').textContent=fmt(S.tga);$('pDebt').textContent=fmt(S.debt);}
+    }
+    $('btnQT').disabled = S.reserves<100;
+    $('btnTax').disabled = false;
+    $('btnSpend').disabled = false;
+  }
+
+  // ---- LOOP ----
+  const TICK_MS=1600;
+  function gameTick(){
+    if(S.paused||S.gameover)return;
+    S.tick++;
+    // advance clock
+    S.quarter++; if(S.quarter>4){S.quarter=1;S.year++;}
+    macroTick();
+    scoreTick();
+    checkUnlocks();
+    checkEventQueue();
+    render();
+    // cred card flash on gain
+    if(S.cred>S.lastCred+0.3){const cf=$('cflash');cf.style.opacity='.25';setTimeout(()=>cf.style.opacity='0',180);}
+    S.lastCred=S.cred;
+  }
+
+  // ---- INPUT ----
+  function bump(el,txt,color,ev){
+    if(ev){const r=(ev.currentTarget||el).getBoundingClientRect();floatText(r.left+r.width/2-14,r.top+8,txt,color);}
+  }
+  $('btnCut').onclick=e=>{if(S.gameover)return;S.rate=clamp(S.rate-0.25,0,20);bump(e.currentTarget,'−25bp','#2AA576',e);render();hintFade();};
+  $('btnHike').onclick=e=>{if(S.gameover)return;S.rate=clamp(S.rate+0.25,0,20);bump(e.currentTarget,'+25bp','#C43F32',e);render();hintFade();};
+  $('btnQE').onclick=e=>{if(S.gameover)return;opQE(100);flashRow('pRes');bump(e.currentTarget,'+$100B','#CF9518',e);log('QE','Bought <b>$100B</b> in bonds — banks handed over Treasuries, you credited reserves you created on the spot. Reserves up, stress eased.','var(--gold)');render();};
+  $('btnQT').onclick=e=>{if(S.gameover)return;if(S.reserves<100)return;opQT(100);flashRow('pRes');bump(e.currentTarget,'−$100B','#4E7BA6',e);log('QT','Sold <b>$100B</b> in bonds — reserves drained back out. Tightens the plumbing; push too far and stress climbs.','var(--sky)');render();};
+  $('btnSpend').onclick=e=>{if(S.gameover)return;S.fiscalImpulse+=1.2;opIssue(150);opSpend(200);flashRow('pDep');bump(e.currentTarget,'spend','#2E7CC4',e);log('SPEND','Government spent into the economy — deposits and reserves rose, debt ticked up. Growth gets a near-term lift; inflation may follow.','var(--sky)');render();};
+  $('btnTax').onclick=e=>{if(S.gameover)return;S.fiscalImpulse-=1.0;opTax(180);flashRow('pDep');bump(e.currentTarget,'tax','#6B5BA6',e);log('TAX','Raised taxes — pulled deposits and reserves out into the TGA. Cools inflation and shrinks the deficit, at the cost of growth.','#6B5BA6');render();};
+  $('resetBtn').onclick=()=>location.reload();
+
+  let hintGone=false;
+  function hintFade(){if(hintGone)return;hintGone=true;setTimeout(()=>{$('hint').textContent='Read the log after each move — it tells you exactly what just happened and why.';},1200);}
+
+  // ---- BOOT ----
+  S=fresh();
+  render();
+  setInterval(gameTick,TICK_MS);
+})();
+</script>
+</body>
+</html>
