@@ -139,6 +139,13 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 .stake.info{background:rgba(96,165,250,.1);color:var(--blue)}
 .consequence{margin:10px 14px;background:var(--card);border:2px solid #2a3548;border-radius:16px;padding:16px;display:none}
 .consequence.show{display:block;animation:breakIn .4s}
+.consequence.takeover{position:fixed;inset:0;margin:0;z-index:90;border:none;border-radius:0;display:none;flex-direction:column;justify-content:center;padding:28px 22px;background:linear-gradient(160deg,#141c2b,#0d131c);overflow-y:auto}
+.consequence.takeover.show{display:flex;animation:takeoverIn .45s cubic-bezier(.2,1,.4,1)}
+@keyframes takeoverIn{0%{opacity:0;transform:scale(.94)}100%{opacity:1;transform:none}}
+.consequence.takeover .con-head{font-size:26px;margin-bottom:16px}
+.consequence.takeover .con-body{font-size:16px;line-height:1.7}
+.consequence.takeover .con-reactions{margin-top:18px}
+.consequence.takeover::before{content:"📰 THE FALLOUT";position:absolute;top:22px;left:22px;font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--dimmer);font-weight:800}
 .con-head{font-family:var(--serif);font-size:17px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .con-body{font-size:13.5px;color:var(--dim);line-height:1.6}
 .con-body b{color:var(--txt)}
@@ -483,13 +490,16 @@ function scoreTick(){
   if(S.inf>6||S.inf<0)s-=4;if(S.un>7)s-=3;s=s/2-1.2;
   // angry factions now drain credibility directly (folded-in political pressure)
   PK.forEach(k=>{if(S.app[k]<25)s-=0.8;});
-  S.cred=clamp(S.cred+s,0,200);
   const on=Math.abs(S.inf-2)<.8&&Math.abs(S.un-4)<1.2;
   if(on)S.streak++;else S.streak=0;
+  // EXCELLENCE BONUS: sustained on-mandate play compounds (like anchored expectations).
+  // Leaves mediocre terms near their ~120 ceiling; lets flawless terms climb toward 200.
+  if(on)s+=Math.min(2.2,0.5+S.streak*0.18);
+  S.cred=clamp(S.cred+s,0,200);
   PK.forEach(k=>{if(S.factionCooldown[k]>0)S.factionCooldown[k]--;});
   S.emergencyThisMonth=false;
   if(S.cred<=0){endGame(false,'cred');return;}
-  if(S.termMonth>=48){endGame(S.cred>=90);return;}
+  if(S.termMonth>=48){endGame(S.cred>=110);return;}
 }
 function monthName(){return MONTHS[S.month%12]+' '+(S.year+Math.floor(S.month/12));}
 function isFomc(){return FOMC_MONTHS.includes(S.month%12);}
@@ -514,9 +524,17 @@ function render(){
   $('btnQE').disabled=S.gameover;
 }
 function showMoods(react){
+  let sndDelay=0;
   PK.forEach(k=>{const v=react[k]||0;const el=$('m'+cap(k));const p=$('p'+cap(k));
-    if(v>3){el.textContent='❤️';p.classList.add('glow-green');p.classList.remove('glow-red');Audio8.sfx('heart');}
+    if(v>3){el.textContent='❤️';p.classList.add('glow-green');p.classList.remove('glow-red');}
     else if(v<-3){el.textContent='😠';p.classList.add('glow-red');p.classList.remove('glow-green');}else return;
+    // reactive faction audio — gated to MEANINGFUL swings (|v|>=5) so it punctuates, staggered so multiple factions don't muddy
+    if(typeof Audio8!=='undefined'&&Math.abs(v)>=5){
+      let snd=null;
+      if(v>=5){snd=(k==='banks')?'register':(k==='people')?'cheer':(k==='congress')?'cheer':'cheer';}
+      else{snd=(k==='people')?'boo':(k==='congress')?'gavel':(k==='banks')?'boo':'boo';}
+      const d=sndDelay;setTimeout(()=>Audio8.sfx(snd),d);sndDelay+=260;
+    }
     el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
     setTimeout(()=>{el.classList.remove('show');p.classList.remove('glow-green','glow-red');},3000);});
 }
@@ -639,11 +657,10 @@ function chooseResponse(r,ev){
   const neg=Object.entries(r.react).filter(([,v])=>v<-3).map(([k])=>`<span class="cr neg">😠 ${PN[k]}</span>`);
   const showTap=S.qeActive&&S.qeTaps>0;
   con.innerHTML=`<div class="con-head">📰 The Fallout</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 2-3 months — don't overcorrect</div>`:''}${showTap?'':'<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>'}`;
-  con.classList.add('show');
-  if(showTap){$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';}
-  else{$('advBtn').style.display='none';const ib=con.querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;}
+  if(showTap){con.classList.remove('takeover');con.classList.add('show');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';}
+  else{con.classList.add('takeover');con.classList.add('show');$('advBtn').style.display='none';const ib=con.querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;}
   try{render();}catch(e){}
-  try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
+  if(!con.classList.contains('takeover')){try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}}
 }
 $('tapZone').addEventListener('click',function(e){
   if(S.qeTaps<=0)return;
@@ -656,7 +673,12 @@ $('tapZone').addEventListener('click',function(e){
     $('tapZone').classList.remove('show');
     const con=$('consequence');
     if(con.classList.contains('show')&&!con.querySelector('.inline-adv')){
+      // QE was part of a crisis response — append advance to existing fallout
       const b=document.createElement('button');b.className='advance-btn inline-adv';b.style.cssText='display:block;margin:14px 0 0;width:100%';b.textContent='Advance →';b.onclick=doAdvance;con.appendChild(b);
+    }else if(!con.classList.contains('show')){
+      // QE was launched from the standing toolbar — render its own fallout so the turn can advance
+      con.classList.remove('takeover');con.innerHTML=`<div class="con-head">💵 Balance Sheet: QE Complete</div><div class="con-body">You created <b>$${fmt(S.qeTotal)}B</b> in new reserves from nothing and credited them to the banking system by buying Treasuries from banks. <b>The money didn't come from anywhere — it was conjured at the moment of purchase.</b> Reserves are up, banks are flush, and if you're not careful, that liquidity becomes tomorrow's inflation.</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>`;
+      con.classList.add('show');con.querySelector('.inline-adv').onclick=doAdvance;
     }
     showMoods({banks:6,treasury:2,congress:-2,people:-2});
   },500);}
@@ -670,7 +692,7 @@ function doAdvance(){
   animateNum($('vGr'),S.prevGr,S.gr,700);
   animateNum($('credNum'),pc,S.cred,700,v=>Math.round(v));
   const cn=$('credNum');cn.classList.remove('counter-pop');void cn.offsetWidth;cn.classList.add('counter-pop');
-  $('consequence').classList.remove('show');$('consequence').innerHTML='';$('advBtn').style.display='none';$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';
+  $('consequence').classList.remove('show','takeover');$('consequence').innerHTML='';$('advBtn').style.display='none';$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';
   nextTurn();
 }
 $('advBtn').addEventListener('click',doAdvance);
@@ -688,36 +710,68 @@ $('btnQE').addEventListener('click',()=>{
   Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent='8 taps remaining';$('tapProg').style.width='0%';
   if(emergency){
     S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
-    toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6 (markets read panic)','var(--red)');
-  }else{toast('QE launched — tap below to inject reserves','var(--green)');}
+    toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6','var(--red)');
+  }else{toast('QE — tap below to create & inject reserves','var(--green)');}
   render();window.scrollTo({top:$('tapZone').offsetTop-70,behavior:'smooth'});
 });
 $('btnQT').addEventListener('click',()=>{
-  if(S.gameover||S.reserves<100)return;
+  if(S.gameover||S.reserves<100||S.qeActive)return;
   const emergency=!isFomc();
   const d=Math.min(200,S.reserves);S.reserves-=d;S.stress=clamp(S.stress+8,0,150);
-  if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
-    toast('⚠️ Emergency QT — $'+fmt(d)+'B drained. Panic signal: credibility −6','var(--red)');
-  }else{toast('QT — $'+fmt(d)+'B in reserves drained from the system','var(--blue)');}
+  let credLine='';
+  if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);credLine=' Because you did this between scheduled meetings, markets read it as panic — <b>credibility −6</b>.';}
   showMoods({banks:-4,treasury:0,congress:2,people:1});Audio8.sfx('bad');
-  render();
+  const con=$('consequence');con.classList.remove('takeover');
+  con.innerHTML=`<div class="con-head">🔻 Balance Sheet: QT Executed</div><div class="con-body">You drained <b>$${fmt(d)}B</b> in reserves out of the banking system by letting Treasuries roll off your balance sheet. <b>Those reserves didn't go anywhere — they simply ceased to exist.</b> The money you destroyed is money the banks no longer have to lend. Tighter conditions, higher stress on the plumbing, and a cooling effect on the economy.${credLine}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>`;
+  con.classList.add('show');con.querySelector('.inline-adv').onclick=doAdvance;
+  render();window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});
 });
 $('plumbTog').addEventListener('click',()=>{const d=$('plumbDr');d.classList.toggle('show');$('plumbTog').textContent=d.classList.contains('show')?'▲ hide plumbing':'▼ the plumbing';});
+const ENDINGS={
+ fail:[ // below 110, term finished
+  {h:'Thanked For Your Service',b:'The polite phrase institutions use when they mean the opposite. Four years steering the world\'s most important economy, and you got a handshake and a parking validation. The next Chair inherits your desk, your mandate, and your unfinished coffee.'},
+  {h:'We\'ll Be In Touch',b:'You were not, in the end, in touch. The economy survived you, which is the faintest praise a central banker can receive. Somewhere a transition team is already redecorating.'},
+  {h:'A Learning Experience',b:'For everyone. Inflation had opinions, the labor market had others, and you were outvoted by arithmetic. The good news: almost nobody remembers the Chair before last. You\'ll have that in common with them soon.'}
+ ],
+ steady:[ // 110-125
+  {h:'Nobody Rioted',b:'The bar for central banking is lower than anyone admits, and you cleared it. Inflation didn\'t spiral, the banks didn\'t implode, your name never trended for the wrong reasons. History books will spell it correctly. That\'s more than most get.'},
+  {h:'No Notes, Mostly',b:'You did the job, and the job stayed done. No crisis bears your name, no bubble your signature. It\'s the kind of term that gets one respectful sentence in a textbook and no documentary. Take the sentence. It\'s real.'},
+  {h:'Fine. Genuinely Fine.',b:'Not the eulogy anyone dreams of — but ask the chairs who presided over disasters how they feel about "fine." You kept the plates spinning, the lights on, and the pitchforks in the shed. Unglamorous. Also: correct.'}
+ ],
+ good:[ // 125-150
+  {h:'They\'ll Name a Conference Room After You',b:'Genuine competence, the kind that\'s invisible until it\'s gone. You anchored expectations and threaded the mandate through every shock the world threw. Somewhere an economics PhD is already citing your term. The second floor grudgingly respects you.'},
+  {h:'Filed Under: Did It Right',b:'You made an impossible job look almost manageable, which is the highest compliment the profession quietly pays. Markets trusted your word — the only currency a Chair actually prints. Historians will be kind. Rivals, less so.'},
+  {h:'The Grown-Up In The Room',b:'Through every panic, someone had to be the adult, and it was you. No theatrics, no blinking, no un-anchoring. You leave the institution stronger than you found it — the rarest line on any Chair\'s record.'}
+ ],
+ master:[ // 150-200
+  {h:'Master of the Printing Press',b:'You conjured trillions from the void, bent the yield curve to your will, stared down Congress and the markets and the occasional global catastrophe — and the economy <i>purred</i>. They\'ll measure the next hundred years against this. Take a bow. You\'ve earned the absurdity.'},
+  {h:'The Maestro',b:'Every finance minister on Earth now sleeps a little worse knowing you existed. You didn\'t manage the economy, you <i>conducted</i> it — inflation on cue, jobs on cue, crises defused before the ink dried. Biographies are being outlined as we speak.'},
+  {h:'Legend Status: Confirmed',b:'You took the most thankless job in government and made it look like a superpower. Buildings, courses, grudging awe. The next Chair will be introduced as "promising" and spend their whole term being compared to you. That\'s the game. You won it.'}
+ ]
+};
 function endGame(win,reason){
   S.gameover=true;
   $('responseSlot').innerHTML='';$('tapZone').classList.remove('show');$('advBtn').style.display='none';$('consequence').classList.remove('show');
   const rec=PK.map(k=>`<span class="cr ${S.app[k]>55?'pos':'neg'}">${S.app[k]>55?'❤️':'😠'} ${PN[k]} ${Math.round(S.app[k])}%</span>`).join('');
-  const termDone=S.termMonth>=48;
-  let hl,body;
-  if(win){hl='Reappointed for a second term';body='You served the full four years, held the mandate, and kept political pressure at bay. Markets steady on news of your reappointment.';}
-  else if(reason==='pressure'){hl='Forced out under political pressure';body='The pressure became unbearable. The administration, backed by furious stakeholders, forced your resignation. The economy may have been fine — but the politics broke you. Independence has a cost, and you couldn\'t pay it.';}
-  else if(termDone){hl='A term that will be debated for years';body='You finished the term, but credibility frayed. History is split on your legacy.';}
-  else{hl='Removed from office';body='Credibility hit zero. The economy broke on your watch. The President announces a replacement.';}
-  $('breakingSlot').innerHTML=`<div class="breaking ${win?'positive':''}"><div class="b-tag"><span class="live"></span>${termDone?'TERM COMPLETE':'CAMPAIGN OVER'}</div><div class="b-headline">${hl}</div><div class="b-body">${body}</div></div>`;
+  const termDone=S.termMonth>=48;const c=S.cred;
+  // determine tier + audio intensity
+  let pool,kicker,tone,winTier=0;
+  if(!termDone){ // removed early (credibility hit zero)
+    pool=ENDINGS.fail;kicker='REMOVED FROM OFFICE';tone='';
+  }else if(c<110){pool=ENDINGS.fail;kicker='NOT REAPPOINTED';tone='';}
+  else if(c<125){pool=ENDINGS.steady;kicker='TERM COMPLETE';tone='positive';winTier=1;}
+  else if(c<150){pool=ENDINGS.good;kicker='A TERM WELL SERVED';tone='positive';winTier=2;}
+  else{pool=ENDINGS.master;kicker='LEGENDARY TERM';tone='positive';winTier=3;}
+  const pickEnd=pool[Math.floor(Math.random()*pool.length)];
+  $('breakingSlot').innerHTML=`<div class="breaking ${tone}"><div class="b-tag"><span class="live"></span>${kicker}</div><div class="b-headline">${pickEnd.h}</div><div class="b-body">${pickEnd.b}</div></div>`;
+  const medal=winTier===3?'👑':winTier===2?'🏆':winTier===1?'🎖️':'📉';
+  const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const con=$('consequence');
-  con.innerHTML=`<div class="con-head">${win?'🏆 Legacy Secured':'📉 The Record'}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months · Credibility ${Math.round(S.cred)}/200<br><br>${win?'A term worth defending. You navigated the shocks history threw at you AND the politics that came for you, and kept the machine running.':'Every chair is judged by the record they leave. This one is a cautionary tale — and a lesson for the next.'}</div><div class="con-reactions">${rec}</div>`;
+  con.classList.add('takeover');con.innerHTML=`<div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
   con.classList.add('show');
-  if(typeof Audio8!=='undefined'){Audio8.sfx(win?'win':'bad');if(!win)shake();}
+  if(typeof Audio8!=='undefined'){
+    if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('bad');shake();}
+  }
 }
 // ================= AUDIO ENGINE (synthesized, no files) =================
 const Audio8={
@@ -729,7 +783,8 @@ const Audio8={
       const AC=window.AudioContext||window.webkitAudioContext;
       this.ctx=new AC();
       this.master=this.ctx.createGain();this.master.gain.value=0.5;this.master.connect(this.ctx.destination);
-      this.musicGain=this.ctx.createGain();this.musicGain.gain.value=0.26;this.musicGain.connect(this.master);
+      this.musicGain=this.ctx.createGain();this.musicGain.gain.value=0.30;this.musicGain.connect(this.master);
+      this.sfxGain=this.ctx.createGain();this.sfxGain.gain.value=0.42;this.sfxGain.connect(this.master);
       this.started=true;this.startLoop();
     }catch(e){}
   },
@@ -795,7 +850,6 @@ const Audio8={
   // ---- one-shot SFX ----
   sfx(type){
     if(!this.ctx||this.muted)return;
-    const t=this.ctx.currentTime;
     if(type==='click'){this.blip(660,0.06,'square',0.18);}
     else if(type==='hike'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(780,0.1,'square',0.2),70);}
     else if(type==='cut'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(350,0.12,'square',0.2),70);}
@@ -804,11 +858,19 @@ const Audio8={
     else if(type==='bad'){this.blip(160,0.25,'sawtooth',0.22);}
     else if(type==='alarm'){let n=0;const iv=setInterval(()=>{this.blip(n%2?740:990,0.16,'square',0.24);if(++n>=6)clearInterval(iv);},180);}
     else if(type==='win'){[523,659,784,1046].forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.18,'triangle',0.2),i*110));}
+    // ---- faction reactions ----
+    else if(type==='cheer'){[659,880].forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.12,'triangle',0.16),i*70));} // banks/treasury happy: bright chime
+    else if(type==='register'){this.blip(1400,0.05,'square',0.16);setTimeout(()=>this.blip(1046,0.05,'square',0.14),55);setTimeout(()=>this.hatBurst(),90);} // cash register cha-ching
+    else if(type==='boo'){this.blip(200,0.3,'sawtooth',0.2);setTimeout(()=>this.blip(150,0.35,'sawtooth',0.18),60);} // crowd boo: low descending
+    else if(type==='gavel'){this.blip(180,0.09,'square',0.24);setTimeout(()=>this.blip(140,0.14,'square',0.2),90);} // congress: gavel thud
+    // ---- master-tier fanfare ----
+    else if(type==='fanfare'){const seq=[523,659,784,1046,1318,1046,1318,1568];seq.forEach((fr,i)=>setTimeout(()=>{this.blip(fr,0.22,'triangle',0.22);this.blip(fr/2,0.22,'sine',0.12);},i*140));}
   },
+  hatBurst(){for(let i=0;i<3;i++)setTimeout(()=>this.hat(0.05),i*30);},
   blip(freq,dur,type,gain){
     if(!this.ctx||this.muted)return;
     const o=this.ctx.createOscillator(),g=this.ctx.createGain();
-    o.type=type;o.frequency.value=freq;g.gain.value=0;o.connect(g);g.connect(this.master);
+    o.type=type;o.frequency.value=freq;g.gain.value=0;o.connect(g);g.connect(this.sfxGain||this.master);
     const t=this.ctx.currentTime;g.gain.linearRampToValueAtTime(gain,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
     o.start(t);o.stop(t+dur+0.03);
   },
