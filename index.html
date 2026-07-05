@@ -241,12 +241,17 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
   <button class="advance-btn" id="advBtn">Advance →</button>
   <div class="plumb-toggle" id="plumbTog">▼ the plumbing</div>
   <div class="plumb-drawer" id="plumbDr">
-    <h4>Every $ reconciles</h4>
-    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--gold)"></span>Bank reserves</span><span class="pv" id="plR">3,000</span></div>
-    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--blue)"></span>TGA</span><span class="pv" id="plT">800</span></div>
-    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--green)"></span>Deposits</span><span class="pv" id="plD">10,000</span></div>
-    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--red)"></span>Debt</span><span class="pv" id="plB">30,000</span></div>
-    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--orange)"></span>Stress</span><span class="pv" id="plS">0</span></div>
+    <h4>Federal Reserve balance sheet</h4>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--purple)"></span>Securities held</span><span class="pv" id="plFedA">3,800</span></div>
+    <div class="pl-row" style="padding-left:10px"><span class="pk"><span class="dot" style="background:var(--gold)"></span>↳ Reserves owed</span><span class="pv" id="plR">3,000</span></div>
+    <div class="pl-row" style="padding-left:10px"><span class="pk"><span class="dot" style="background:var(--blue)"></span>↳ TGA owed</span><span class="pv" id="plT">800</span></div>
+    <h4>Banking system</h4>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--gold)"></span>Reserves held</span><span class="pv" id="plBkR">3,000</span></div>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--purple)"></span>Loans out</span><span class="pv" id="plL">8,000</span></div>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--green)"></span>Deposits owed</span><span class="pv" id="plD">10,000</span></div>
+    <h4>Government</h4>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--red)"></span>National debt</span><span class="pv" id="plB">30,000</span></div>
+    <div class="pl-row"><span class="pk"><span class="dot" style="background:var(--orange)"></span>Stress index</span><span class="pv" id="plS">0</span></div>
   </div>
   <div class="footer">Real accounting · game-tuned reactions · rates move only at FOMC<br><button id="resetBtn">↺ new term</button></div>
 </div>
@@ -474,9 +479,10 @@ function macroTick(){
   S.transmitted+=(stance-S.transmitted)*0.10;
   S.supplyShock*=.92;S.infPush*=.8;S.unempPush*=.8;S.growthPush*=.8;
   const n=()=>(Math.random()-.5)*.06;
-  S.inf+=(2+(4-S.un)*.5-S.transmitted*.15+S.supplyShock*1.2+S.infPush-S.inf)*.06+n();
-  S.un+=(4+(2.5-S.gr)*.8+S.supplyShock*.5+S.unempPush-S.un)*.05+n();
   S.gr+=(2.5-S.transmitted*.8-S.supplyShock*.6+S.growthPush-S.gr)*.07+n();
+  S.un+=(4+(2.5-S.gr)*.8+S.supplyShock*.5+S.unempPush-S.un)*.05+n();
+  const pgap=4-S.un,phillips=pgap>0?Math.pow(pgap,1.5)*.45:pgap*.15;
+  S.inf+=(2+phillips-S.transmitted*.15+S.supplyShock*1.2+S.infPush-S.inf)*.06+n();
   S.inf=clamp(S.inf,-2,20);S.un=clamp(S.un,2,20);S.gr=clamp(S.gr,-10,10);
   const sc=1200-S.reserves;
   if(sc>0)S.stress=clamp(S.stress+sc*.006,0,150);else S.stress=clamp(S.stress-3,0,150);
@@ -517,7 +523,7 @@ function render(){
   const io=Math.abs(S.inf-2);$('dgInf').className='dg'+(io>2?' warn':io<.7?' good':'');
   $('dgUn').className='dg'+(S.un>6?' warn':S.un<4.5?' good':'');$('dgGr').className='dg'+(S.gr<.5?' warn':S.gr>2?' good':'');
   PK.forEach(k=>{const v=S.app[k];const b=$('b'+cap(k));b.style.width=clamp(v,0,100)+'%';b.style.background=v>60?'var(--green)':v>35?'var(--gold)':'var(--red)';});
-  $('plR').textContent=fmt(S.reserves);$('plT').textContent=fmt(S.tga);$('plD').textContent=fmt(S.deposits);$('plB').textContent=fmt(S.debt);$('plS').textContent=Math.round(S.stress);
+  $('plFedA').textContent=fmt(S.reserves+S.tga);$('plR').textContent=fmt(S.reserves);$('plT').textContent=fmt(S.tga);$('plBkR').textContent=fmt(S.reserves);$('plL').textContent=fmt(S.loans);$('plD').textContent=fmt(S.deposits);$('plB').textContent=fmt(S.debt);$('plS').textContent=Math.round(S.stress);
   if(isFomc())$('fomcPill').innerHTML=`🔔 <b>FOMC MEETING THIS MONTH</b> — you may move rates`;
   else $('fomcPill').innerHTML=`Next FOMC in <b>${nextFomcIn()} month(s)</b> — rates locked until then`;
   $('btnQT').disabled=S.reserves<100||S.gameover;
@@ -599,7 +605,10 @@ function pickNewsOrFomc(){
         outcome:'You held. Previous decisions still working through the system. <b>Sometimes the best move is no move.</b>'},
       {ico:'📉',t:'Cut −25bp',desc:'Ease. Stimulate growth, risk inflation.',stakes:[{t:'↑ growth',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
         fx:{rate:-.25},react:{banks:-4,treasury:-2,congress:5,people:5},needsFomc:true,
-        outcome:'You cut. Cheaper borrowing, a growth nudge — but <b>inflation just got permission to climb</b>. Watch the next CPI print.'}
+        outcome:'You cut. Cheaper borrowing, a growth nudge — but <b>inflation just got permission to climb</b>. Watch the next CPI print.'},
+      {ico:'📉📉',t:'Cut −50bp',desc:'Aggressive ease. Emergency-level signal.',stakes:[{t:'↑↑ growth',c:'pos'},{t:'↑↑ inflation risk',c:'neg'},{t:'Banks 😠',c:'neg'}],
+        fx:{rate:-.5},react:{banks:-8,treasury:-4,congress:8,people:8},needsFomc:true,
+        outcome:'A jumbo cut — the kind the Fed reserves for genuine fear. Borrowing costs crater, risk assets surge, and Congress loves you today. But <b>a 50bp cut tells the world you see something ugly ahead</b>. If the economy wasn\'t that bad, you just un-anchored expectations for nothing.'}
     ]};
 }
 function fireAlert(sh){
