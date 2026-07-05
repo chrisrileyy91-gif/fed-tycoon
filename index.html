@@ -286,7 +286,7 @@ const SHOCKS=[
   alertHeadline:'U.S. STRIKES FOREIGN NATION',
   alertDesc:'Military action just began overseas. Oil is spiking, markets are in freefall, and capital is fleeing to safety. <b>This is not a drill.</b> The whole world just changed and you have to respond.',
   body:'Conflict erupts. Oil surges on supply fears, equities crater, and global capital floods into dollars and Treasuries. Inflation pressure up from energy; growth threatened by uncertainty. <b>You didn\'t choose this — but it\'s yours now.</b>',
-  effects:{supplyShock:1.8,infPush:.4,growthPush:-.3,reserves:200},
+  effects:{supplyShock:1.8,growthPush:-.3,reserves:200},
   responses:[
     {ico:'🛡️',t:'Signal stability — Fed stands ready',desc:'Reassure markets the Fed will provide liquidity as needed.',stakes:[{t:'↓ panic',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
       fx:{reserves:150,stress:-10},react:{banks:8,treasury:4,congress:2,people:3},
@@ -306,7 +306,7 @@ const SHOCKS=[
       fx:{rateOverride:0.25,qeTaps:20,growthPush:.4},react:{banks:10,treasury:8,congress:10,people:8},
       outcome:'You went nuclear — rates to the floor, QE unleashed. <b>Tap to inject reserves.</b> You likely prevented a depression. But you also seeded the inflation that will define your term\'s back half. There was no other choice. There rarely is.'},
     {ico:'🏦',t:'Targeted facilities only',desc:'Support credit markets without going to zero.',stakes:[{t:'Measured',c:'info'},{t:'May be too slow',c:'neg'}],
-      fx:{reserves:300,stress:-10,rateOverride:0.02},react:{banks:3,treasury:-3,congress:-6,people:-8},
+      fx:{reserves:300,stress:-10,rate:-1.0},react:{banks:3,treasury:-3,congress:-6,people:-8},
       outcome:'You held back the bazooka. History may call it prudent or timid. In a freefall, <b>markets punish half-measures</b>. The recovery may be slower for it.'}
   ]},
 {id:'fxCrisis',minMonth:5,prob:.10,alert:false,ico:'💱',
@@ -324,7 +324,7 @@ const SHOCKS=[
 {id:'oilCartel',minMonth:4,prob:.10,alert:false,ico:'🛢️',
   tag:'⚠️ ENERGY',headline:'Oil cartel slashes production — prices spike 30%',
   body:'A coordinated production cut sends energy prices soaring. Gas jumps overnight. A classic <b>supply-side inflation shock</b> — raises prices while dragging growth. Your rate lever can cool demand but can\'t make oil.',
-  effects:{supplyShock:1.3,infPush:.35,growthPush:-.2},
+  effects:{supplyShock:1.3,growthPush:-.2},
   responses:[
     {ico:'📣',t:'Look through the shock',desc:'Supply shocks are temporary. Don\'t tighten into a slowdown.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'}],
       fx:{},react:{banks:-2,treasury:0,congress:4,people:2},
@@ -351,10 +351,10 @@ const NEWS=[
 {id:'congressSpend',turn:[4,14],prob:.5,type:'fiscal',
   tag:'FISCAL POLICY',headline:'Congress passes $380B infrastructure bill',
   body:'Roads, bridges, broadband — funded by <b>new Treasury issuance</b>. Reserves will drain to fund it. Growth now, plumbing squeeze later.',
-  effects:{debt:380,growthPush:.3,infPush:.15,reserves:-200,tga:200,deposits:200},
+  effects:{debt:380,growthPush:.3,infPush:.05,reserves:-200,tga:200,deposits:200},
   responses:[
     {ico:'✅',t:'Publicly support it',desc:'Endorse the fiscal boost.',stakes:[{t:'↑ growth',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'↑ inflation',c:'neg'}],
-      fx:{growthPush:.2,infPush:.1},react:{banks:2,treasury:-8,congress:12,people:6},
+      fx:{growthPush:.2,infPush:.03},react:{banks:2,treasury:-8,congress:12,people:6},
       outcome:'You backed the bill. Growth gets a jolt — but Treasury drained the system to fund it, and <b>inflation hasn\'t read the "transitory" memo</b>. Watch your stress gauge.'},
     {ico:'🚫',t:'Warn on inflation and deficits',desc:'Push back publicly. Your voice moves markets.',stakes:[{t:'Credibility',c:'pos'},{t:'Congress 😠',c:'neg'}],
       fx:{},react:{banks:3,treasury:8,congress:-10,people:-4},
@@ -467,16 +467,16 @@ function freshState(sc){
     lastStakeholderMonth:-99,emergencyThisMonth:false,
     fired:{},gameover:false,pendingShocks:[]};
 }
-function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2,0,150);}
+function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2,0,150);S.growthPush+=0.03;}
 function macroTick(){
   S.prevInf=S.inf;S.prevUn=S.un;S.prevGr=S.gr;S.prevRate=S.rate;
   const stance=S.rate-S.neutral;
   S.transmitted+=(stance-S.transmitted)*0.10;
   S.supplyShock*=.92;S.infPush*=.8;S.unempPush*=.8;S.growthPush*=.8;
   const n=()=>(Math.random()-.5)*.06;
-  S.inf+=(2-S.transmitted*.6+S.supplyShock*1.2+S.infPush-S.inf)*.12+n();
-  S.un+=(4+S.transmitted*.55+S.supplyShock*.5+S.unempPush-S.un)*.10+n();
-  S.gr+=(2.5-S.transmitted*.8-S.supplyShock*.6+S.growthPush-S.gr)*.13+n();
+  S.inf+=(2+(4-S.un)*.5-S.transmitted*.15+S.supplyShock*1.2+S.infPush-S.inf)*.06+n();
+  S.un+=(4+(2.5-S.gr)*.8+S.supplyShock*.5+S.unempPush-S.un)*.05+n();
+  S.gr+=(2.5-S.transmitted*.8-S.supplyShock*.6+S.growthPush-S.gr)*.07+n();
   S.inf=clamp(S.inf,-2,20);S.un=clamp(S.un,2,20);S.gr=clamp(S.gr,-10,10);
   const sc=1200-S.reserves;
   if(sc>0)S.stress=clamp(S.stress+sc*.006,0,150);else S.stress=clamp(S.stress-3,0,150);
@@ -487,10 +487,10 @@ function macroTick(){
 }
 function scoreTick(){
   let s=Math.max(0,5-Math.abs(S.inf-2)*2)+Math.max(0,3-Math.abs(S.un-4)*1.2);
-  if(S.inf>6||S.inf<0)s-=4;if(S.un>7)s-=3;s=s/2-1.2;
+  if(S.inf>6||S.inf<0)s-=4;if(S.un>7)s-=3;s=s/2-1.5;
   // angry factions now drain credibility directly (folded-in political pressure)
   PK.forEach(k=>{if(S.app[k]<25)s-=0.8;});
-  const on=Math.abs(S.inf-2)<.8&&Math.abs(S.un-4)<1.2;
+  const on=Math.abs(S.inf-2)<.5&&Math.abs(S.un-4)<.8;
   if(on)S.streak++;else S.streak=0;
   // EXCELLENCE BONUS: sustained on-mandate play compounds (like anchored expectations).
   // Leaves mediocre terms near their ~120 ceiling; lets flawless terms climb toward 200.
@@ -499,7 +499,7 @@ function scoreTick(){
   PK.forEach(k=>{if(S.factionCooldown[k]>0)S.factionCooldown[k]--;});
   S.emergencyThisMonth=false;
   if(S.cred<=0){endGame(false,'cred');return;}
-  if(S.termMonth>=48){endGame(S.cred>=110);return;}
+  if(S.termMonth>48){endGame(S.cred>=110);return;}
 }
 function monthName(){return MONTHS[S.month%12]+' '+(S.year+Math.floor(S.month/12));}
 function isFomc(){return FOMC_MONTHS.includes(S.month%12);}
@@ -542,7 +542,7 @@ function applyApproval(r){PK.forEach(k=>{S.app[k]=clamp((S.app[k]||50)+(r[k]||0)
 function makeDataPrint(){
   const isCPI=(S.month%2===0);
   if(isCPI){
-    const exp=2.5,act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
+    const exp=+(S.prevInf*.6+2*.4).toFixed(1),act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
     const sTag=sur>0.3?['dp-hot','HOTTER than expected 🔥']:sur<-0.3?['dp-cold','COOLER than expected ❄️']:['dp-inline','in line ✓'];
     return{kind:'data',tag:'📊 CPI RELEASE',headline:'Consumer Price Index — monthly print',
       printNum:act.toFixed(1)+'%',printVs:`exp. ${exp.toFixed(1)}%`,printSurprise:sTag,
@@ -562,7 +562,7 @@ function nextTurn(){
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
   // --- POLITICAL ESCALATION: fires off low credibility (folded-in pressure), not a separate meter ---
   const angryCount=PK.filter(k=>S.app[k]<32).length;
-  const heat=(S.cred<70?1:0)+(S.cred<45?1:0)+(angryCount>=2?1:0); // 0-3 political-heat tiers
+  const heat=(S.cred<75?1:0)+(S.cred<55?1:0)+(angryCount>=1?1:0); // 0-3 political-heat tiers
   if(heat>S.pressureTier&&heat>0){
     S.pressureTier=heat;
     const pe=PRESSURE_EVENTS[heat];
@@ -589,16 +589,16 @@ function pickNewsOrFomc(){
     body:`FOMC meeting. Inflation <b>${S.inf.toFixed(1)}%</b>, unemployment <b>${S.un.toFixed(1)}%</b>, growth <b>${S.gr.toFixed(1)}%</b>. One of your <b>8 chances a year</b> to move rates. Between meetings, your hands are tied. Choose.`,
     responses:[
       {ico:'📈',t:'Hike +25bp',desc:'Tighten. Cool inflation, cost jobs (lagged).',stakes:[{t:'↓ inflation',c:'pos'},{t:'↑ unemployment',c:'neg'}],
-        fx:{rate:.25,infPush:-.15,unempPush:.1,growthPush:-.08},react:{banks:5,treasury:3,congress:-4,people:-4},needsFomc:true,
+        fx:{rate:.25},react:{banks:5,treasury:3,congress:-4,people:-4},needsFomc:true,
         outcome:'You hiked. Effects land over <b>2-3 months</b> — patience. The tightening works through the pipeline slowly.'},
       {ico:'📈📈',t:'Hike +50bp',desc:'Aggressive. Strong signal on inflation.',stakes:[{t:'↓↓ inflation',c:'pos'},{t:'↑↑ unemployment',c:'neg'},{t:'Banks 😠',c:'neg'}],
-        fx:{rate:.5,infPush:-.3,unempPush:.2,growthPush:-.18},react:{banks:-6,treasury:2,congress:-6,people:-2},needsFomc:true,
+        fx:{rate:.5},react:{banks:-6,treasury:2,congress:-6,people:-2},needsFomc:true,
         outcome:'A jumbo hike — not fully priced. Yields jump. <b>You\'re serious about inflation</b>, and the economy is about to feel it hard.'},
       {ico:'⏸️',t:'Hold steady',desc:'Let prior moves work.',stakes:[{t:'No change',c:'info'}],
         fx:{},react:{banks:2,treasury:0,congress:-1,people:0},needsFomc:true,
         outcome:'You held. Previous decisions still working through the system. <b>Sometimes the best move is no move.</b>'},
       {ico:'📉',t:'Cut −25bp',desc:'Ease. Stimulate growth, risk inflation.',stakes:[{t:'↑ growth',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
-        fx:{rate:-.25,infPush:.15,growthPush:.1,unempPush:-.08},react:{banks:-4,treasury:-2,congress:5,people:5},needsFomc:true,
+        fx:{rate:-.25},react:{banks:-4,treasury:-2,congress:5,people:5},needsFomc:true,
         outcome:'You cut. Cheaper borrowing, a growth nudge — but <b>inflation just got permission to climb</b>. Watch the next CPI print.'}
     ]};
 }
@@ -717,7 +717,7 @@ $('btnQE').addEventListener('click',()=>{
 $('btnQT').addEventListener('click',()=>{
   if(S.gameover||S.reserves<100||S.qeActive)return;
   const emergency=!isFomc();
-  const d=Math.min(200,S.reserves);S.reserves-=d;S.stress=clamp(S.stress+8,0,150);
+  const d=Math.min(200,S.reserves);S.reserves-=d;S.stress=clamp(S.stress+8,0,150);S.growthPush-=0.06;
   let credLine='';
   if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);credLine=' Because you did this between scheduled meetings, markets read it as panic — <b>credibility −6</b>.';}
   showMoods({banks:-4,treasury:0,congress:2,people:1});Audio8.sfx('bad');
@@ -888,7 +888,7 @@ function updateTension(){
 }
 // ================= MOTION =================
 function shake(){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');}
-function flashGood(){document.body.classList.remove('flash-good');void document.body.offsetWidth;document.body.classList.add('flash-good');setTimeout(()=>document.body.classList.remove('flash-good'),650);}
+
 // animated number counter
 function animateNum(el,from,to,dur,fmtFn){
   if(!el)return;const start=performance.now();
