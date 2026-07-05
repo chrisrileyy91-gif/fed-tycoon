@@ -53,6 +53,25 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .tb-cred-num{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--gold)}
 .fomc-pill{margin:2px 14px 0;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--dimmer);letter-spacing:1px;padding:4px;text-align:center}
 .fomc-pill b{color:var(--blue)}
+.pressure-strip{margin:6px 14px 0;background:var(--bg2);border:1px solid #2a3548;border-radius:12px;padding:8px 12px}
+.ps-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ps-label{font-family:var(--mono);font-size:10px;letter-spacing:.5px;color:var(--dim);font-weight:600}
+.ps-tier{font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:5px;background:rgba(52,211,153,.14);color:var(--green)}
+.ps-tier.warn{background:rgba(232,185,48,.16);color:var(--gold)}
+.ps-tier.danger{background:rgba(248,113,113,.16);color:var(--red);animation:livePulse 1.2s infinite}
+.ps-bar{height:8px;border-radius:5px;background:#0d131c;position:relative;overflow:hidden}
+.ps-fill{height:100%;border-radius:5px;width:20%;transition:width .6s,background .5s;background:var(--green)}
+.ps-ticks{position:absolute;inset:0;display:flex;pointer-events:none}
+.ps-ticks span{flex:1;border-right:1px dashed rgba(255,255,255,.12)}
+.ps-ticks span:last-child{border:none}
+.tools-bar{display:flex;gap:8px;margin:8px 14px 0}
+.tool-btn{flex:1;font-family:var(--sans);font-weight:700;font-size:13px;border:1.5px solid #2a3548;border-radius:12px;padding:9px 6px;cursor:pointer;background:var(--card);color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:1px;transition:all .15s}
+.tool-btn:active{transform:translateY(1px)}
+.tool-btn .tb-sub{font-family:var(--mono);font-size:8.5px;font-weight:500;color:var(--dimmer);letter-spacing:.3px;text-transform:uppercase}
+.tb-qe{border-color:rgba(52,211,153,.3)}.tb-qe:hover{border-color:var(--green);box-shadow:0 0 12px var(--green-glow)}
+.tb-qt{border-color:rgba(96,165,250,.3)}.tb-qt:hover{border-color:var(--blue);box-shadow:0 0 12px rgba(96,165,250,.2)}
+.tool-btn:disabled{opacity:.4;cursor:not-allowed}
+.tool-btn:disabled:hover{border-color:#2a3548;box-shadow:none}
 #breakingSlot .breaking{margin:6px 14px 0;background:linear-gradient(135deg,#2a1520,#1a1025);border:1.5px solid var(--red-d);border-radius:16px;padding:16px;position:relative;overflow:hidden;animation:breakIn .5s cubic-bezier(.3,1,.5,1)}
 @keyframes breakIn{from{opacity:0;transform:translateY(-12px) scale(.97)}to{opacity:1;transform:none}}
 .breaking::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:scan 2s linear infinite}
@@ -187,6 +206,14 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
     <div class="tb-right"><div class="tb-cred"><div class="tb-cred-bar"><div class="fill" id="credFill"></div></div><div class="tb-cred-num" id="credNum">50</div></div></div>
   </div>
   <div class="fomc-pill" id="fomcPill"></div>
+  <div class="pressure-strip" id="pressureStrip">
+    <div class="ps-top"><span class="ps-label">🏛️ Political Pressure on the Fed</span><span class="ps-tier" id="psTier">CALM</span></div>
+    <div class="ps-bar"><div class="ps-fill" id="psFill"></div><div class="ps-ticks"><span></span><span></span><span></span></div></div>
+  </div>
+  <div class="tools-bar" id="toolsBar">
+    <button class="tool-btn tb-qe" id="btnQE">💵 QE<span class="tb-sub">create reserves</span></button>
+    <button class="tool-btn tb-qt" id="btnQT">🔻 QT<span class="tb-sub">drain reserves</span></button>
+  </div>
   <div id="breakingSlot"></div>
   <div class="desk">
     <div class="pawns">
@@ -347,6 +374,86 @@ const NEWS=[
   ]}
 ];
 
+// ---- STAKEHOLDER-ANGER CARDS (fire when a faction crosses into anger; each has its own weapon) ----
+const STAKEHOLDER_CARDS={
+banks:{tag:'🏦 BANKING SECTOR',headline:'Bank lobby launches campaign against the Fed',
+  body:'With approval cratering, the banking lobby is running ads and lobbying Congress against your policies. If you don\'t address it, they\'ll tighten lending in protest — a credit squeeze you didn\'t cause but will own.',
+  responses:[
+    {ico:'🤝',t:'Meet with the bank CEOs — smooth it over',desc:'Signal you hear them. Costs a little credibility (looks captured).',stakes:[{t:'Banks ❤️',c:'pos'},{t:'Credibility −',c:'neg'}],
+      fx:{cred:-3},react:{banks:14,treasury:0,congress:0,people:-3},
+      outcome:'You met privately with the big banks. Approval recovers — but the optics of the Fed cozying up to Wall Street cost you with the public and dinged your credibility. A trade.'},
+    {ico:'🛡️',t:'Hold firm — you don\'t answer to the lobby',desc:'Independence over appeasement. They stay mad and lending tightens.',stakes:[{t:'Credibility +',c:'pos'},{t:'↑ stress',c:'neg'},{t:'Banks 😠',c:'neg'}],
+      fx:{cred:3,stress:12},react:{banks:-4,treasury:2,congress:0,people:4},
+      outcome:'You refused to be lobbied. The public respects it — but banks quietly tightened lending in protest, and financial stress ticked up. Principle has a price.'}
+  ]},
+congress:{tag:'🏫 CONGRESS',headline:'Congress opens hearings into the Fed',
+  body:'Furious with your approval among lawmakers collapsing, Congressional leaders have called you to testify. This is a direct challenge to your independence — and a chance for grandstanding at your expense. Political pressure is building.',
+  responses:[
+    {ico:'🎙️',t:'Testify with confidence — defend the record',desc:'Face them head-on. Risky, but a strong showing builds credibility.',stakes:[{t:'Credibility +',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'High-stakes',c:'info'}],
+      fx:{cred:4,pressure:-12},react:{banks:3,treasury:3,congress:6,people:5},
+      outcome:'You testified and held your own — measured, data-driven, unshakeable. Lawmakers who came to grill you left grudgingly impressed. Pressure eased and your credibility grew. This is what independence looks like under fire.'},
+    {ico:'😤',t:'Push back hard — attack their spending',desc:'Name the real cause of inflation: their bills. A fight.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Congress 😠😠',c:'neg'}],
+      fx:{pressure:-6},react:{banks:5,treasury:4,congress:-12,people:6},
+      outcome:'You went on offense — pointing at the spending bills as the true inflation driver. The public loved the spine. Congress is now openly at war with you. You won the round and made a lasting enemy.'}
+  ]},
+people:{tag:'👥 THE PUBLIC',headline:'Protests erupt over the cost of living',
+  body:'Public approval of the Fed has hit a record low. Demonstrations are spreading, and "Abolish the Fed" is trending. You\'re the visible face of an economy people feel is failing them — even where it\'s not your fault. The administration is watching the polls.',
+  responses:[
+    {ico:'📺',t:'Address the public directly — show empathy',desc:'Acknowledge the pain. Humanize the institution.',stakes:[{t:'People ❤️',c:'pos'},{t:'↓ pressure',c:'pos'}],
+      fx:{pressure:-8},react:{banks:-2,treasury:0,congress:2,people:12},
+      outcome:'You went on air and spoke plainly about the hardship people feel, without overpromising. It humanized the Fed. Approval recovered and some pressure lifted. Words aren\'t policy — but sometimes they matter.'},
+    {ico:'🎯',t:'Stay technocratic — results, not sympathy',desc:'You\'re not a politician. Let the data speak.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
+      fx:{cred:3,pressure:6},react:{banks:3,treasury:2,congress:-2,people:-6},
+      outcome:'You stayed above the fray — "the Fed doesn\'t do politics." Purists respect it. But to a hurting public it read as cold, approval sank further, and the administration took note. Pressure climbed.'}
+  ]},
+treasury:{tag:'🏛️ THE TREASURY',headline:'Treasury Secretary publicly breaks with the Fed',
+  body:'The relationship has frayed. The Treasury Secretary just told reporters the Fed is "out of step" with the administration\'s agenda. When Treasury and Fed openly feud, markets get nervous and coordination on the debt breaks down.',
+  responses:[
+    {ico:'🤝',t:'Repair the relationship privately',desc:'Coordinate quietly. Smooth the plumbing.',stakes:[{t:'Treasury ❤️',c:'pos'},{t:'↓ pressure',c:'pos'}],
+      fx:{pressure:-6,reserves:100},react:{banks:2,treasury:14,congress:0,people:0},
+      outcome:'You mended fences with Treasury behind closed doors. Coordination on issuance resumed, reserves steadied, and the public feud cooled. Boring, effective statesmanship — the kind nobody notices when it works.'},
+    {ico:'⚖️',t:'Assert Fed independence from Treasury',desc:'The Fed is not an arm of the administration. Draw the line.',stakes:[{t:'Credibility +',c:'pos'},{t:'Treasury 😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
+      fx:{cred:4,pressure:8},react:{banks:4,treasury:-8,congress:-2,people:3},
+      outcome:'You publicly reaffirmed that the Fed answers to its mandate, not the administration. Institutionally correct and credibility-building — but the rift with Treasury widened and the administration\'s pressure grew.'}
+  ]}
+};
+
+// ---- PRESSURE-TIER ESCALATION EVENTS (faceless administration; fire when pressure crosses a tier) ----
+const PRESSURE_EVENTS={
+1:{tag:'⚠️ POLITICAL PRESSURE',headline:'The administration "expresses concern" about Fed policy',
+  body:'A senior official, speaking anonymously, told the press the White House is "watching the Fed closely" and "hopes the Chair understands the stakes." It\'s a warning shot. Independence is being tested — quietly, for now.',
+  responses:[
+    {ico:'🛡️',t:'Reaffirm independence — politely but firmly',desc:'Signal you won\'t be moved. Builds credibility, holds pressure.',stakes:[{t:'Credibility +',c:'pos'},{t:'Pressure holds',c:'info'}],
+      fx:{cred:3},react:{banks:5,treasury:2,congress:-3,people:0},
+      outcome:'You issued a calm, firm statement about the Fed\'s mandate. Markets read it as backbone. The administration noted it. The line is drawn — for now.'},
+    {ico:'🤐',t:'Say nothing — don\'t dignify it',desc:'Ignore the pressure. It may escalate.',stakes:[{t:'Avoids fight',c:'info'},{t:'↑ pressure',c:'neg'}],
+      fx:{pressure:5},react:{banks:0,treasury:0,congress:0,people:0},
+      outcome:'You let it pass without comment. No confrontation — but silence emboldened them. The pressure quietly climbed.'}
+  ]},
+2:{tag:'⚠️ POLITICAL PRESSURE',headline:'Administration floats replacing the Fed Chair',
+  body:'It\'s no longer anonymous. A cabinet official openly mused on the record about "new leadership at the Fed." The threat to your job is now explicit. Every decision you make is read as either caving or defying. This is the crucible of central bank independence.',
+  responses:[
+    {ico:'⚖️',t:'Stand your ground — the Fed serves the economy, not the White House',desc:'The defining stand. Credibility soars, pressure holds high.',stakes:[{t:'Credibility ++',c:'pos'},{t:'History remembers this',c:'info'}],
+      fx:{cred:6},react:{banks:8,treasury:4,congress:-4,people:2},
+      outcome:'You refused to bend, publicly and unmistakably. The bond market rallied on the signal of a truly independent Fed. The administration is furious — but you just became the kind of Chair history writes about. The pressure remains, but so does your spine.'},
+    {ico:'🕊️',t:'Signal flexibility — hint you\'ll consider their view',desc:'De-escalate. Lowers pressure now, costs credibility.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Credibility −−',c:'neg'}],
+      fx:{cred:-8,pressure:-20},react:{banks:-4,treasury:3,congress:4,people:2},
+      outcome:'You quietly signaled willingness to align with the administration. Pressure dropped sharply — but the market noticed the Fed just blinked, and your credibility took a real hit. You bought peace with independence. Every future decision now carries the whiff of politics.'}
+  ]},
+3:{tag:'🚨 CONSTITUTIONAL CRISIS',headline:'Administration moves to force you out',
+  alert:true,ico:'⚖️',kicker:'BREAKING NEWS',alertHeadline:'YOUR JOB IS ON THE LINE',
+  alertDesc:'The administration is openly moving to remove you. This is the moment every independent central banker dreads. Markets are in turmoil over the threat to Fed independence. <b>How you respond defines your entire legacy.</b>',
+  body:'It\'s a full-blown confrontation. The administration is testing whether it can force out a sitting Fed Chair. The markets are terrified — not of your policies, but of what your removal would mean for the independence of the institution itself. This is the whole game.',
+  responses:[
+    {ico:'🛡️',t:'Refuse to resign — dare them to act',desc:'The ultimate stand for independence. All-or-nothing.',stakes:[{t:'Credibility +++',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Legacy-defining',c:'info'}],
+      fx:{cred:10,pressure:-25},react:{banks:10,treasury:5,congress:0,people:6},
+      outcome:'You refused to go, invoking the independence of the institution and daring them to trigger a crisis. The bet paid off — the political cost of forcing you out proved too high, and they backed down. The bond market surged on the vindication of Fed independence. You will be remembered as the Chair who held the line when it mattered most.'},
+    {ico:'🏳️',t:'Negotiate a graceful exit path',desc:'Defuse the crisis by conceding ground. Survival over principle.',stakes:[{t:'↓↓ pressure',c:'pos'},{t:'Credibility −−−',c:'neg'}],
+      fx:{cred:-15,pressure:-40},react:{banks:-6,treasury:4,congress:6,people:0},
+      outcome:'You cut a deal to survive — aligning enough with the administration to keep your chair. The immediate crisis passed. But the market saw a Fed that could be bent by political will, and your credibility never fully recovered. You kept the job. The question history will ask is whether it was still worth having.'}
+  ]}
+};
+
 let S,SC;
 function freshState(sc){
   return{month:0,year:sc.yr||2025,termMonth:1,
@@ -356,6 +463,8 @@ function freshState(sc){
     loans:8000,stress:0,app:{...sc.app},cred:50,streak:0,
     qeActive:false,qeTaps:0,qeMax:0,qeTotal:0,
     prevInf:sc.inf,prevUn:sc.un,prevGr:sc.gr,prevRate:sc.rate,
+    pressure:20,pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
+    lastStakeholderMonth:-99,emergencyThisMonth:false,
     fired:{},gameover:false,pendingShocks:[]};
 }
 function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2,0,150);}
@@ -382,8 +491,21 @@ function scoreTick(){
   S.cred=clamp(S.cred+s,0,200);
   const on=Math.abs(S.inf-2)<.8&&Math.abs(S.un-4)<1.2;
   if(on)S.streak++;else S.streak=0;
-  if(S.cred<=0){endGame(false);return;}
-  if(S.termMonth>=48){endGame(S.cred>=90);return;}
+  // ---- INDEPENDENCE PRESSURE ----
+  // rises from angry stakeholders + economic pain; decays when calm
+  let p=0;
+  PK.forEach(k=>{if(S.app[k]<30)p+=(30-S.app[k])*0.05;}); // each angry faction pushes
+  if(S.inf>5)p+=(S.inf-5)*0.6;      // high inflation = political heat
+  if(S.un>6)p+=(S.un-6)*0.7;        // high unemployment = political heat
+  if(S.gr<0)p+=Math.abs(S.gr)*0.5;  // recession = heat
+  if(p===0)p=-2.5;                   // nothing wrong => pressure cools
+  S.pressure=clamp(S.pressure+p,0,100);
+  // decay faction cooldowns
+  PK.forEach(k=>{if(S.factionCooldown[k]>0)S.factionCooldown[k]--;});
+  S.emergencyThisMonth=false;
+  if(S.cred<=0){endGame(false,'cred');return;}
+  if(S.pressure>=100){endGame(false,'pressure');return;}
+  if(S.termMonth>=48){endGame(S.cred>=90&&S.pressure<70);return;}
 }
 function monthName(){return MONTHS[S.month%12]+' '+(S.year+Math.floor(S.month/12));}
 function isFomc(){return FOMC_MONTHS.includes(S.month%12);}
@@ -403,6 +525,16 @@ function render(){
   $('plR').textContent=fmt(S.reserves);$('plT').textContent=fmt(S.tga);$('plD').textContent=fmt(S.deposits);$('plB').textContent=fmt(S.debt);$('plS').textContent=Math.round(S.stress);
   if(isFomc())$('fomcPill').innerHTML=`🔔 <b>FOMC MEETING THIS MONTH</b> — you may move rates`;
   else $('fomcPill').innerHTML=`Next FOMC in <b>${nextFomcIn()} month(s)</b> — rates locked until then`;
+  // pressure meter
+  const P=S.pressure;$('psFill').style.width=clamp(P,2,100)+'%';
+  const pf=$('psFill'),pt=$('psTier');
+  pf.style.background=P<40?'var(--green)':P<70?'var(--gold)':'var(--red)';
+  if(P<40){pt.textContent='CALM';pt.className='ps-tier';}
+  else if(P<70){pt.textContent='ELEVATED';pt.className='ps-tier warn';}
+  else{pt.textContent='CRITICAL';pt.className='ps-tier danger';}
+  // QE/QT availability
+  $('btnQT').disabled=S.reserves<100||S.gameover;
+  $('btnQE').disabled=S.gameover;
 }
 function showMoods(react){
   PK.forEach(k=>{const v=react[k]||0;const el=$('m'+cap(k));const p=$('p'+cap(k));
@@ -433,6 +565,22 @@ function nextTurn(){
   const alertShock=S.pendingShocks.find(s=>s.alert);
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
+  // --- PRESSURE TIER ESCALATION: fire when pressure crosses a new tier upward ---
+  const tier=S.pressure>=80?3:S.pressure>=60?2:S.pressure>=40?1:0;
+  if(tier>S.pressureTier){
+    S.pressureTier=tier;
+    const pe=PRESSURE_EVENTS[tier];
+    if(pe){if(pe.alert){fireAlert(pe);}else{showEvent(pe);}return;}
+  }
+  if(tier<S.pressureTier)S.pressureTier=tier; // allow re-trigger if it climbs again after falling
+  // --- STAKEHOLDER-ANGER CARDS: gated by threshold + faction cooldown + global spacing ---
+  if(S.termMonth-S.lastStakeholderMonth>=3){
+    const angry=PK.filter(k=>S.app[k]<28&&S.factionCooldown[k]<=0);
+    if(angry.length&&Math.random()<0.7){
+      const k=pick(angry);S.factionCooldown[k]=4;S.lastStakeholderMonth=S.termMonth;
+      showEvent({...STAKEHOLDER_CARDS[k],_faction:k});return;
+    }
+  }
   if(isFomc()){showEvent(pickNewsOrFomc());return;}
   const domestic=NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.5){const ev=pick(domestic);S.fired[ev.id]=true;showEvent(ev);}
@@ -503,6 +651,7 @@ function chooseResponse(r,ev){
   if(f.infPush)S.infPush+=f.infPush;if(f.unempPush)S.unempPush+=f.unempPush;if(f.growthPush)S.growthPush+=f.growthPush;
   if(f.reserves)S.reserves=clamp(S.reserves+f.reserves,0,99999);if(f.tga)S.tga=clamp(S.tga+f.tga,0,99999);
   if(f.deposits)S.deposits=clamp(S.deposits+f.deposits,100,99999);if(f.debt)S.debt+=f.debt;if(f.stress)S.stress=clamp(S.stress+f.stress,0,150);
+  if(f.cred)S.cred=clamp(S.cred+f.cred,0,200);if(f.pressure)S.pressure=clamp(S.pressure+f.pressure,0,100);
   if(f.qeTaps){S.qeActive=true;S.qeTaps=f.qeTaps;S.qeMax=f.qeTaps;S.qeTotal=0;}
   applyApproval(r.react);showMoods(r.react);
   $('responseSlot').innerHTML='';
@@ -540,15 +689,48 @@ function doAdvance(){
   nextTurn();
 }
 $('advBtn').addEventListener('click',doAdvance);
+// ---- ALWAYS-ON QE / QT ----
+function toast(msg,color){
+  let t=$('gameToast');
+  if(!t){t=document.createElement('div');t.id='gameToast';t.style.cssText='position:fixed;left:50%;top:64px;transform:translateX(-50%) translateY(-140%);background:'+(color||'var(--gold)')+';color:#1a1000;font-family:var(--sans);font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;z-index:70;box-shadow:0 6px 20px rgba(0,0,0,.4);transition:transform .35s;max-width:88%;text-align:center';document.body.appendChild(t);}
+  t.innerHTML=msg;t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(-140%)';},2400);
+}
+$('btnQE').addEventListener('click',()=>{
+  if(S.gameover||S.qeActive)return;
+  const emergency=!isFomc();
+  S.qeActive=true;S.qeTaps=8;S.qeMax=8;S.qeTotal=0;
+  $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent='8 taps remaining';$('tapProg').style.width='0%';
+  if(emergency){
+    S.emergencyThisMonth=true;S.cred=clamp(S.cred-4,0,200);S.pressure=clamp(S.pressure+8,0,100);
+    toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −4, pressure +8','var(--red)');
+  }else{toast('QE launched — tap below to inject reserves','var(--green)');}
+  render();window.scrollTo({top:$('tapZone').offsetTop-70,behavior:'smooth'});
+});
+$('btnQT').addEventListener('click',()=>{
+  if(S.gameover||S.reserves<100)return;
+  const emergency=!isFomc();
+  const d=Math.min(200,S.reserves);S.reserves-=d;S.stress=clamp(S.stress+8,0,150);
+  if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-4,0,200);S.pressure=clamp(S.pressure+8,0,100);
+    toast('⚠️ Emergency QT — $'+fmt(d)+'B drained. Panic signal: cred −4, pressure +8','var(--red)');
+  }else{toast('QT — $'+fmt(d)+'B in reserves drained from the system','var(--blue)');}
+  showMoods({banks:-4,treasury:0,congress:2,people:1});
+  render();
+});
 $('plumbTog').addEventListener('click',()=>{const d=$('plumbDr');d.classList.toggle('show');$('plumbTog').textContent=d.classList.contains('show')?'▲ hide plumbing':'▼ the plumbing';});
-function endGame(win){
+function endGame(win,reason){
   S.gameover=true;
   $('responseSlot').innerHTML='';$('tapZone').classList.remove('show');$('advBtn').style.display='none';$('consequence').classList.remove('show');
   const rec=PK.map(k=>`<span class="cr ${S.app[k]>55?'pos':'neg'}">${S.app[k]>55?'❤️':'😠'} ${PN[k]} ${Math.round(S.app[k])}%</span>`).join('');
   const termDone=S.termMonth>=48;
-  $('breakingSlot').innerHTML=`<div class="breaking ${win?'positive':''}"><div class="b-tag"><span class="live"></span>${termDone?'TERM COMPLETE':'CAMPAIGN OVER'}</div><div class="b-headline">${win?'Reappointed for a second term':termDone?'A term that will be debated for years':'Removed from office'}</div><div class="b-body">${win?'You served the full four years and held the mandate. Markets steady on news of your reappointment.':termDone?'You finished the term, but credibility frayed. History is split on your legacy.':'Credibility hit zero. The President announces a replacement. Your term ends early.'}</div></div>`;
+  let hl,body;
+  if(win){hl='Reappointed for a second term';body='You served the full four years, held the mandate, and kept political pressure at bay. Markets steady on news of your reappointment.';}
+  else if(reason==='pressure'){hl='Forced out under political pressure';body='The pressure became unbearable. The administration, backed by furious stakeholders, forced your resignation. The economy may have been fine — but the politics broke you. Independence has a cost, and you couldn\'t pay it.';}
+  else if(termDone){hl='A term that will be debated for years';body='You finished the term, but credibility frayed. History is split on your legacy.';}
+  else{hl='Removed from office';body='Credibility hit zero. The economy broke on your watch. The President announces a replacement.';}
+  $('breakingSlot').innerHTML=`<div class="breaking ${win?'positive':''}"><div class="b-tag"><span class="live"></span>${termDone?'TERM COMPLETE':'CAMPAIGN OVER'}</div><div class="b-headline">${hl}</div><div class="b-body">${body}</div></div>`;
   const con=$('consequence');
-  con.innerHTML=`<div class="con-head">${win?'🏆 Legacy Secured':'📉 The Record'}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months · Credibility ${Math.round(S.cred)}/200<br><br>${win?'A term worth defending. You navigated the shocks history threw at you and kept the machine running.':'Every chair is judged by the record they leave. This one is a cautionary tale — and a lesson for the next.'}</div><div class="con-reactions">${rec}</div>`;
+  con.innerHTML=`<div class="con-head">${win?'🏆 Legacy Secured':'📉 The Record'}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months · Credibility ${Math.round(S.cred)}/200 · Pressure ${Math.round(S.pressure)}/100<br><br>${win?'A term worth defending. You navigated the shocks history threw at you AND the politics that came for you, and kept the machine running.':'Every chair is judged by the record they leave. This one is a cautionary tale — and a lesson for the next.'}</div><div class="con-reactions">${rec}</div>`;
   con.classList.add('show');
 }
 function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
