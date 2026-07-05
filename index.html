@@ -53,17 +53,14 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .tb-cred-num{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--gold)}
 .fomc-pill{margin:2px 14px 0;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--dimmer);letter-spacing:1px;padding:4px;text-align:center}
 .fomc-pill b{color:var(--blue)}
-.pressure-strip{margin:6px 14px 0;background:var(--bg2);border:1px solid #2a3548;border-radius:12px;padding:8px 12px}
-.ps-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.ps-label{font-family:var(--mono);font-size:10px;letter-spacing:.5px;color:var(--dim);font-weight:600}
-.ps-tier{font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:5px;background:rgba(52,211,153,.14);color:var(--green)}
-.ps-tier.warn{background:rgba(232,185,48,.16);color:var(--gold)}
-.ps-tier.danger{background:rgba(248,113,113,.16);color:var(--red);animation:livePulse 1.2s infinite}
-.ps-bar{height:8px;border-radius:5px;background:#0d131c;position:relative;overflow:hidden}
-.ps-fill{height:100%;border-radius:5px;width:20%;transition:width .6s,background .5s;background:var(--green)}
-.ps-ticks{position:absolute;inset:0;display:flex;pointer-events:none}
-.ps-ticks span{flex:1;border-right:1px dashed rgba(255,255,255,.12)}
-.ps-ticks span:last-child{border:none}
+.mute-btn{background:none;border:1px solid #2a3548;border-radius:8px;font-size:14px;padding:3px 8px;cursor:pointer;line-height:1}
+.mute-btn:active{transform:scale(.92)}
+@keyframes screenShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}30%{transform:translateX(6px)}45%{transform:translateX(-4px)}60%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+body.shake{animation:screenShake .5s}
+@keyframes flashGreen{0%{box-shadow:0 0 0 rgba(52,211,153,0)}50%{box-shadow:inset 0 0 60px rgba(52,211,153,.3)}100%{box-shadow:0 0 0 rgba(52,211,153,0)}}
+body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;animation:flashGreen .6s}
+.counter-pop{animation:counterPop .35s}
+@keyframes counterPop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
 .tools-bar{display:flex;gap:8px;margin:8px 14px 0}
 .tool-btn{flex:1;font-family:var(--sans);font-weight:700;font-size:13px;border:1.5px solid #2a3548;border-radius:12px;padding:9px 6px;cursor:pointer;background:var(--card);color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:1px;transition:all .15s}
 .tool-btn:active{transform:translateY(1px)}
@@ -203,13 +200,9 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 <div class="screen" id="gameScreen">
   <div class="topbar">
     <div class="tb-left"><div class="tb-seal">₣</div><div class="tb-date"><span class="tb-month" id="tbMonth">Jan 2025</span><span class="tb-term" id="tbTerm">Term month 1 / 48</span></div></div>
-    <div class="tb-right"><div class="tb-cred"><div class="tb-cred-bar"><div class="fill" id="credFill"></div></div><div class="tb-cred-num" id="credNum">50</div></div></div>
+    <div class="tb-right"><button id="muteBtn" class="mute-btn">🔊</button><div class="tb-cred"><div class="tb-cred-bar"><div class="fill" id="credFill"></div></div><div class="tb-cred-num" id="credNum">50</div></div></div>
   </div>
   <div class="fomc-pill" id="fomcPill"></div>
-  <div class="pressure-strip" id="pressureStrip">
-    <div class="ps-top"><span class="ps-label">🏛️ Political Pressure on the Fed</span><span class="ps-tier" id="psTier">CALM</span></div>
-    <div class="ps-bar"><div class="ps-fill" id="psFill"></div><div class="ps-ticks"><span></span><span></span><span></span></div></div>
-  </div>
   <div class="tools-bar" id="toolsBar">
     <button class="tool-btn tb-qe" id="btnQE">💵 QE<span class="tb-sub">create reserves</span></button>
     <button class="tool-btn tb-qt" id="btnQT">🔻 QT<span class="tb-sub">drain reserves</span></button>
@@ -463,7 +456,7 @@ function freshState(sc){
     loans:8000,stress:0,app:{...sc.app},cred:50,streak:0,
     qeActive:false,qeTaps:0,qeMax:0,qeTotal:0,
     prevInf:sc.inf,prevUn:sc.un,prevGr:sc.gr,prevRate:sc.rate,
-    pressure:20,pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
+    pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
     lastStakeholderMonth:-99,emergencyThisMonth:false,
     fired:{},gameover:false,pendingShocks:[]};
 }
@@ -488,24 +481,15 @@ function macroTick(){
 function scoreTick(){
   let s=Math.max(0,5-Math.abs(S.inf-2)*2)+Math.max(0,3-Math.abs(S.un-4)*1.2);
   if(S.inf>6||S.inf<0)s-=4;if(S.un>7)s-=3;s=s/2-1.2;
+  // angry factions now drain credibility directly (folded-in political pressure)
+  PK.forEach(k=>{if(S.app[k]<25)s-=0.8;});
   S.cred=clamp(S.cred+s,0,200);
   const on=Math.abs(S.inf-2)<.8&&Math.abs(S.un-4)<1.2;
   if(on)S.streak++;else S.streak=0;
-  // ---- INDEPENDENCE PRESSURE ----
-  // rises from angry stakeholders + economic pain; decays when calm
-  let p=0;
-  PK.forEach(k=>{if(S.app[k]<30)p+=(30-S.app[k])*0.05;}); // each angry faction pushes
-  if(S.inf>5)p+=(S.inf-5)*0.6;      // high inflation = political heat
-  if(S.un>6)p+=(S.un-6)*0.7;        // high unemployment = political heat
-  if(S.gr<0)p+=Math.abs(S.gr)*0.5;  // recession = heat
-  if(p===0)p=-2.5;                   // nothing wrong => pressure cools
-  S.pressure=clamp(S.pressure+p,0,100);
-  // decay faction cooldowns
   PK.forEach(k=>{if(S.factionCooldown[k]>0)S.factionCooldown[k]--;});
   S.emergencyThisMonth=false;
   if(S.cred<=0){endGame(false,'cred');return;}
-  if(S.pressure>=100){endGame(false,'pressure');return;}
-  if(S.termMonth>=48){endGame(S.cred>=90&&S.pressure<70);return;}
+  if(S.termMonth>=48){endGame(S.cred>=90);return;}
 }
 function monthName(){return MONTHS[S.month%12]+' '+(S.year+Math.floor(S.month/12));}
 function isFomc(){return FOMC_MONTHS.includes(S.month%12);}
@@ -514,6 +498,7 @@ const PK=['banks','treasury','congress','people'];
 const PN={banks:'Banks',treasury:'Treasury',congress:'Congress',people:'People'};
 const cap=k=>k.charAt(0).toUpperCase()+k.slice(1);
 function render(){
+  updateTension();
   $('tbMonth').textContent=monthName();$('tbTerm').textContent=`Term month ${S.termMonth} / 48`;
   $('credFill').style.width=(S.cred/200*100)+'%';$('credNum').textContent=Math.round(S.cred);
   $('vInf').textContent=S.inf.toFixed(1);$('vUn').textContent=S.un.toFixed(1);$('vGr').textContent=S.gr.toFixed(1);$('vRt').textContent=S.rate.toFixed(2);
@@ -525,20 +510,12 @@ function render(){
   $('plR').textContent=fmt(S.reserves);$('plT').textContent=fmt(S.tga);$('plD').textContent=fmt(S.deposits);$('plB').textContent=fmt(S.debt);$('plS').textContent=Math.round(S.stress);
   if(isFomc())$('fomcPill').innerHTML=`🔔 <b>FOMC MEETING THIS MONTH</b> — you may move rates`;
   else $('fomcPill').innerHTML=`Next FOMC in <b>${nextFomcIn()} month(s)</b> — rates locked until then`;
-  // pressure meter
-  const P=S.pressure;$('psFill').style.width=clamp(P,2,100)+'%';
-  const pf=$('psFill'),pt=$('psTier');
-  pf.style.background=P<40?'var(--green)':P<70?'var(--gold)':'var(--red)';
-  if(P<40){pt.textContent='CALM';pt.className='ps-tier';}
-  else if(P<70){pt.textContent='ELEVATED';pt.className='ps-tier warn';}
-  else{pt.textContent='CRITICAL';pt.className='ps-tier danger';}
-  // QE/QT availability
   $('btnQT').disabled=S.reserves<100||S.gameover;
   $('btnQE').disabled=S.gameover;
 }
 function showMoods(react){
   PK.forEach(k=>{const v=react[k]||0;const el=$('m'+cap(k));const p=$('p'+cap(k));
-    if(v>3){el.textContent='❤️';p.classList.add('glow-green');p.classList.remove('glow-red');}
+    if(v>3){el.textContent='❤️';p.classList.add('glow-green');p.classList.remove('glow-red');Audio8.sfx('heart');}
     else if(v<-3){el.textContent='😠';p.classList.add('glow-red');p.classList.remove('glow-green');}else return;
     el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
     setTimeout(()=>{el.classList.remove('show');p.classList.remove('glow-green','glow-red');},3000);});
@@ -565,14 +542,15 @@ function nextTurn(){
   const alertShock=S.pendingShocks.find(s=>s.alert);
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
-  // --- PRESSURE TIER ESCALATION: fire when pressure crosses a new tier upward ---
-  const tier=S.pressure>=80?3:S.pressure>=60?2:S.pressure>=40?1:0;
-  if(tier>S.pressureTier){
-    S.pressureTier=tier;
-    const pe=PRESSURE_EVENTS[tier];
-    if(pe){if(pe.alert){fireAlert(pe);}else{showEvent(pe);}return;}
+  // --- POLITICAL ESCALATION: fires off low credibility (folded-in pressure), not a separate meter ---
+  const angryCount=PK.filter(k=>S.app[k]<32).length;
+  const heat=(S.cred<70?1:0)+(S.cred<45?1:0)+(angryCount>=2?1:0); // 0-3 political-heat tiers
+  if(heat>S.pressureTier&&heat>0){
+    S.pressureTier=heat;
+    const pe=PRESSURE_EVENTS[heat];
+    if(pe&&Math.random()<0.7){if(pe.alert){fireAlert(pe);}else{showEvent(pe);}return;}
   }
-  if(tier<S.pressureTier)S.pressureTier=tier; // allow re-trigger if it climbs again after falling
+  if(heat<S.pressureTier)S.pressureTier=heat;
   // --- STAKEHOLDER-ANGER CARDS: gated by threshold + faction cooldown + global spacing ---
   if(S.termMonth-S.lastStakeholderMonth>=3){
     const angry=PK.filter(k=>S.app[k]<28&&S.factionCooldown[k]<=0);
@@ -609,7 +587,7 @@ function pickNewsOrFomc(){
 function fireAlert(sh){
   $('alertKicker').textContent=sh.kicker||'BREAKING';$('alertIco').textContent=sh.ico||'🚨';
   $('alertHeadline').textContent=sh.alertHeadline||sh.headline;$('alertDesc').innerHTML=sh.alertDesc||sh.body;
-  $('alertScrim').classList.add('show');
+  $('alertScrim').classList.add('show');Audio8.sfx('alarm');shake();
   $('alertBtn').onclick=()=>{$('alertScrim').classList.remove('show');showEvent(sh);};
 }
 function showDataPrint(dp){
@@ -631,7 +609,7 @@ function showEvent(ev){
     const locked=r.needsFomc&&!fomc;
     const card=document.createElement('div');card.className='resp-card'+(locked?' locked':'');
     card.innerHTML=`<div class="rc-head"><span class="rc-ico">${r.ico}</span><span class="rc-title">${r.t}</span>${locked?'<span class="rc-lock">🔒 FOMC only</span>':''}</div><div class="rc-desc">${r.desc}</div><div class="rc-stakes">${r.stakes.map(s=>`<span class="stake ${s.c}">${s.t}</span>`).join('')}</div>`;
-    if(!locked)card.onclick=()=>chooseResponse(r,ev);
+    if(!locked)card.onclick=()=>{Audio8.sfx('click');chooseResponse(r,ev);};
     cont.appendChild(card);
   });
   $('consequence').classList.remove('show');$('advBtn').style.display='none';
@@ -646,12 +624,13 @@ function applyPassive(e){
 }
 function chooseResponse(r,ev){
   if(S.gameover)return;const f=r.fx||{};
+  if(f.rate>0)Audio8.sfx('hike');else if(f.rate<0)Audio8.sfx('cut');
   if(f.rate!==undefined)S.rate=clamp(S.rate+f.rate,0,20);
   if(f.rateOverride!==undefined)S.rate=f.rateOverride;
   if(f.infPush)S.infPush+=f.infPush;if(f.unempPush)S.unempPush+=f.unempPush;if(f.growthPush)S.growthPush+=f.growthPush;
   if(f.reserves)S.reserves=clamp(S.reserves+f.reserves,0,99999);if(f.tga)S.tga=clamp(S.tga+f.tga,0,99999);
   if(f.deposits)S.deposits=clamp(S.deposits+f.deposits,100,99999);if(f.debt)S.debt+=f.debt;if(f.stress)S.stress=clamp(S.stress+f.stress,0,150);
-  if(f.cred)S.cred=clamp(S.cred+f.cred,0,200);if(f.pressure)S.pressure=clamp(S.pressure+f.pressure,0,100);
+  if(f.cred)S.cred=clamp(S.cred+f.cred,0,200);if(f.pressure)S.cred=clamp(S.cred-f.pressure*0.5,0,200);
   if(f.qeTaps){S.qeActive=true;S.qeTaps=f.qeTaps;S.qeMax=f.qeTaps;S.qeTotal=0;}
   applyApproval(r.react);showMoods(r.react);
   $('responseSlot').innerHTML='';
@@ -672,7 +651,7 @@ $('tapZone').addEventListener('click',function(e){
   $('tapNum').textContent=fmt(S.qeTotal);$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
   const r=this.getBoundingClientRect();const m=document.createElement('div');m.className='money-fly';m.textContent=pick(['💵','💰','🪙','💲','🏦']);
   m.style.left=((e.clientX||r.left+r.width/2)-r.left)+'px';m.style.top=((e.clientY||r.top+r.height/2)-r.top)+'px';
-  this.appendChild(m);setTimeout(()=>m.remove(),1100);render();
+  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('coin');render();
   if(S.qeTaps<=0){S.qeActive=false;setTimeout(()=>{
     $('tapZone').classList.remove('show');
     const con=$('consequence');
@@ -683,8 +662,14 @@ $('tapZone').addEventListener('click',function(e){
   },500);}
 });
 function doAdvance(){
-  if(S.gameover)return;
+  if(S.gameover)return;if(typeof Audio8!=='undefined')Audio8.sfx('click');
+  const pc=S.cred;
   S.month++;S.termMonth++;macroTick();scoreTick();if(S.gameover)return;
+  // roll the gauge numbers to their new values
+  animateNum($('vInf'),S.prevInf,S.inf,700);animateNum($('vUn'),S.prevUn,S.un,700);
+  animateNum($('vGr'),S.prevGr,S.gr,700);
+  animateNum($('credNum'),pc,S.cred,700,v=>Math.round(v));
+  const cn=$('credNum');cn.classList.remove('counter-pop');void cn.offsetWidth;cn.classList.add('counter-pop');
   $('consequence').classList.remove('show');$('consequence').innerHTML='';$('advBtn').style.display='none';$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';
   nextTurn();
 }
@@ -700,10 +685,10 @@ $('btnQE').addEventListener('click',()=>{
   if(S.gameover||S.qeActive)return;
   const emergency=!isFomc();
   S.qeActive=true;S.qeTaps=8;S.qeMax=8;S.qeTotal=0;
-  $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent='8 taps remaining';$('tapProg').style.width='0%';
+  Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent='8 taps remaining';$('tapProg').style.width='0%';
   if(emergency){
-    S.emergencyThisMonth=true;S.cred=clamp(S.cred-4,0,200);S.pressure=clamp(S.pressure+8,0,100);
-    toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −4, pressure +8','var(--red)');
+    S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
+    toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6 (markets read panic)','var(--red)');
   }else{toast('QE launched — tap below to inject reserves','var(--green)');}
   render();window.scrollTo({top:$('tapZone').offsetTop-70,behavior:'smooth'});
 });
@@ -711,10 +696,10 @@ $('btnQT').addEventListener('click',()=>{
   if(S.gameover||S.reserves<100)return;
   const emergency=!isFomc();
   const d=Math.min(200,S.reserves);S.reserves-=d;S.stress=clamp(S.stress+8,0,150);
-  if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-4,0,200);S.pressure=clamp(S.pressure+8,0,100);
-    toast('⚠️ Emergency QT — $'+fmt(d)+'B drained. Panic signal: cred −4, pressure +8','var(--red)');
+  if(emergency){S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
+    toast('⚠️ Emergency QT — $'+fmt(d)+'B drained. Panic signal: credibility −6','var(--red)');
   }else{toast('QT — $'+fmt(d)+'B in reserves drained from the system','var(--blue)');}
-  showMoods({banks:-4,treasury:0,congress:2,people:1});
+  showMoods({banks:-4,treasury:0,congress:2,people:1});Audio8.sfx('bad');
   render();
 });
 $('plumbTog').addEventListener('click',()=>{const d=$('plumbDr');d.classList.toggle('show');$('plumbTog').textContent=d.classList.contains('show')?'▲ hide plumbing':'▼ the plumbing';});
@@ -730,11 +715,129 @@ function endGame(win,reason){
   else{hl='Removed from office';body='Credibility hit zero. The economy broke on your watch. The President announces a replacement.';}
   $('breakingSlot').innerHTML=`<div class="breaking ${win?'positive':''}"><div class="b-tag"><span class="live"></span>${termDone?'TERM COMPLETE':'CAMPAIGN OVER'}</div><div class="b-headline">${hl}</div><div class="b-body">${body}</div></div>`;
   const con=$('consequence');
-  con.innerHTML=`<div class="con-head">${win?'🏆 Legacy Secured':'📉 The Record'}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months · Credibility ${Math.round(S.cred)}/200 · Pressure ${Math.round(S.pressure)}/100<br><br>${win?'A term worth defending. You navigated the shocks history threw at you AND the politics that came for you, and kept the machine running.':'Every chair is judged by the record they leave. This one is a cautionary tale — and a lesson for the next.'}</div><div class="con-reactions">${rec}</div>`;
+  con.innerHTML=`<div class="con-head">${win?'🏆 Legacy Secured':'📉 The Record'}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months · Credibility ${Math.round(S.cred)}/200<br><br>${win?'A term worth defending. You navigated the shocks history threw at you AND the politics that came for you, and kept the machine running.':'Every chair is judged by the record they leave. This one is a cautionary tale — and a lesson for the next.'}</div><div class="con-reactions">${rec}</div>`;
   con.classList.add('show');
+  if(typeof Audio8!=='undefined'){Audio8.sfx(win?'win':'bad');if(!win)shake();}
 }
+// ================= AUDIO ENGINE (synthesized, no files) =================
+const Audio8={
+  ctx:null,master:null,musicGain:null,muted:false,started:false,
+  step:0,tempo:110,loopTimer:null,tension:0,
+  init(){
+    if(this.started)return;
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;
+      this.ctx=new AC();
+      this.master=this.ctx.createGain();this.master.gain.value=0.5;this.master.connect(this.ctx.destination);
+      this.musicGain=this.ctx.createGain();this.musicGain.gain.value=0.26;this.musicGain.connect(this.master);
+      this.started=true;this.startLoop();
+    }catch(e){}
+  },
+  // ---- rhythmic musical bed: a warm looping progression with a head-nod pulse ----
+  startLoop(){
+    if(!this.ctx)return;
+    const beat=60/this.tempo/2; // eighth-note groove
+    const tick=()=>{
+      if(this.muted||!this.ctx){this.loopTimer=setTimeout(tick,beat*1000);return;}
+      const s=this.step%16;
+      // chord roots cycle (Am - F - C - G feel), souring with tension
+      const prog=[57,57,53,53,48,48,55,55]; // MIDI-ish roots per 2-step
+      const root=prog[Math.floor(s/2)%8];
+      const t=this.tension; // 0..1
+      // bass on downbeats
+      if(s%2===0)this.note(root-12,beat*1.6,'sine',0.22,0);
+      // pulse/hat every step (the head-nod)
+      this.hat(0.03+ (s%4===0?0.03:0));
+      // arpeggio notes — brighter when calm, dissonant when tense
+      if(s%2===1){
+        const third=t>0.5? root+3 : root+4; // minor third creeps in under tension
+        const fifth=root+7;
+        const notes=[root,third,fifth,root+12];
+        this.note(notes[Math.floor(s/2)%4],beat*1.2,'triangle',0.10,t*6);
+      }
+      // tension pad swell
+      if(s===0){this.pad(root, beat*8, 0.05+t*0.05, t);}
+      this.step++;
+      this.loopTimer=setTimeout(tick,beat*1000);
+    };
+    tick();
+  },
+  mtof(m){return 440*Math.pow(2,(m-69)/12);},
+  note(midi,dur,type,gain,detune){
+    if(!this.ctx||this.muted)return;
+    const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+    o.type=type;o.frequency.value=this.mtof(midi);if(detune)o.detune.value=detune;
+    g.gain.value=0;o.connect(g);g.connect(this.musicGain);
+    const t=this.ctx.currentTime;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(gain,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.start(t);o.stop(t+dur+0.05);
+  },
+  pad(midi,dur,gain,t){
+    if(!this.ctx||this.muted)return;
+    [0,7].forEach(iv=>{
+      const o=this.ctx.createOscillator(),g=this.ctx.createGain(),f=this.ctx.createBiquadFilter();
+      o.type='sawtooth';o.frequency.value=this.mtof(midi+iv-12);o.detune.value=(Math.random()-.5)*8;
+      f.type='lowpass';f.frequency.value=400+t*1200;
+      g.gain.value=0;o.connect(f);f.connect(g);g.connect(this.musicGain);
+      const c=this.ctx.currentTime;
+      g.gain.linearRampToValueAtTime(gain,c+dur*0.3);g.gain.linearRampToValueAtTime(0.0001,c+dur);
+      o.start(c);o.stop(c+dur+0.1);
+    });
+  },
+  hat(gain){
+    if(!this.ctx||this.muted)return;
+    const b=this.ctx.createBuffer(1,this.ctx.sampleRate*0.03,this.ctx.sampleRate);
+    const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+    const src=this.ctx.createBufferSource(),g=this.ctx.createGain(),f=this.ctx.createBiquadFilter();
+    src.buffer=b;f.type='highpass';f.frequency.value=7000;g.gain.value=gain;
+    src.connect(f);f.connect(g);g.connect(this.musicGain);src.start();
+  },
+  // ---- one-shot SFX ----
+  sfx(type){
+    if(!this.ctx||this.muted)return;
+    const t=this.ctx.currentTime;
+    if(type==='click'){this.blip(660,0.06,'square',0.18);}
+    else if(type==='hike'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(780,0.1,'square',0.2),70);}
+    else if(type==='cut'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(350,0.12,'square',0.2),70);}
+    else if(type==='coin'){const f=[880,1180,1560];f.forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.09,'square',0.16),i*45));}
+    else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
+    else if(type==='bad'){this.blip(160,0.25,'sawtooth',0.22);}
+    else if(type==='alarm'){let n=0;const iv=setInterval(()=>{this.blip(n%2?740:990,0.16,'square',0.24);if(++n>=6)clearInterval(iv);},180);}
+    else if(type==='win'){[523,659,784,1046].forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.18,'triangle',0.2),i*110));}
+  },
+  blip(freq,dur,type,gain){
+    if(!this.ctx||this.muted)return;
+    const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.value=0;o.connect(g);g.connect(this.master);
+    const t=this.ctx.currentTime;g.gain.linearRampToValueAtTime(gain,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.start(t);o.stop(t+dur+0.03);
+  },
+  setTension(v){this.tension=clamp(v,0,1);},
+  toggleMute(){this.muted=!this.muted;return this.muted;}
+};
+// tension follows economic distress
+function updateTension(){
+  if(!S)return;
+  let t=0;
+  t+=Math.min(1,Math.abs(S.inf-2)/6);
+  t+=Math.min(1,Math.max(0,S.un-4)/6);
+  t+=Math.min(1,S.stress/100);
+  Audio8.setTension(Math.min(1,t/2.2));
+}
+// ================= MOTION =================
+function shake(){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');}
+function flashGood(){document.body.classList.remove('flash-good');void document.body.offsetWidth;document.body.classList.add('flash-good');setTimeout(()=>document.body.classList.remove('flash-good'),650);}
+// animated number counter
+function animateNum(el,from,to,dur,fmtFn){
+  if(!el)return;const start=performance.now();
+  const tick=now=>{const p=Math.min(1,(now-start)/dur);const e=1-Math.pow(1-p,3);const v=from+(to-from)*e;
+    el.textContent=fmtFn?fmtFn(v):v.toFixed(1);if(p<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+}
+$('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMute();$('muteBtn').textContent=m?'🔇':'🔊';});
+
 function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
-$('startBtn').addEventListener('click',()=>{S=freshState(SC.state);$('introScreen').classList.remove('active');$('gameScreen').classList.add('active');nextTurn();});
+$('startBtn').addEventListener('click',()=>{Audio8.init();S=freshState(SC.state);$('introScreen').classList.remove('active');$('gameScreen').classList.add('active');nextTurn();});
 $('resetBtn').addEventListener('click',()=>{$('gameScreen').classList.remove('active');$('introScreen').classList.add('active');$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';$('consequence').classList.remove('show');$('plumbDr').classList.remove('show');boot();});
 boot();
 })();
