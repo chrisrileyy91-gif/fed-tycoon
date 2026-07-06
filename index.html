@@ -227,6 +227,7 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
       <div class="dg" id="dgUn"><div class="dg-label">Unemployment</div><div class="dg-val"><span id="vUn">4.2</span><span class="u">%</span></div><div class="dg-delta" id="dUn"></div></div>
       <div class="dg" id="dgGr"><div class="dg-label">Growth</div><div class="dg-val"><span id="vGr">2.8</span><span class="u">%</span></div><div class="dg-delta" id="dGr"></div></div>
       <div class="dg" id="dgRt"><div class="dg-label">Fed rate</div><div class="dg-val"><span id="vRt">3.50</span><span class="u">%</span></div><div class="dg-delta" id="dRt"></div></div>
+      <div class="dg" id="dgExp" style="grid-column:span 2;background:linear-gradient(90deg,#1a1410,#1e1418)"><div class="dg-label">Inflation Expectations ⚓</div><div class="dg-val"><span id="vExp">2.0</span><span class="u">%</span></div><div class="dg-delta" id="dExp"></div></div>
     </div>
   </div>
   <div id="responseSlot"></div>
@@ -277,8 +278,8 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 const FOMC_MONTHS=[0,2,4,5,7,8,10,11];
 
 const SCENARIOS=[
-{title:"The AI Boom",yr:2025,narrative:`Silicon Valley just triggered the biggest capital race since the internet. Congress passed the <span class="hl">$420B American AI Dominance Act</span> — the largest tech subsidy in history — and the Treasury issued massive debt to fund it, draining reserves.<br><br>Inflation runs hot at <b class="hl">3.8%</b>. Unemployment is low at <b>4.2%</b>. Wall Street is euphoric; Main Street watches grocery prices climb. You inherit a <b class="hl">$3T balance sheet</b> and a rate at <b>3.50%</b>.<br><br>Your term is <b>four years — 48 months.</b> Data comes monthly. You move rates only at FOMC meetings. And the world <b class="hl">will not wait</b> for your calendar.`,
-state:{inf:3.8,un:4.2,gr:2.8,rate:3.50,reserves:2400,tga:600,deposits:11000,debt:31000,app:{banks:60,treasury:50,congress:60,people:42}}},
+{title:"The AI Boom",yr:2025,narrative:`Silicon Valley just triggered the biggest capital race since the internet. Congress passed the <span class="hl">$420B American AI Dominance Act</span> — the largest tech subsidy in history — and the Treasury issued massive debt to fund it, draining reserves.<br><br>Inflation runs hot at <b class="hl">4.2%</b>. Unemployment is <b>3.8%</b> — below the level where wage pressure builds. Growth is <b>3.2%</b> and accelerating. Your predecessor <b class="hl">left rates at 2.50%</b> — behind the curve. You inherit a <b class="hl">$3T balance sheet</b> and an economy that's overheating.<br><br>Your term is <b>four years — 48 months.</b> Data comes monthly. You move rates only at FOMC meetings. And the world <b class="hl">will not wait</b> for your calendar.`,
+state:{inf:4.2,un:3.8,gr:3.2,rate:2.50,reserves:2400,tga:600,deposits:11000,debt:31000,app:{banks:65,treasury:45,congress:55,people:38}}},
 {title:"The Slowdown",yr:2025,narrative:`The previous chair hiked aggressively to kill inflation and <b class="hl">succeeded — at a cost</b>.<br><br>Inflation is tame at <b>1.9%</b>, but unemployment drifted to <b class="hl">5.8%</b> and growth is a fragile <b>0.8%</b>. Layoff headlines run daily. Two regional banks failed last month.<br><br>Congress is split — House wants stimulus, Senate wants cuts. Your rate sits at <b class="hl">4.75%</b>. The question on every desk: <b>did the last chair overtighten?</b><br><br>Four-year term. Monthly data. Rates move only at FOMC. The world writes its own headlines.`,
 state:{inf:1.9,un:5.8,gr:0.8,rate:4.75,reserves:1800,tga:500,deposits:8800,debt:33000,app:{banks:40,treasury:45,congress:42,people:38}}},
 {title:"Election Year",yr:2025,narrative:`It's an election year and <b class="hl">everyone wants something from you</b>.<br><br>The President trails in polls and needs a strong economy — his team publicly pressures you to cut. Congress passed a <b>$200B pre-election spending bill</b> over Treasury objections. Inflation sits at <b>2.6%</b>, unemployment <b>4.5%</b>, growth <b>1.6%</b>.<br><br>Nothing's on fire. Nothing's comfortable. The danger is <b class="hl">political pressure to do the wrong thing for the right reasons</b>.<br><br>Four years. Monthly data. FOMC-locked rates. Independence is about to be tested.`,
@@ -337,11 +338,35 @@ const SHOCKS=[
     {ico:'⚠️',t:'Signal vigilance on inflation',desc:'Protect price credibility even for a supply shock.',stakes:[{t:'Credibility',c:'pos'},{t:'Growth risk',c:'neg'},{t:'People 😠',c:'neg'}],
       fx:{infPush:-.15},react:{banks:4,treasury:2,congress:-4,people:-4},
       outcome:'You talked tough. Bond markets trust you — <b>expectations stay anchored</b>. But hawkishness into an oil slowdown risks squeezing an economy already hurting from expensive energy.'}
+  ]},
+{id:'chinaSlowdown',minMonth:8,prob:.10,alert:false,ico:'🏭',
+  tag:'⚠️ GLOBAL',headline:'China\'s economy stalls — global demand craters',
+  body:'China\'s property sector collapsed, taking consumer spending with it. Global commodity prices are falling. U.S. exporters are getting crushed, but cheaper imports mean <b>disinflation is coming for free</b>. The dollar is surging as capital flees to safety.',
+  effects:{growthPush:-.3,reserves:150,infPush:-.1},
+  responses:[
+    {ico:'🌍',t:'Coordinate — open swap lines',desc:'Stabilize the global system. The Fed as lender of last resort to the world.',stakes:[{t:'↓ contagion',c:'pos'},{t:'Congress 😠',c:'neg'}],
+      fx:{stress:-8},react:{banks:5,treasury:6,congress:-5,people:0},
+      outcome:'You opened dollar swap lines to stabilize global markets. It worked — quietly, behind the scenes. But Congress asked why the American central bank is propping up foreign economies. <b>Global plumbing is invisible until it breaks.</b>'},
+    {ico:'⏸️',t:'Monitor — this isn\'t our problem yet',desc:'China\'s economy is not America\'s mandate.',stakes:[{t:'Prudent',c:'info'},{t:'If contagion spreads…',c:'neg'}],
+      fx:{},react:{banks:-2,treasury:-3,congress:3,people:0},
+      outcome:'You stayed out of it. Domestically popular — but the global financial system runs on dollars, and when you don\'t provide them, <b>the plumbing tightens everywhere</b>. Contagion risk lingers.'}
+  ]},
+{id:'euDebt',minMonth:12,prob:.08,alert:false,ico:'📉',
+  tag:'⚠️ GLOBAL',headline:'European sovereign debt crisis — bond markets seize',
+  body:'A major European economy can\'t roll its debt. Bond yields spike across the continent. Capital floods into U.S. Treasuries — <b>yields falling, dollar surging, reserves flooding in</b>. Global recession risk is real.',
+  effects:{reserves:250,growthPush:-.2,infPush:-.05},
+  responses:[
+    {ico:'🏦',t:'Backstop — dollar swap lines at scale',desc:'The global system needs dollars and you\'re the only source.',stakes:[{t:'Global stability',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Balance sheet ↑',c:'info'}],
+      fx:{reserves:200,stress:-12},react:{banks:6,treasury:5,congress:-8,people:-2},
+      outcome:'You flooded the world with dollars through swap lines. The crisis contained itself because markets knew the Fed would provide. Congress is furious about foreign entanglements. <b>You just learned why the dollar is a responsibility, not just a privilege.</b>'},
+    {ico:'⏸️',t:'Stand back — protect the domestic mandate',desc:'Your job is American prices and jobs. Period.',stakes:[{t:'Domestic focus',c:'info'},{t:'Global risk',c:'neg'}],
+      fx:{stress:10},react:{banks:-3,treasury:-4,congress:4,people:2},
+      outcome:'You kept your hands clean. The crisis deepened before the ECB managed to contain it — barely. Financial stress climbed and global growth took a hit. <b>In a dollar world, neutrality is a policy choice with consequences.</b>'}
   ]}
 ];
 
 const NEWS=[
-{id:'groceryPrices',turn:[3,10],prob:.5,type:'',
+{id:'groceryPrices',turn:[2,14],prob:.5,type:'',
   tag:'CONSUMER PRICES',headline:'Grocery prices up 8% — public outrage builds',
   body:'Eggs, meat, bread lead the surge. <b>"What is the Fed doing?"</b> trends nationwide. Congress demands a hearing.',
   effects:{infPush:.2},
@@ -353,7 +378,7 @@ const NEWS=[
       fx:{},react:{banks:3,treasury:0,congress:-4,people:-5},
       outcome:'You stayed silent. Principled — but in your absence, <b>Congress filled the vacuum with blame</b>. Aimed at you.'}
   ]},
-{id:'congressSpend',turn:[4,14],prob:.5,type:'fiscal',
+{id:'congressSpend',turn:[4,18],prob:.5,type:'fiscal',
   tag:'FISCAL POLICY',headline:'Congress passes $380B infrastructure bill',
   body:'Roads, bridges, broadband — funded by <b>new Treasury issuance</b>. Reserves will drain to fund it. Growth now, plumbing squeeze later.',
   effects:{debt:380,growthPush:.3,infPush:.05,reserves:-200,tga:200,deposits:200},
@@ -365,7 +390,7 @@ const NEWS=[
       fx:{},react:{banks:3,treasury:8,congress:-10,people:-4},
       outcome:'You warned against it. It passes anyway — <b>you\'re the Fed, not Congress</b> — but markets heard your hawkishness. Treasury is grateful. Congress is furious.'}
   ]},
-{id:'pressPressure',turn:[6,20],prob:.5,type:'',
+{id:'pressPressure',turn:[10,30],prob:.5,type:'',
   tag:'POLITICAL',headline:'President demands rate cuts on national TV',
   body:'"<b>The Fed is holding this economy hostage.</b>" Prime time, 40 million viewers, 62% agree. Every move now reads through a political lens.',
   effects:{},
@@ -376,6 +401,90 @@ const NEWS=[
     {ico:'🤝',t:'Stay diplomatically silent',desc:'Don\'t escalate. Don\'t capitulate.',stakes:[{t:'Avoids fight',c:'info'},{t:'Looks weak',c:'neg'}],
       fx:{},react:{banks:0,treasury:0,congress:2,people:0},
       outcome:'You declined to engage. No fight — but <b>silence in the face of pressure invites more of it</b>. The President reads it as weakness and turns up the heat.'}
+  ]},
+{id:'housingBubble',turn:[8,28],prob:.45,type:'',
+  tag:'HOUSING',headline:'Home prices up 18% — "Is this a bubble?"',
+  body:'Shelter costs are the biggest driver of CPI. Mortgage rates haven\'t slowed the market. First-time buyers are priced out. <b>The Fed\'s rate policy directly sets mortgage costs</b> — and everyone knows it.',
+  effects:{infPush:.12},
+  responses:[
+    {ico:'⚠️',t:'Warn about financial stability risks',desc:'Use the podium to cool speculation.',stakes:[{t:'Credibility +',c:'pos'},{t:'Banks 😠',c:'neg'},{t:'People ❤️',c:'pos'}],
+      fx:{cred:2},react:{banks:-5,treasury:2,congress:2,people:5},
+      outcome:'You warned publicly about housing froth. Mortgage lenders hate the scrutiny, but first-time buyers appreciated someone in power acknowledging the problem. <b>Jawboning isn\'t policy — but it\'s not nothing.</b>'},
+    {ico:'⏸️',t:'Not the Fed\'s mandate — let markets work',desc:'Asset prices aren\'t in your mandate. Inflation and employment are.',stakes:[{t:'Discipline',c:'info'},{t:'People 😠',c:'neg'}],
+      fx:{},react:{banks:4,treasury:0,congress:-2,people:-4},
+      outcome:'You stayed silent on housing. Purists respected the restraint — the Fed\'s mandate is prices and employment, not home values. But to a generation locked out of homeownership, <b>the silence was the message.</b>'}
+  ]},
+{id:'techLayoffs',turn:[6,26],prob:.45,type:'',
+  tag:'LABOR MARKET',headline:'Tech sector sheds 120,000 jobs in one quarter',
+  body:'The biggest names in tech are cutting deep. Headlines scream recession — but the rest of the economy is still hiring. A <b>sectoral rotation</b>, not a collapse. The question: does the Fed respond to headlines or data?',
+  effects:{unempPush:.15,growthPush:-.05},
+  responses:[
+    {ico:'📊',t:'Point to the broader data — labor market is fine',desc:'Tech layoffs dominate headlines but total payrolls are growing.',stakes:[{t:'Data-driven',c:'pos'},{t:'Looks cold',c:'neg'}],
+      fx:{},react:{banks:3,treasury:2,congress:-2,people:-4},
+      outcome:'You cited the data: total employment growing, claims stable, other sectors hiring. All true. But to the laid-off engineer watching you say the economy is "strong," <b>aggregate data is cold comfort for individual pain.</b>'},
+    {ico:'🎤',t:'Acknowledge the hardship — signal you\'re watching',desc:'Show empathy without changing policy.',stakes:[{t:'People ❤️',c:'pos'},{t:'Markets wonder',c:'neg'}],
+      fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
+      outcome:'You acknowledged the pain without overpromising. Markets briefly dipped on the dovish tone, then recovered when you clarified nothing had changed. <b>Communication is the Fed\'s first tool — and its trickiest.</b>'}
+  ]},
+{id:'debtCeiling',turn:[24,46],prob:.40,type:'fiscal',
+  tag:'FISCAL CRISIS',headline:'Debt ceiling standoff — Treasury warns of default in 30 days',
+  body:'Congress can\'t agree on raising the debt ceiling. Treasury is burning through the TGA on extraordinary measures. If the U.S. defaults on its debt, <b>the global financial system breaks</b>. This isn\'t your fight — but the fallout would be.',
+  effects:{stress:15,tga:-200},
+  responses:[
+    {ico:'📣',t:'Publicly urge Congress to act',desc:'Break protocol and wade into fiscal politics.',stakes:[{t:'↓ stress',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Independence risk',c:'neg'}],
+      fx:{stress:-8,cred:-2},react:{banks:4,treasury:8,congress:-8,people:3},
+      outcome:'You stepped into the arena and told Congress the consequences of default. Treasury was grateful. Congress accused you of overreach. <b>You spent credibility to buy stability</b> — a trade you\'ll make more than once.'},
+    {ico:'🤐',t:'Stay out of it — fiscal policy isn\'t your lane',desc:'Protect independence. Prepare contingency plans quietly.',stakes:[{t:'Independence',c:'pos'},{t:'Stress builds',c:'neg'}],
+      fx:{},react:{banks:-2,treasury:-5,congress:3,people:0},
+      outcome:'You said nothing publicly while preparing emergency liquidity facilities behind the scenes. Independence preserved — but Treasury felt abandoned, and the stress gauge climbed. <b>Silence has a cost when the clock is ticking.</b>'}
+  ]},
+{id:'autoStrike',turn:[14,38],prob:.40,type:'',
+  tag:'LABOR / SUPPLY',headline:'Auto workers strike — production halts nationwide',
+  body:'300,000 workers walk off the line. A <b>supply shock and a wage event in one</b> — production drops and wage settlements will set benchmarks across manufacturing. The Fed can\'t make cars or negotiate contracts.',
+  effects:{supplyShock:.4,growthPush:-.08},
+  responses:[
+    {ico:'📣',t:'Look through it — temporary supply disruption',desc:'Strikes end. Don\'t tighten into a transitory shock.',stakes:[{t:'Protects growth',c:'pos'},{t:'Wage expectations',c:'neg'}],
+      fx:{},react:{banks:-2,treasury:0,congress:3,people:4},
+      outcome:'You called it transitory — and you were probably right. But the wage settlement set a benchmark: <b>workers everywhere now know what\'s possible</b>. Whether that feeds inflation depends on what happens next.'},
+    {ico:'⚠️',t:'Flag the wage-price risk',desc:'Big settlements seed expectations for every contract negotiation.',stakes:[{t:'Credibility',c:'pos'},{t:'People 😠',c:'neg'}],
+      fx:{infPush:-.05},react:{banks:4,treasury:2,congress:-3,people:-5},
+      outcome:'You warned that large wage settlements could feed a wage-price spiral. Workers felt the Fed was rooting against their paycheck. <b>The Phillips Curve doesn\'t care about your sympathies.</b>'}
+  ]},
+{id:'confCollapse',turn:[20,42],prob:.45,type:'',
+  tag:'CONSUMER DATA',headline:'Consumer confidence hits decade low — spending stalls',
+  body:'People have stopped spending. Sentiment surveys show deep pessimism. Retail is hurting. <b>Confidence can be self-fulfilling</b> — if people believe a recession is coming, they pull back, and the recession comes.',
+  effects:{growthPush:-.2},
+  responses:[
+    {ico:'📢',t:'Counter the narrative — the economy is stronger than sentiment',desc:'Use the podium before pessimism becomes reality.',stakes:[{t:'↑ confidence',c:'pos'},{t:'Looks political',c:'neg'}],
+      fx:{growthPush:.08},react:{banks:2,treasury:0,congress:2,people:3},
+      outcome:'You made the case for optimism — citing data, not spin. Some confidence returned. <b>Central bankers manage expectations as much as money supply</b>, and right now expectations needed managing.'},
+    {ico:'⏸️',t:'Let the data speak — don\'t be a cheerleader',desc:'If confidence is falling, there might be a reason.',stakes:[{t:'Discipline',c:'info'},{t:'Self-fulfilling risk',c:'neg'}],
+      fx:{},react:{banks:0,treasury:0,congress:-2,people:-3},
+      outcome:'You declined to talk up the economy. The numbers are the numbers. But confidence is fragile, and <b>your silence let the pessimism harden</b>. Sometimes the data needs a narrator.'}
+  ]},
+{id:'tradeWar',turn:[26,46],prob:.40,type:'fiscal',
+  tag:'TRADE POLICY',headline:'New tariffs — import prices spike, retaliation begins',
+  body:'The administration slapped tariffs on $300B of imports. Trading partners retaliate. <b>A tariff is a supply shock and a tax in one</b> — raises prices while dragging growth. Sound familiar? You can\'t tariff your way to prosperity, but you can\'t untariff from this chair either.',
+  effects:{supplyShock:.5,growthPush:-.12},
+  responses:[
+    {ico:'📊',t:'Look through it — one-time price level shift',desc:'Tariffs raise prices once; they don\'t cause persistent inflation.',stakes:[{t:'Economically correct',c:'pos'},{t:'People see prices rise',c:'neg'}],
+      fx:{},react:{banks:2,treasury:0,congress:-3,people:-3},
+      outcome:'You were technically right — a tariff shifts the price level once, not the inflation rate permanently. But telling people "it\'s a one-time increase" while groceries get more expensive <b>is the kind of technically-right that\'s politically wrong.</b>'},
+    {ico:'⚠️',t:'Warn that tariffs complicate the inflation picture',desc:'Acknowledge the policy is making your job harder — without naming sides.',stakes:[{t:'Honest',c:'pos'},{t:'Administration 😠',c:'neg'}],
+      fx:{cred:2},react:{banks:3,treasury:3,congress:-4,people:2},
+      outcome:'You said, carefully, that trade policy was adding uncertainty to the inflation outlook. Economists applauded the honesty. The administration read it as criticism. <b>Independence means saying true things powerful people don\'t want to hear.</b>'}
+  ]},
+{id:'wageSpike',turn:[3,20],prob:.45,type:'',
+  tag:'LABOR DATA',headline:'Wages up 5.2% year-over-year — hottest in a decade',
+  body:'Workers are getting raises. <b>Good for paychecks, complicated for inflation.</b> The Phillips Curve says this matters — wage growth feeds into prices. But workers haven\'t had real wage growth in years. Do you celebrate or worry?',
+  effects:{infPush:.1,growthPush:.08},
+  responses:[
+    {ico:'🎉',t:'Welcome it — workers deserve this',desc:'Real wage growth is a good thing. Don\'t be the villain.',stakes:[{t:'People ❤️',c:'pos'},{t:'Inflation risk',c:'neg'}],
+      fx:{},react:{banks:-3,treasury:-2,congress:5,people:8},
+      outcome:'You publicly welcomed the wage data. Workers felt seen. But the bond market noted your comfort with 5% wage growth and <b>repriced rate cut expectations to zero</b>. What you say as Chair has consequences you can\'t unring.'},
+    {ico:'📊',t:'Flag it as an inflation risk — stay vigilant',desc:'5% wage growth isn\'t compatible with 2% inflation long-term.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'}],
+      fx:{cred:2},react:{banks:5,treasury:3,congress:-4,people:-6},
+      outcome:'You said what the textbook says: sustained wage growth above productivity gains feeds inflation. True, important, and <b>incredibly unpopular with anyone who just got a raise</b>. The bond market loved it. Twitter did not.'}
   ]}
 ];
 
@@ -468,21 +577,25 @@ function freshState(sc){
     loans:8000,stress:0,app:{...sc.app},cred:50,streak:0,
     qeActive:false,qeTaps:0,qeMax:0,qeTotal:0,
     prevInf:sc.inf,prevUn:sc.un,prevGr:sc.gr,prevRate:sc.rate,
+    exp:2.0,prevExp:2.0,
     pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
     lastStakeholderMonth:-99,emergencyThisMonth:false,
     fired:{},gameover:false,pendingShocks:[]};
 }
 function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2,0,150);S.growthPush+=0.03;}
 function macroTick(){
-  S.prevInf=S.inf;S.prevUn=S.un;S.prevGr=S.gr;S.prevRate=S.rate;
+  S.prevInf=S.inf;S.prevUn=S.un;S.prevGr=S.gr;S.prevRate=S.rate;S.prevExp=S.exp;
   const stance=S.rate-S.neutral;
   S.transmitted+=(stance-S.transmitted)*0.10;
   S.supplyShock*=.92;S.infPush*=.8;S.unempPush*=.8;S.growthPush*=.8;
   const n=()=>(Math.random()-.5)*.06;
+  // Inflation expectations: self-fulfilling anchor. High cred → anchored at 2%. Low cred → drift toward actual inflation.
+  const anchorW=clamp((S.cred-15)/135,0.15,1);
+  S.exp+=(2*anchorW+S.inf*(1-anchorW)-S.exp)*.04;
   S.gr+=(2.5-S.transmitted*.8-S.supplyShock*.6+S.growthPush-S.gr)*.07+n();
   S.un+=(4+(2.5-S.gr)*.8+S.supplyShock*.5+S.unempPush-S.un)*.05+n();
   const pgap=4-S.un,phillips=pgap>0?Math.pow(pgap,1.5)*.45:pgap*.15;
-  S.inf+=(2+phillips-S.transmitted*.15+S.supplyShock*1.2+S.infPush-S.inf)*.06+n();
+  S.inf+=(S.exp+phillips-S.transmitted*.15+S.supplyShock*1.2+S.infPush-S.inf)*.06+n();
   S.inf=clamp(S.inf,-2,20);S.un=clamp(S.un,2,20);S.gr=clamp(S.gr,-10,10);
   const sc=1200-S.reserves;
   if(sc>0)S.stress=clamp(S.stress+sc*.006,0,150);else S.stress=clamp(S.stress-3,0,150);
@@ -517,11 +630,12 @@ function render(){
   updateTension();
   $('tbMonth').textContent=monthName();$('tbTerm').textContent=`Term month ${S.termMonth} / 48`;
   $('credFill').style.width=(S.cred/200*100)+'%';$('credNum').textContent=Math.round(S.cred);
-  $('vInf').textContent=S.inf.toFixed(1);$('vUn').textContent=S.un.toFixed(1);$('vGr').textContent=S.gr.toFixed(1);$('vRt').textContent=S.rate.toFixed(2);
+  $('vInf').textContent=S.inf.toFixed(1);$('vUn').textContent=S.un.toFixed(1);$('vGr').textContent=S.gr.toFixed(1);$('vRt').textContent=S.rate.toFixed(2);$('vExp').textContent=S.exp.toFixed(1);
   const dd=(id,c,p,inv)=>{const d=c-p,el=$(id);if(Math.abs(d)<.05){el.textContent='';return;}el.textContent=(d>0?'▲':'▼')+Math.abs(d).toFixed(1);el.style.color=((d>0)===inv)?'var(--red)':'var(--green)';};
-  dd('dInf',S.inf,S.prevInf,true);dd('dUn',S.un,S.prevUn,true);dd('dGr',S.gr,S.prevGr,false);dd('dRt',S.rate,S.prevRate,false);
+  dd('dInf',S.inf,S.prevInf,true);dd('dUn',S.un,S.prevUn,true);dd('dGr',S.gr,S.prevGr,false);dd('dRt',S.rate,S.prevRate,false);dd('dExp',S.exp,S.prevExp,true);
   const io=Math.abs(S.inf-2);$('dgInf').className='dg'+(io>2?' warn':io<.7?' good':'');
   $('dgUn').className='dg'+(S.un>6?' warn':S.un<4.5?' good':'');$('dgGr').className='dg'+(S.gr<.5?' warn':S.gr>2?' good':'');
+  $('dgExp').className='dg'+(S.exp>2.5?' warn':S.exp<2.3?' good':'');
   PK.forEach(k=>{const v=S.app[k];const b=$('b'+cap(k));b.style.width=clamp(v,0,100)+'%';b.style.background=v>60?'var(--green)':v>35?'var(--gold)':'var(--red)';});
   $('plFedA').textContent=fmt(S.reserves+S.tga);$('plR').textContent=fmt(S.reserves);$('plT').textContent=fmt(S.tga);$('plBkR').textContent=fmt(S.reserves);$('plL').textContent=fmt(S.loans);$('plD').textContent=fmt(S.deposits);$('plB').textContent=fmt(S.debt);$('plS').textContent=Math.round(S.stress);
   if(isFomc())$('fomcPill').innerHTML=`🔔 <b>FOMC MEETING THIS MONTH</b> — you may move rates`;
@@ -548,7 +662,7 @@ function applyApproval(r){PK.forEach(k=>{S.app[k]=clamp((S.app[k]||50)+(r[k]||0)
 function makeDataPrint(){
   const isCPI=(S.month%2===0);
   if(isCPI){
-    const exp=+(S.prevInf*.6+2*.4).toFixed(1),act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
+    const exp=+(S.exp*.5+S.prevInf*.5).toFixed(1),act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
     const sTag=sur>0.3?['dp-hot','HOTTER than expected 🔥']:sur<-0.3?['dp-cold','COOLER than expected ❄️']:['dp-inline','in line ✓'];
     return{kind:'data',tag:'📊 CPI RELEASE',headline:'Consumer Price Index — monthly print',
       printNum:act.toFixed(1)+'%',printVs:`exp. ${exp.toFixed(1)}%`,printSurprise:sTag,
@@ -567,8 +681,8 @@ function nextTurn(){
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
   // --- POLITICAL ESCALATION: fires off low credibility (folded-in pressure), not a separate meter ---
-  const angryCount=PK.filter(k=>S.app[k]<32).length;
-  const heat=(S.cred<75?1:0)+(S.cred<55?1:0)+(angryCount>=1?1:0); // 0-3 political-heat tiers
+  const politicalAnger=['congress','people'].filter(k=>S.app[k]<32).length;
+  const heat=(S.cred<75?1:0)+(S.cred<55?1:0)+(politicalAnger>=1?1:0); // 0-3 political-heat tiers
   if(heat>S.pressureTier&&heat>0){
     S.pressureTier=heat;
     const pe=PRESSURE_EVENTS[heat];
@@ -699,18 +813,21 @@ function doAdvance(){
   // roll the gauge numbers to their new values
   animateNum($('vInf'),S.prevInf,S.inf,700);animateNum($('vUn'),S.prevUn,S.un,700);
   animateNum($('vGr'),S.prevGr,S.gr,700);
+  animateNum($('vExp'),S.prevExp,S.exp,700);
   animateNum($('credNum'),pc,S.cred,700,v=>Math.round(v));
   const cn=$('credNum');cn.classList.remove('counter-pop');void cn.offsetWidth;cn.classList.add('counter-pop');
   $('consequence').classList.remove('show','takeover');$('consequence').innerHTML='';$('advBtn').style.display='none';$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';
+  $('tapZone').classList.remove('show');S.qeActive=false;S.qeTaps=0;
+  const gt=$('gameToast');if(gt){gt.style.display='none';clearTimeout(gt._t);}
   nextTurn();
 }
 $('advBtn').addEventListener('click',doAdvance);
 // ---- ALWAYS-ON QE / QT ----
 function toast(msg,color){
   let t=$('gameToast');
-  if(!t){t=document.createElement('div');t.id='gameToast';t.style.cssText='position:fixed;left:50%;top:64px;transform:translateX(-50%) translateY(-140%);background:'+(color||'var(--gold)')+';color:#1a1000;font-family:var(--sans);font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;z-index:70;box-shadow:0 6px 20px rgba(0,0,0,.4);transition:transform .35s;max-width:88%;text-align:center';document.body.appendChild(t);}
-  t.innerHTML=msg;t.style.transform='translateX(-50%) translateY(0)';
-  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(-140%)';},2400);
+  if(!t){t=document.createElement('div');t.id='gameToast';t.style.cssText='position:fixed;left:50%;top:64px;transform:translateX(-50%);background:'+(color||'var(--gold)')+';color:#1a1000;font-family:var(--sans);font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;z-index:70;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:88%;text-align:center;display:none';document.body.appendChild(t);}
+  t.style.background=color||'var(--gold)';t.innerHTML=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.display='none';},2400);
 }
 $('btnQE').addEventListener('click',()=>{
   if(S.gameover||S.qeActive)return;
@@ -720,7 +837,11 @@ $('btnQE').addEventListener('click',()=>{
   if(emergency){
     S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
     toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6','var(--red)');
-  }else{toast('QE — tap below to create & inject reserves','var(--green)');}
+  }else{
+    const qeCost=S.rate>1?Math.min(5,Math.floor((S.rate-1)*1.5)):0;
+    if(qeCost>0){S.cred=clamp(S.cred-qeCost,0,200);toast(`QE while rates at ${S.rate.toFixed(1)}% — mixed signal. Credibility −${qeCost}`,'var(--orange)');}
+    else{toast('QE — tap below to create & inject reserves','var(--green)');}
+  }
   render();window.scrollTo({top:$('tapZone').offsetTop-70,behavior:'smooth'});
 });
 $('btnQT').addEventListener('click',()=>{
@@ -776,7 +897,7 @@ function endGame(win,reason){
   const medal=winTier===3?'👑':winTier===2?'🏆':winTier===1?'🎖️':'📉';
   const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const con=$('consequence');
-  con.classList.add('takeover');con.innerHTML=`<div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
+  con.classList.add('takeover');con.innerHTML=`<div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}%<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
   con.classList.add('show');
   if(typeof Audio8!=='undefined'){
     if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('bad');shake();}
@@ -802,6 +923,7 @@ const Audio8={
     if(!this.ctx)return;
     const beat=60/this.tempo/2; // eighth-note groove
     const tick=()=>{
+      if(this.ctx.state==='suspended')this.ctx.resume();
       if(this.muted||!this.ctx){this.loopTimer=setTimeout(tick,beat*1000);return;}
       const s=this.step%16;
       // chord roots cycle (Am - F - C - G feel), souring with tension
@@ -859,6 +981,7 @@ const Audio8={
   // ---- one-shot SFX ----
   sfx(type){
     if(!this.ctx||this.muted)return;
+    if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.blip(660,0.06,'square',0.18);}
     else if(type==='hike'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(780,0.1,'square',0.2),70);}
     else if(type==='cut'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(350,0.12,'square',0.2),70);}
