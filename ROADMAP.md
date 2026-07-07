@@ -5,33 +5,33 @@ This is the sequential build plan. Each phase depends on the prior phase being c
 ---
 
 ## PHASE 1A: Engine Completion — Equity/Asset Market
-**Status:** ✅ Complete (pending your playtest)
+**Status:** ⬜ Not started
 **Dependency:** Phase 0 cleared ✅
 **Why this comes first:** Every deck uses the same engine. Adding the equity channel AFTER building decks means retrofitting equity reactions into every deck's events. Engine completes before content scales.
 
 ### Deliverables
-- [x] Add `S.equities` variable to state (baseline 100, represents index level)
-- [x] Equity pricing equation in macroTick:
+- [ ] Add `S.equities` variable to state (baseline 100, represents index level)
+- [ ] Equity pricing equation in macroTick:
   - Reacts to growth expectations (earnings channel)
   - Reacts to rate stance (discount rate channel — hikes push equities down)
-  - Reacts to QE/QT (portfolio balance effect — QE lifts asset prices directly via decaying `S.qeBoost`)
+  - Reacts to QE/QT (portfolio balance effect — QE lifts asset prices directly)
   - Mean-reverts slowly (markets overshoot and correct)
   - Random noise (markets are volatile)
-- [x] Wealth effect feeds growth equation: `(equities - 100) * coefficient` modifies growth
-- [x] Equity crash threshold: drop >20% from trailing peak triggers financial stress event (6-month cooldown, peak resets after handling)
-- [x] Equity bubble threshold: sustained >140 for 6+ months triggers "irrational exuberance" pressure event (6-month cooldown)
-- [x] Equity ticker in UI (visible, always updating, delta arrows — deliberately not a desk gauge, per design spec)
-- [x] One crash event card (emergency liquidity vs. let markets bottom) and one bubble event card (warn vs. stay silent) with response options
-- [x] Stakeholder reactions to equity moves (Banks/People react in both crash and bubble response cards)
-- [x] End-of-term report includes final equity level
+- [ ] Wealth effect feeds growth equation: `(equities - 100) * coefficient` modifies growth
+- [ ] Equity crash threshold: drop >20% from trailing peak triggers financial stress event
+- [ ] Equity bubble threshold: sustained >140 triggers "irrational exuberance" pressure event
+- [ ] Equity gauge in UI (visible, always updating, delta arrows)
+- [ ] At least one crash event card and one bubble event card with response options
+- [ ] Stakeholder reactions to equity moves (Banks care about portfolios, People care about 401k)
+- [ ] End-of-term report includes final equity level
 
 ### Validation
-- [x] Hike aggressively → equities fall → growth drags through wealth effect (amplifies tightening) — isolated deterministic test: rate 7% for 12 months, equities 100→69.5, gr converges to 1.33
-- [x] Cut aggressively → equities rally → growth boosts through wealth effect (amplifies easing) — isolated test: rate 0.5% for 12 months, equities 100→116, gr converges to 3.20
-- [x] QE visibly lifts equities — full-term playthrough biased toward QE reached equities 132 vs. 76-103 in a QT-biased run
-- [x] Sharp equity crash triggers stress event — deterministic forced-state test confirms alert fires, both responses resolve, peak resets correctly; bubble-ignored flag correctly amplifies a later crash's copy and stress
-- [ ] Re-run Phase 0 simulation: divergence still holds (equity channel doesn't break it) — **not verified**, no Phase 0 simulation script exists in the repo to re-run; only two full-term headless playthroughs were done (one QE-biased, one QT-biased), both completed a full term with no runtime errors and plausible numbers
-- [x] All equity effects use economically truthful channels (no invented mechanics) — matches the design spec's wiring diagram exactly (earnings/discount-rate/portfolio-balance in, wealth-effect/crash/bubble out)
+- [ ] Hike aggressively → equities fall → growth drags through wealth effect (amplifies tightening)
+- [ ] Cut aggressively → equities rally → growth boosts through wealth effect (amplifies easing)
+- [ ] QE visibly lifts equities
+- [ ] Sharp equity crash triggers stress event
+- [ ] Re-run Phase 0 simulation: divergence still holds (equity channel doesn't break it)
+- [ ] All equity effects use economically truthful channels (no invented mechanics)
 
 ### Economics audit
 - Rate → equity valuation: real (discount rate on future earnings)
