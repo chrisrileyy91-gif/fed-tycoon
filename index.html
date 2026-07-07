@@ -891,7 +891,7 @@ function chooseResponse(r,ev){
   if(showTap){
     const body=`<div class="con-head">📰 The Decision</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${lag}`;
     const con=$('consequence');con.innerHTML=body;con.classList.add('show');
-    $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
+    $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
     try{render();}catch(e){}
     try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
   }else{
@@ -906,10 +906,11 @@ function chooseResponse(r,ev){
 $('tapZone').addEventListener('click',function(e){
   if(S.qeTaps<=0)return;
   S.qeTaps--;S.qeTotal+=S.qePerTap;opQETap(S.qePerTap);
-  $('tapNum').textContent=fmt(S.qeTotal);$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
+  $('tapNum').textContent=fmt(S.qeTotal);$('tapNum').style.color=((S.qeMax-S.qeTaps)%2===0)?'var(--green)':'#fff';
+  $('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
   const r=this.getBoundingClientRect();const m=document.createElement('div');m.className='money-fly';m.textContent='💵';
   m.style.left=((e.clientX||r.left+r.width/2)-r.left)+'px';m.style.top=((e.clientY||r.top+r.height/2)-r.top)+'px';
-  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('coin');render();
+  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('stamp');render();
   if(S.qeTaps<=0){S.qeActive=false;setTimeout(()=>{
     $('tapZone').classList.remove('show');
     const con=$('consequence');
@@ -952,7 +953,7 @@ $('btnQE').addEventListener('click',()=>{
   if(S.gameover||S.qeActive)return;
   const emergency=!isFomc();
   S.qeActive=true;S.qeTaps=50;S.qeMax=50;S.qeTotal=0;S.qePerTap=4;
-  Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent='50 taps remaining';$('tapProg').style.width='0%';
+  Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent='50 taps remaining';$('tapProg').style.width='0%';
   if(emergency){
     S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
     toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6','var(--red)');
@@ -1105,6 +1106,7 @@ const Audio8={
     else if(type==='hike'){this.tone([{freq:[280,380],type:'sine',gain:0.18,glide:0.2},{freq:[560,760],type:'triangle',gain:0.09,detune:3,glide:0.2}],{attack:0.025,decay:0.25});}
     else if(type==='cut'){this.tone([{freq:[380,280],type:'sine',gain:0.18,glide:0.2},{freq:[760,560],type:'triangle',gain:0.09,detune:3,glide:0.2}],{attack:0.025,decay:0.25});}
     else if(type==='coin'){this.tone([{freq:220,type:'sine',gain:0.14},{freq:440,type:'triangle',gain:0.07}],{attack:0.01,decay:0.1});this.noiseBurst(0.03,0.04,'bandpass',2000,3);}
+    else if(type==='stamp'){this.tone([{freq:130,type:'sine',gain:0.18},{freq:85,type:'sine',gain:0.12}],{attack:0.002,decay:0.07});this.noiseBurst(0.05,0.16,'bandpass',2200,1.4);}
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
     else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
     else if(type==='alarm'){
