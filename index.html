@@ -914,8 +914,10 @@ $('tapZone').addEventListener('click',function(e){
   const r=this.getBoundingClientRect();
   S.qeTaps--;S.qeTotal+=S.qePerTap;opQETap(S.qePerTap);
   const evenTap=(S.qeMax-S.qeTaps)%2===0;
-  $('tapNum').textContent=fmt(S.qeTotal);$('tapNum').style.color=evenTap?'var(--green)':'#fff';
-  this.style.background=evenTap?'#fff':'var(--green)';
+  const tapNum=$('tapNum');
+  tapNum.textContent=fmt(S.qeTotal);tapNum.style.color=evenTap?'#5c6b45':'#eef2ea';
+  tapNum.classList.remove('counter-pop');void tapNum.offsetWidth;tapNum.classList.add('counter-pop');
+  this.style.background=evenTap?'#eef2ea':'#5c6b45';
   $('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
   const m=document.createElement('div');m.className='money-fly';m.textContent='💵';
   m.style.left=((e.clientX||r.left+r.width/2)-r.left)+'px';m.style.top=((e.clientY||r.top+r.height/2)-r.top)+'px';
