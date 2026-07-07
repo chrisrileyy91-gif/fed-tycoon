@@ -708,12 +708,12 @@ function showMoods(react){
   PK.forEach(k=>{const v=react[k]||0;const el=$('m'+cap(k));const p=$('p'+cap(k));
     if(v>3){el.textContent='❤️';p.classList.add('glow-green');p.classList.remove('glow-red');}
     else if(v<-3){el.textContent='😠';p.classList.add('glow-red');p.classList.remove('glow-green');}else return;
-    // reactive faction audio — gated to MEANINGFUL swings (|v|>=5) so it punctuates, staggered so multiple factions don't muddy
+    // reactive faction audio — banks/congress only, gated to MEANINGFUL swings (|v|>=5) so it punctuates
     if(typeof Audio8!=='undefined'&&Math.abs(v)>=5){
       let snd=null;
-      if(v>=5){snd=(k==='banks')?'register':(k==='people')?'cheer':(k==='congress')?'cheer':'cheer';}
-      else{snd=(k==='people')?'boo':(k==='congress')?'gavel':(k==='banks')?'boo':'boo';}
-      const d=sndDelay;setTimeout(()=>Audio8.sfx(snd),d);sndDelay+=260;
+      if(k==='banks'&&v>=5)snd='register';
+      else if(k==='congress'&&v<=-5)snd='gavel';
+      if(snd){const d=sndDelay;setTimeout(()=>Audio8.sfx(snd),d);sndDelay+=260;}
     }
     el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
     setTimeout(()=>{el.classList.remove('show');p.classList.remove('glow-green','glow-red');},3000);});
@@ -1097,27 +1097,101 @@ const Audio8={
     src.buffer=b;f.type='highpass';f.frequency.value=7000;g.gain.value=gain;
     src.connect(f);f.connect(g);g.connect(this.musicGain);src.start();
   },
-  // ---- one-shot SFX ----
+  // ---- one-shot SFX: institutional tone — sine/triangle layers, soft attacks, filtered where needed ----
   sfx(type){
     if(!this.ctx||this.muted)return;
     if(this.ctx.state==='suspended')this.ctx.resume();
-    if(type==='click'){this.blip(660,0.06,'square',0.18);}
-    else if(type==='hike'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(780,0.1,'square',0.2),70);}
-    else if(type==='cut'){this.blip(520,0.08,'square',0.2);setTimeout(()=>this.blip(350,0.12,'square',0.2),70);}
-    else if(type==='coin'){const f=[880,1180,1560];f.forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.09,'square',0.16),i*45));}
+    if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
+    else if(type==='hike'){this.tone([{freq:[280,380],type:'sine',gain:0.18,glide:0.2},{freq:[560,760],type:'triangle',gain:0.09,detune:3,glide:0.2}],{attack:0.025,decay:0.25});}
+    else if(type==='cut'){this.tone([{freq:[380,280],type:'sine',gain:0.18,glide:0.2},{freq:[760,560],type:'triangle',gain:0.09,detune:3,glide:0.2}],{attack:0.025,decay:0.25});}
+    else if(type==='coin'){this.tone([{freq:220,type:'sine',gain:0.14},{freq:440,type:'triangle',gain:0.07}],{attack:0.01,decay:0.1});this.noiseBurst(0.03,0.04,'bandpass',2000,3);}
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
-    else if(type==='bad'){this.blip(160,0.25,'sawtooth',0.22);}
-    else if(type==='alarm'){let n=0;const iv=setInterval(()=>{this.blip(n%2?740:990,0.16,'square',0.24);if(++n>=6)clearInterval(iv);},180);}
-    else if(type==='win'){[523,659,784,1046].forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.18,'triangle',0.2),i*110));}
+    else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
+    else if(type==='alarm'){
+      // EAS-style attention tone: 853Hz+960Hz, 4 pulses (220ms on / 100ms off), pre-scheduled for tight timing
+      const t0=this.ctx.currentTime;
+      for(let i=0;i<4;i++){
+        const start=t0+i*0.32;
+        [853,960].forEach(fr=>{
+          const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+          o.type='sine';o.frequency.value=fr;
+          g.gain.setValueAtTime(0,start);
+          g.gain.linearRampToValueAtTime(0.18,start+0.015);
+          g.gain.setValueAtTime(0.18,start+0.205);
+          g.gain.linearRampToValueAtTime(0.0001,start+0.22);
+          o.connect(g);g.connect(this.sfxGain||this.master);
+          o.start(start);o.stop(start+0.23);
+        });
+      }
+    }
+    else if(type==='win'){
+      const notes=[523,659,784,1046];
+      notes.forEach((fr,i)=>{
+        this.tone([{freq:fr,type:'sine',gain:0.16},{freq:fr,type:'triangle',gain:0.08}],{attack:0.03,hold:0.3,decay:0.2,delay:i*0.16,swell:i===notes.length-1});
+      });
+    }
     // ---- faction reactions ----
-    else if(type==='cheer'){[659,880].forEach((fr,i)=>setTimeout(()=>this.blip(fr,0.12,'triangle',0.16),i*70));} // banks/treasury happy: bright chime
-    else if(type==='register'){this.blip(1400,0.05,'square',0.16);setTimeout(()=>this.blip(1046,0.05,'square',0.14),55);setTimeout(()=>this.hatBurst(),90);} // cash register cha-ching
-    else if(type==='boo'){this.blip(200,0.3,'sawtooth',0.2);setTimeout(()=>this.blip(150,0.35,'sawtooth',0.18),60);} // crowd boo: low descending
-    else if(type==='gavel'){this.blip(180,0.09,'square',0.24);setTimeout(()=>this.blip(140,0.14,'square',0.2),90);} // congress: gavel thud
+    else if(type==='register'){this.tone([{freq:262,type:'sine',gain:0.12},{freq:330,type:'sine',gain:0.10},{freq:392,type:'sine',gain:0.10}],{attack:0.02,decay:0.3});} // banks approve: grounded low triad
+    else if(type==='gavel'){this.tone([{freq:150,type:'sine',gain:0.2}],{attack:0.005,decay:0.2});this.noiseBurst(0.08,0.08,'bandpass',800,2);} // congress angry: single thud + crack
     // ---- master-tier fanfare ----
-    else if(type==='fanfare'){const seq=[523,659,784,1046,1318,1046,1318,1568];seq.forEach((fr,i)=>setTimeout(()=>{this.blip(fr,0.22,'triangle',0.22);this.blip(fr/2,0.22,'sine',0.12);},i*140));}
+    else if(type==='fanfare'){
+      const seq=[523,659,784,1046,1318,1046,1318,1568];
+      seq.forEach((fr,i)=>{
+        const delay=i*0.16;
+        this.tone([{freq:fr,type:'sine',gain:0.18},{freq:fr*2,type:'triangle',gain:0.09},{freq:fr*1.5,type:'sine',gain:0.06}],{attack:0.025,hold:0.28,decay:0.18,delay});
+        if(i>=seq.length-2){
+          this.tone([{freq:fr,type:'sine',gain:0.045},{freq:fr*2,type:'triangle',gain:0.0225}],{attack:0.025,hold:0.1,decay:0.08,delay:delay+0.08});
+        }
+      });
+    }
   },
-  hatBurst(){for(let i=0;i<3;i++)setTimeout(()=>this.hat(0.05),i*30);},
+  // layered oscillator voice: attack (linear) -> optional hold plateau -> release (exp or linear) to silence
+  tone(layers,opts){
+    if(!this.ctx||this.muted)return;
+    opts=opts||{};
+    const out=opts.dest||this.sfxGain||this.master;
+    const start=this.ctx.currentTime+(opts.delay||0);
+    const attack=opts.attack!=null?opts.attack:0.02;
+    const hold=opts.hold||0;
+    const release=opts.decay!=null?opts.decay:0.2;
+    const peakT=start+attack,holdEndT=peakT+hold,endT=holdEndT+release;
+    layers.forEach(L=>{
+      const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+      o.type=L.type||'sine';
+      if(Array.isArray(L.freq)){
+        const glide=L.glide!=null?L.glide:(hold+release);
+        o.frequency.setValueAtTime(L.freq[0],start);
+        o.frequency.linearRampToValueAtTime(L.freq[1],start+glide);
+      }else o.frequency.value=L.freq;
+      if(L.detune)o.detune.value=L.detune;
+      let node=o;
+      if(L.filter){
+        const f=this.ctx.createBiquadFilter();
+        f.type=L.filter.type||'lowpass';f.frequency.value=L.filter.freq||1000;
+        if(L.filter.Q!=null)f.Q.value=L.filter.Q;
+        o.connect(f);node=f;
+      }
+      const peak=L.gain!=null?L.gain:(opts.gain!=null?opts.gain:0.15);
+      g.gain.setValueAtTime(0,start);
+      g.gain.linearRampToValueAtTime(peak,peakT);
+      if(opts.swell)g.gain.linearRampToValueAtTime(peak*1.2,holdEndT);
+      else if(hold>0)g.gain.setValueAtTime(peak,holdEndT);
+      g.gain.exponentialRampToValueAtTime(0.0001,endT);
+      node.connect(g);g.connect(out);
+      o.start(start);o.stop(endT+0.05);
+    });
+  },
+  // short filtered noise burst — texture layer for coin/bad/gavel
+  noiseBurst(dur,gain,filterType,filterFreq,Q,delay){
+    if(!this.ctx||this.muted)return;
+    const start=this.ctx.currentTime+(delay||0);
+    const b=this.ctx.createBuffer(1,Math.max(1,Math.floor(this.ctx.sampleRate*dur)),this.ctx.sampleRate);
+    const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+    const src=this.ctx.createBufferSource(),g=this.ctx.createGain(),f=this.ctx.createBiquadFilter();
+    src.buffer=b;f.type=filterType||'bandpass';f.frequency.value=filterFreq||2000;if(Q!=null)f.Q.value=Q;
+    g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(gain,start+0.005);g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+    src.connect(f);f.connect(g);g.connect(this.sfxGain||this.master);src.start(start);
+  },
   blip(freq,dur,type,gain){
     if(!this.ctx||this.muted)return;
     const o=this.ctx.createOscillator(),g=this.ctx.createGain();
