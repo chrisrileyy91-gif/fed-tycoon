@@ -152,7 +152,22 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 .fallout-scrim{position:fixed;inset:0;z-index:90;background:rgba(10,15,20,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:24px}
 .fallout-scrim.show{display:flex;animation:alertFade .3s}
 .fallout-card{max-width:440px;width:100%;background:linear-gradient(160deg,#1a2535,#111820);border:1.5px solid #2a3548;border-radius:22px;padding:24px 22px;max-height:80vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.6);animation:takeoverIn .45s cubic-bezier(.2,1,.4,1)}
-.fallout-tag{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--dimmer);font-weight:800;margin-bottom:10px}
+.anchor-head{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.anchor-seal{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold),var(--gold-d));display:grid;place-items:center;font-family:var(--serif);font-size:13px;font-weight:800;color:#2a1e02;flex-shrink:0;box-shadow:0 0 16px var(--gold-glow)}
+.anchor-brand{line-height:1.3}
+.anchor-brand .ab1{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--txt);font-weight:700}
+.anchor-brand .ab2{font-family:var(--mono);font-size:8.5px;letter-spacing:1.8px;color:var(--dimmer);text-transform:uppercase}
+.anchor-rule{height:1px;background:linear-gradient(90deg,var(--gold-d),transparent);margin-bottom:14px}
+.anchor-headline{font-family:var(--serif);font-size:20px;font-weight:700;line-height:1.24;margin-bottom:10px}
+.rundown{margin:14px 0;padding:2px 0;border-top:1px solid #2a3548;border-bottom:1px solid #2a3548}
+.rx-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0}
+.rx-row+.rx-row{border-top:1px solid #2a3548}
+.rx-dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.rx-dot.up{background:var(--green)}
+.rx-dot.down{background:var(--red)}
+.rx-dot.neutral{background:var(--dimmer)}
+.rx-label{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dimmer);width:58px;flex-shrink:0;padding-top:1.5px}
+.rx-text{font-size:12.5px;color:var(--dim);line-height:1.5}
 .con-head{font-family:var(--serif);font-size:17px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .con-body{font-size:13.5px;color:var(--dim);line-height:1.6}
 .con-body b{color:var(--txt)}
@@ -654,6 +669,20 @@ function nextFomcIn(){for(let i=1;i<=6;i++){if(FOMC_MONTHS.includes((S.month+i)%
 const PK=['banks','treasury','congress','people'];
 const PN={banks:'Banks',treasury:'Treasury',congress:'Congress',people:'People'};
 const cap=k=>k.charAt(0).toUpperCase()+k.slice(1);
+const RX_LINES={
+  banks:{sp:'Banks are thrilled — this is exactly what they wanted.',mp:'Banks welcome the move.',n:'Banks shrug — nothing changes for them today.',mn:'Banks are uneasy about the signal.',sn:'Banks are furious — call it a serious misstep.'},
+  treasury:{sp:'Treasury calls it the right call, full stop.',mp:'Treasury backs the decision.',n:'Treasury has no strong reaction.',mn:'Treasury quietly disagrees.',sn:'Treasury is openly critical of the move.'},
+  congress:{sp:'Congress is cheering from both sides of the aisle.',mp:'Congress responds well.',n:"Congress isn't paying much attention.",mn:'Congress is grumbling.',sn:'Congress is furious, and letters are already being drafted.'},
+  people:{sp:'The public praises the decision!',mp:'The public seems pleased.',n:"The public hasn't really noticed.",mn:"The public isn't thrilled.",sn:'The public is not happy.'}
+};
+function reactTier(v){return v>=7?'sp':v>=3?'mp':v<=-7?'sn':v<=-3?'mn':'n';}
+function reactDot(tier){return(tier==='sp'||tier==='mp')?'up':(tier==='sn'||tier==='mn')?'down':'neutral';}
+function reactRundown(react){
+  return PK.map(k=>{
+    const tier=reactTier(react[k]||0);
+    return `<div class="rx-row"><span class="rx-dot ${reactDot(tier)}"></span><span class="rx-label">${PN[k]}</span><span class="rx-text">${RX_LINES[k][tier]}</span></div>`;
+  }).join('');
+}
 function render(){
   updateTension();
   $('tbMonth').textContent=monthName();$('tbTerm').textContent=`Term month ${S.termMonth} / 48`;
@@ -858,14 +887,16 @@ function chooseResponse(r,ev){
   const pos=Object.entries(r.react).filter(([,v])=>v>3).map(([k])=>`<span class="cr pos">❤️ ${PN[k]}</span>`);
   const neg=Object.entries(r.react).filter(([,v])=>v<-3).map(([k])=>`<span class="cr neg">😠 ${PN[k]}</span>`);
   const showTap=S.qeActive&&S.qeTaps>0;
-  const body=`<div class="con-head">📰 The Fallout</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 6-18 months — growth moves first, then jobs, then inflation.</div>`:''}${showTap?'':'<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>'}`;
+  const lag=(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 6-18 months — growth moves first, then jobs, then inflation.</div>`:'';
   if(showTap){
+    const body=`<div class="con-head">📰 The Decision</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${lag}`;
     const con=$('consequence');con.innerHTML=body;con.classList.add('show');
     $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
     try{render();}catch(e){}
     try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
   }else{
-    const fc=$('falloutCard');fc.innerHTML=`<div class="fallout-tag">📰 THE FALLOUT</div>`+body;
+    const fc=$('falloutCard');
+    fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${r.t}</div><div class="con-body">${r.outcome}</div><div class="rundown">${reactRundown(r.react)}</div>${lag}<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Move On →</button>`;
     $('advBtn').style.display='none';
     const ib=fc.querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
     $('falloutScrim').classList.add('show');
@@ -985,7 +1016,7 @@ function endGame(win,reason){
   const medal=winTier===3?'👑':winTier===2?'🏆':winTier===1?'🎖️':'📉';
   const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const fc=$('falloutCard');
-  fc.innerHTML=`<div class="fallout-tag">📰 THE FALLOUT</div><div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
+  fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button>`;
   $('falloutScrim').classList.add('show');
   if(typeof Audio8!=='undefined'){
     if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('bad');shake();}
