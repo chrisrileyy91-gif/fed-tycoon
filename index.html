@@ -703,6 +703,12 @@ function render(){
   $('btnQT').disabled=S.reserves<100||S.gameover;
   $('btnQE').disabled=S.gameover;
 }
+let renderPending=false;
+function scheduleRender(){
+  if(renderPending)return;
+  renderPending=true;
+  requestAnimationFrame(()=>{renderPending=false;render();});
+}
 function showMoods(react){
   let sndDelay=0;
   PK.forEach(k=>{const v=react[k]||0;const el=$('m'+cap(k));const p=$('p'+cap(k));
@@ -891,7 +897,7 @@ function chooseResponse(r,ev){
   if(showTap){
     const body=`<div class="con-head">📰 The Decision</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${lag}`;
     const con=$('consequence');con.innerHTML=body;con.classList.add('show');
-    $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
+    $('tapZone').classList.add('show');$('tapZone').style.background='';$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
     try{render();}catch(e){}
     try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
   }else{
@@ -905,12 +911,15 @@ function chooseResponse(r,ev){
 }
 $('tapZone').addEventListener('click',function(e){
   if(S.qeTaps<=0)return;
+  const r=this.getBoundingClientRect();
   S.qeTaps--;S.qeTotal+=S.qePerTap;opQETap(S.qePerTap);
-  $('tapNum').textContent=fmt(S.qeTotal);$('tapNum').style.color=((S.qeMax-S.qeTaps)%2===0)?'var(--green)':'#fff';
+  const evenTap=(S.qeMax-S.qeTaps)%2===0;
+  $('tapNum').textContent=fmt(S.qeTotal);$('tapNum').style.color=evenTap?'var(--green)':'#fff';
+  this.style.background=evenTap?'#fff':'var(--green)';
   $('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
-  const r=this.getBoundingClientRect();const m=document.createElement('div');m.className='money-fly';m.textContent='💵';
+  const m=document.createElement('div');m.className='money-fly';m.textContent='💵';
   m.style.left=((e.clientX||r.left+r.width/2)-r.left)+'px';m.style.top=((e.clientY||r.top+r.height/2)-r.top)+'px';
-  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('stamp');render();
+  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('stamp');scheduleRender();
   if(S.qeTaps<=0){S.qeActive=false;setTimeout(()=>{
     $('tapZone').classList.remove('show');
     const con=$('consequence');
@@ -953,7 +962,7 @@ $('btnQE').addEventListener('click',()=>{
   if(S.gameover||S.qeActive)return;
   const emergency=!isFomc();
   S.qeActive=true;S.qeTaps=50;S.qeMax=50;S.qeTotal=0;S.qePerTap=4;
-  Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent='50 taps remaining';$('tapProg').style.width='0%';
+  Audio8.sfx('coin');$('tapZone').classList.add('show');$('tapZone').style.background='';$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent='50 taps remaining';$('tapProg').style.width='0%';
   if(emergency){
     S.emergencyThisMonth=true;S.cred=clamp(S.cred-6,0,200);
     toast('⚠️ Emergency inter-meeting QE — markets read panic. Credibility −6','var(--red)');
