@@ -152,7 +152,6 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 .fallout-scrim{position:fixed;inset:0;z-index:90;background:rgba(10,15,20,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:24px}
 .fallout-scrim.show{display:flex;animation:alertFade .3s}
 .fallout-card{max-width:440px;width:100%;background:linear-gradient(160deg,#1a2535,#111820);border:1.5px solid #2a3548;border-radius:22px;padding:24px 22px;max-height:80vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.6);animation:takeoverIn .45s cubic-bezier(.2,1,.4,1)}
-.fallout-tag{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--dimmer);font-weight:800;margin-bottom:10px}
 .con-head{font-family:var(--serif);font-size:17px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .con-body{font-size:13.5px;color:var(--dim);line-height:1.6}
 .con-body b{color:var(--txt)}
@@ -858,14 +857,14 @@ function chooseResponse(r,ev){
   const pos=Object.entries(r.react).filter(([,v])=>v>3).map(([k])=>`<span class="cr pos">❤️ ${PN[k]}</span>`);
   const neg=Object.entries(r.react).filter(([,v])=>v<-3).map(([k])=>`<span class="cr neg">😠 ${PN[k]}</span>`);
   const showTap=S.qeActive&&S.qeTaps>0;
-  const body=`<div class="con-head">📰 The Fallout</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 6-18 months — growth moves first, then jobs, then inflation.</div>`:''}${showTap?'':'<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>'}`;
+  const body=`<div class="con-head">📰 The Decision</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 6-18 months — growth moves first, then jobs, then inflation.</div>`:''}${showTap?'':'<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Advance →</button>'}`;
   if(showTap){
     const con=$('consequence');con.innerHTML=body;con.classList.add('show');
     $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
     try{render();}catch(e){}
     try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
   }else{
-    const fc=$('falloutCard');fc.innerHTML=`<div class="fallout-tag">📰 THE FALLOUT</div>`+body;
+    const fc=$('falloutCard');fc.innerHTML=body;
     $('advBtn').style.display='none';
     const ib=fc.querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
     $('falloutScrim').classList.add('show');
@@ -985,7 +984,7 @@ function endGame(win,reason){
   const medal=winTier===3?'👑':winTier===2?'🏆':winTier===1?'🎖️':'📉';
   const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const fc=$('falloutCard');
-  fc.innerHTML=`<div class="fallout-tag">📰 THE FALLOUT</div><div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
+  fc.innerHTML=`<div class="con-head">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button></div>`;
   $('falloutScrim').classList.add('show');
   if(typeof Audio8!=='undefined'){
     if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('bad');shake();}
