@@ -181,7 +181,7 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 .tap-zone:active{background:linear-gradient(135deg,#0e2a14,#0c2210)}
 .tap-title{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);margin-bottom:6px;font-weight:700}
 .tap-count{font-family:var(--mono);font-size:38px;font-weight:800;color:var(--green);line-height:1}
-.tap-count #tapNum{display:inline-block}
+.tap-count #tapNum{display:inline-block;transform-origin:right center;margin-right:10px}
 .tap-count .u{font-size:15px;color:var(--green-d)}
 .tap-sub{font-size:12px;color:#3a7a4a;margin-top:6px}
 .tap-left{font-family:var(--mono);font-size:12px;color:var(--green-d);margin-top:4px;font-weight:700}
@@ -257,7 +257,7 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
   <div id="responseSlot"></div>
   <div class="tap-zone" id="tapZone">
     <div class="tap-title">⚡ Tap to create reserves</div>
-    <div class="tap-count"><span id="tapNum">0</span><span class="u">$B</span></div>
+    <div class="tap-count"><span id="tapNum">0</span><span class="u">BILLION</span></div>
     <div class="tap-sub" id="tapSub">Each tap = $25B created from nothing → into banks</div>
     <div class="tap-left" id="tapLeft"></div>
     <div class="tap-prog"><div class="fill" id="tapProg"></div></div>
