@@ -15,13 +15,13 @@ CHAIR is an educational Federal Reserve tycoon game built for the App Store. The
 We work in **VS Code with Claude Code**. Repo: `chrisrileyy91-gif/fed-tycoon` (main branch, GitHub Pages). Claude Code edits `index.html` directly. After edits, here are the PowerShell commands:
 
 ```powershell
-cd C:\path\to\fed-tycoon
+cd C:\Users\chris\Dev\fed-tycoon
 git add -A
 git commit -m "description of changes"
 git push origin main
 ```
 
-Syntax-check before every commit: extract the `<script>` block, run through `vm.Script`. The single `index.html` is the code source of truth — orient from it at session start.
+Syntax-check before every commit: extract the `<script>` block, run through `vm.Script`. The single `index.html` is the code source of truth — orient from it at session start. ROADMAP.md has the phased build plan with dependencies and validation criteria.
 
 ---
 
@@ -56,7 +56,7 @@ High credibility → anchored at 2%. Low credibility → drift toward actual inf
 
 ## QE/QT mechanics
 
-- **QE:** `growthPush += 0.03` per tap, `reserves += 25`. NOT direct inflation — works through growth→employment→Phillips.
+- **QE:** `growthPush += 0.03` per tap, `reserves += 25`. NOT direct inflation — works through growth→employment→Phillips chain.
 - **QT:** `growthPush -= 0.06`, drains ≤$200B reserves, adds stress.
 - **QE cost scales with rate:** `min(5, floor((rate-1)*1.5))` credibility when rate > 1%. Free at zero bound (ZLB teaching).
 - **Inter-meeting:** additional 6 credibility penalty.
@@ -74,7 +74,7 @@ Hike +25bp, Hike +50bp, Hold, Cut -25bp, Cut -50bp. fx = `{rate: X}` only. No by
 
 ## Scoring
 
-Base drain -1.5/month. On-mandate: inf ±0.5 of 2%, un ±0.8 of 4%. Streak bonus up to +2.2/month. Angry factions (<25): -0.8 each. Political pressure from Congress/People anger only. Term ends at month >48. Cred ≤ 0 = removed.
+Base drain -1.5/month. On-mandate: inf ±0.5 of 2%, un ±0.8 of 4%. Streak bonus up to +2.2/month. Angry factions (<25): -0.8 each. Political pressure from Congress/People anger only (Banks/Treasury have their own stakeholder cards). Term ends at month >48. Cred ≤ 0 = removed.
 
 ## Plumbing (balance sheets)
 
@@ -96,7 +96,60 @@ Fed: Securities (= reserves + TGA) | Reserves owed + TGA owed. Banks: Reserves +
 
 ---
 
+## Phase 1A design spec: Equity/Asset Market
+
+The equity index is an amplifier embedded in the existing transmission chain — not a parallel system. It reads from the engine's state variables and feeds back into them through channels that already exist.
+
+### Wiring diagram
+
+**Inputs to equities (what moves the market):**
+- Growth → equity earnings (positive: strong economy = strong profits)
+- Rate stance → discount rate (negative: hikes push valuations down)
+- QE → portfolio balance effect (positive: direct asset price support)
+- Random noise (markets are volatile — ±1.5 points/month)
+- Mean reversion (markets overshoot and correct)
+
+**Outputs from equities (what the market causes):**
+- Wealth effect → growth equation: `(equities - 100) * coefficient` modifies growth. Equities above baseline boost consumption; below baseline drag it. This connects equities to the ENTIRE downstream chain: growth → Okun's → unemployment → Phillips → inflation → expectations → credibility.
+- Crash threshold → financial stress: equities down >20% from trailing peak adds stress and fires a crisis event card.
+- Bubble threshold → pressure event: equities sustained >140 for 6+ months fires an "irrational exuberance" event.
+
+### Pricing equation (hypothesis)
+```javascript
+const eqTarget = 100 + (S.gr - 2.5) * 15 - S.transmitted * 12 + qeBoost;
+S.equities += (eqTarget - S.equities) * 0.12 + (Math.random() - 0.5) * 3;
+S.equities = clamp(S.equities, 20, 250);
+```
+Convergence 12%/month (faster than macro — markets move before the economy). Noise ±1.5/month. Policy signal dominates noise on a 3-month horizon — a 25bp hike should reliably move equities down 3-5 points over a quarter.
+
+### Crash and bubble events
+
+**Correction (10-15% below peak):** No event card. Automatic stress addition. Plumbing quietly tightens.
+
+**Crash (>20% below peak):** Full-screen crisis alert. Two responses:
+- Provide emergency liquidity: reserves up, stress down, banks love it — but moral hazard (you taught markets the Fed will always rescue them). Small credibility cost.
+- Let markets find a bottom: stress stays elevated, banks/people angry — but credibility rises for not panicking. Discipline over comfort.
+
+**Bubble (>140 sustained 6+ months):** Pressure event. Two responses:
+- Warn about valuations: equities dip from jawboning, banks angry, but you're on record.
+- Stay silent: no immediate consequence — but if a crash later fires, the consequences AMPLIFY because you ignored the warning. This teaches the 2006-2007 lesson.
+
+### UI placement
+
+NOT a desk gauge (that implies a policy target — equities have no target). Instead: a dedicated ticker element between the FOMC pill and QE/QT toolbar. Slim bar, always visible, mono font, green/red color shifts on movement. Signals "I'm a market reaction, not a policy variable." Always moving, always reacting — the player's peripheral awareness that markets are watching.
+
+### Economics audit
+- Rate → equity valuation via discount rate: real, well-documented
+- Equity → consumption → growth via wealth effect: real (0.3-0.5% consumption per 10% equity change)
+- QE → asset prices via portfolio balance: real (this IS how QE transmits)
+- Crash → credit tightening → recession: real (2008 mechanism)
+- Equity is NOT a Fed target: real (the game must never imply it is)
+
+---
+
 ## Product vision & roadmap
+
+See ROADMAP.md for the phased build plan. Summary:
 
 ### The deck system
 
@@ -135,7 +188,7 @@ An equity index that reacts to conditions and decisions. Economically truthful �
 - Equity bubble → overconfidence → overheating → the Fed's dilemma
 
 **Game integration:**
-- Visible equity gauge (always moving, always reacting)
+- Visible equity ticker (always moving, always reacting)
 - Wealth effect feeds growth equation
 - Crashes trigger stress events + stakeholder reactions
 - Bubbles create pressure events ("irrational exuberance")
@@ -199,7 +252,7 @@ Addictive WITHOUT violating economics-first:
 - ✅ 9 new events + spacing fix
 - ✅ -50bp cut, balance-sheet drawer, AI Boom rebalance
 - ✅ Political anger fix, bug fixes, iOS audio
-- ⬜ Asset/equity market integration
+- ✅ Asset/equity market integration
 - ⬜ Deck system architecture
 - ⬜ Achievement/unlock system
 - ⬜ Sparkline history gauges
