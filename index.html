@@ -1216,61 +1216,23 @@ const Audio8={
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
     else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
     else if(type==='alarm'){
-      // "uh oh" cue: three-layer sine swell rises quickly but without an attack transient — perceptible within ~80ms of the tap (no dead silence), sustains as a bed of dread, then a quiet newsroom chatter comes in behind.
-      // Primary fundamentals are placed 240Hz+ so they are ABOVE the ~200Hz iPhone-speaker roll-off from the very start of the ramp — not just at the end. Sub-bass layer is kept for headphone body but never load-bearing on phone.
+      // Tornado-siren wail: one sawtooth oscillator sweeping up then slightly back down. Unambiguous "warning" character (rich harmonics = siren, not the slide-whistle a sine sweep produced). 40ms attack so it's not a jump-scare.
       const t0=this.ctx.currentTime, sfxOut=this.sfxGain||this.master;
-      const mkSwell=(f0,f1,peak,dur,riseDur)=>{
-        const o=this.ctx.createOscillator(),g=this.ctx.createGain();
-        o.type='sine';
-        o.frequency.setValueAtTime(f0,t0);
-        o.frequency.linearRampToValueAtTime(f1,t0+riseDur);
-        g.gain.setValueAtTime(0,t0);
-        g.gain.linearRampToValueAtTime(peak,t0+riseDur);
-        g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
-        o.connect(g);g.connect(sfxOut);
-        o.start(t0);o.stop(t0+dur+0.05);
-      };
-      // primary swell — 240 -> 340 Hz, comfortably in the phone-audible band throughout. 120ms rise is fast enough that the sound is CLEARLY perceptible from the first tap and reaches peak before the button-click SFX has finished decaying.
-      mkSwell(240,340,0.30,1.70,0.12);
-      // upper harmonic — brightens the swell so it reads as an intentional cue, not room noise
-      mkSwell(440,680,0.16,1.45,0.13);
-      // sub-bass — inaudible on phone, felt on headphones/subwoofers
-      mkSwell(90,140,0.22,1.60,0.14);
-      // chatter bed — a touch quieter than the original but well above where I had it (it was inaudible under a sub-bass I couldn't hear either)
-      const chatterDelay=0.30, chatterDur=1.10;
-      const voices=[
-        {pitch:118,f1:[600,780],f2:[1050,1250],gain:0.115},
-        {pitch:205,f1:[480,720],f2:[1700,1980],gain:0.105},
-        {pitch:142,f1:[440,660],f2:[1450,1800],gain:0.090}
-      ];
-      voices.forEach((V,vi)=>{
-        const start=t0+chatterDelay+vi*0.07, end=start+chatterDur;
-        const osc=this.ctx.createOscillator();osc.type='sawtooth';osc.frequency.value=V.pitch;
-        const lfo=this.ctx.createOscillator(),lfoG=this.ctx.createGain();
-        lfo.type='sine';lfo.frequency.value=4.5+Math.random();lfoG.gain.value=8;
-        lfo.connect(lfoG);lfoG.connect(osc.detune);
-        const f1=this.ctx.createBiquadFilter(),f2=this.ctx.createBiquadFilter();
-        f1.type='bandpass';f1.Q.value=6;f1.frequency.value=V.f1[0];
-        f2.type='bandpass';f2.Q.value=7;f2.frequency.value=V.f2[0];
-        const sweep=(param,r)=>{let ti=start;while(ti<end){ti+=0.20+Math.random()*0.14;param.linearRampToValueAtTime(r[0]+Math.random()*(r[1]-r[0]),Math.min(ti,end));}};
-        sweep(f1.frequency,V.f1);sweep(f2.frequency,V.f2);
-        const g=this.ctx.createGain();g.gain.setValueAtTime(0,start);
-        let ti=start;
-        while(ti<end){
-          const on=0.07+Math.random()*0.09, off=0.04+Math.random()*0.08;
-          const peak=V.gain*(0.55+Math.random()*0.55);
-          g.gain.linearRampToValueAtTime(peak,Math.min(ti+0.02,end));
-          g.gain.setValueAtTime(peak,Math.min(ti+on-0.02,end));
-          g.gain.linearRampToValueAtTime(0,Math.min(ti+on,end));
-          ti+=on+off;
-        }
-        const hp=this.ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=280;
-        const lp=this.ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3400;
-        osc.connect(f1);f1.connect(f2);f2.connect(hp);hp.connect(lp);lp.connect(g);g.connect(sfxOut);
-        osc.start(start);lfo.start(start);osc.stop(end+0.05);lfo.stop(end+0.05);
-      });
-      // room hiss — one layer, kept below the chatter so the swell stays dominant
-      this.noiseBurst(1.1,0.020,'bandpass',1900,1.4,0.30);
+      const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+      o.type='sawtooth';
+      // sweep: 380 Hz -> 720 Hz (rise) -> 500 Hz (settle). Whole range comfortably above phone speaker roll-off.
+      o.frequency.setValueAtTime(380,t0);
+      o.frequency.linearRampToValueAtTime(720,t0+0.55);
+      o.frequency.linearRampToValueAtTime(500,t0+1.10);
+      // envelope: 40ms rise, sustain, 200ms release
+      g.gain.setValueAtTime(0,t0);
+      g.gain.linearRampToValueAtTime(0.18,t0+0.04);
+      g.gain.setValueAtTime(0.18,t0+0.90);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+1.15);
+      // slight tame-down of the sawtooth's top end so it's not too "buzzy"
+      const lp=this.ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;lp.Q.value=0.7;
+      o.connect(lp);lp.connect(g);g.connect(sfxOut);
+      o.start(t0);o.stop(t0+1.20);
     }
     else if(type==='win'){
       // coin-bag drop: bag body thud, cascading metallic pings (front-loaded), a few late settling clinks
