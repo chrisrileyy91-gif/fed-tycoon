@@ -1386,6 +1386,30 @@ function animateNum(el,from,to,dur,fmtFn){
 $('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMute();$('muteBtn').textContent=m?'🔇':'🔊';});
 
 function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
+// intro greeting — "Welcome, Fed Chair. And good luck." via browser TTS
+// tries autoplay at ~1.5s (desktop often allows); falls back to first-touch-anywhere on mobile
+let greetingDone=false;
+function speakGreeting(){
+  if(greetingDone)return;greetingDone=true;
+  try{Audio8.init();}catch(e){}
+  if(!('speechSynthesis' in window))return;
+  try{
+    const voices=speechSynthesis.getVoices()||[];
+    const preferred=voices.find(v=>/samantha|karen|zira|susan|allison|victoria|serena|moira|tessa|fiona|female/i.test(v.name))
+                 ||voices.find(v=>/^en[-_]/i.test(v.lang||''))
+                 ||voices[0];
+    const u=new SpeechSynthesisUtterance('Welcome, Fed Chair. And good luck.');
+    if(preferred)u.voice=preferred;
+    u.pitch=0.85;u.rate=0.85;u.volume=1;
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }catch(e){}
+}
+const greetingAutoTimer=setTimeout(speakGreeting,1500);
+const greetingOnTouch=()=>{clearTimeout(greetingAutoTimer);speakGreeting();
+  document.removeEventListener('touchstart',greetingOnTouch);
+  document.removeEventListener('click',greetingOnTouch);};
+document.addEventListener('touchstart',greetingOnTouch,{passive:true});
+document.addEventListener('click',greetingOnTouch);
 $('startBtn').addEventListener('click',()=>{Audio8.init();S=freshState(SC.state);$('introScreen').classList.remove('active');$('gameScreen').classList.add('active');nextTurn();});
 $('resetBtn').addEventListener('click',()=>{$('gameScreen').classList.remove('active');$('introScreen').classList.add('active');$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';$('consequence').classList.remove('show');$('falloutScrim').classList.remove('show');$('plumbDr').classList.remove('show');boot();});
 boot();
