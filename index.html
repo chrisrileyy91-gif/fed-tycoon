@@ -1179,13 +1179,22 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // socket-wrench ratchet: 8 rapid metallic clicks (~15 clicks/sec) — the sound of a hand ratchet cranking down a bolt. No thunk, no highs above the click band, no ring; just impulsive click-click-click-click.
-      const clicks=8, spacing=0.065;
+      // ratchet tightening: 7 distinct pawl clicks, spacing WIDENS as tension rises (harder to turn), each click a bright metallic tick (~2.6kHz) with a hint of low body, then a final "seat" thud when the bolt lands.
+      const clicks=7;
+      let delay=0;
       for(let i=0;i<clicks;i++){
-        const delay=i*spacing+(Math.random()-0.5)*0.008;
-        // each click: brief mid-band noise impulse (~1kHz) — sharp attack, near-zero decay so there's no metallic ring
-        this.noiseBurst(0.005,0.18+Math.random()*0.04,'bandpass',900+Math.random()*220,7,delay);
+        const t=i/(clicks-1);
+        // spacing grows from ~55ms to ~120ms — the "getting tighter" feel
+        const step=0.055+t*0.065+(Math.random()-0.5)*0.006;
+        // bright metallic pawl tick — high bandpass w/ resonance for the "tink"
+        this.noiseBurst(0.006,0.16+Math.random()*0.04,'bandpass',2400+Math.random()*400,12,delay);
+        // subtle low body under each click so it feels mechanical, not just static
+        this.noiseBurst(0.004,0.05,'bandpass',260,3,delay);
+        delay+=step;
       }
+      // final "seat" thud — bolt bottoms out
+      this.tone([{freq:180,type:'sine',gain:0.18},{freq:110,type:'sine',gain:0.10}],{attack:0.003,decay:0.09,delay:delay+0.03});
+      this.noiseBurst(0.008,0.09,'bandpass',1800,6,delay+0.03);
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
