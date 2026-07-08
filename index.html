@@ -1179,22 +1179,20 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // ratchet tightening: 7 distinct pawl clicks, spacing WIDENS as tension rises (harder to turn), each click a bright metallic tick + a mid-band body so it stays audible on phone speakers, ending with a "seat" thud.
+      // ratchet tightening: 7 pawl clicks with widening spacing (rising tension), each a bright ~2.7kHz metallic tick + a mid-band body, ending with a "seat" thud when the bolt bottoms out.
+      // Gains and frequencies are all sized for a phone speaker: bursts >=35ms so the (1-i/N)^2 buffer envelope leaves audible content, everything above 200Hz so nothing falls below the iPhone speaker roll-off, tick gain 0.45+ so it clearly reads over the preceding button click.
       const clicks=7;
       let delay=0;
       for(let i=0;i<clicks;i++){
         const t=i/(clicks-1);
-        // spacing grows from ~55ms to ~120ms — the "getting tighter" feel
         const step=0.055+t*0.065+(Math.random()-0.5)*0.006;
-        // bright metallic pawl tick — 40ms burst so the resonant filter has time to ring and the internal (1-i/N)^2 buffer envelope actually produces a click, not silence
-        this.noiseBurst(0.045,0.34+Math.random()*0.08,'bandpass',2600+Math.random()*400,6,delay);
-        // mid-band body under each tick — audible on phone speakers (was 260Hz which is below iPhone roll-off)
-        this.noiseBurst(0.035,0.14,'bandpass',520,2,delay);
+        this.noiseBurst(0.045,0.45+Math.random()*0.08,'bandpass',2600+Math.random()*400,6,delay);
+        this.noiseBurst(0.035,0.20,'bandpass',520,2,delay);
         delay+=step;
       }
-      // final "seat" thud — bolt bottoms out. Bumped up to 220/140 Hz so it's audible on phone speakers.
-      this.tone([{freq:220,type:'sine',gain:0.24},{freq:140,type:'sine',gain:0.14}],{attack:0.008,decay:0.11,delay:delay+0.03});
-      this.noiseBurst(0.05,0.12,'bandpass',1800,3,delay+0.03);
+      // seat thud — 260/170Hz (both above phone roll-off), warmer attack so it thunks rather than clicks
+      this.tone([{freq:260,type:'sine',gain:0.30},{freq:170,type:'sine',gain:0.18}],{attack:0.008,decay:0.13,delay:delay+0.03});
+      this.noiseBurst(0.06,0.18,'bandpass',1800,3,delay+0.03);
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
@@ -1218,8 +1216,8 @@ const Audio8={
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
     else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
     else if(type==='alarm'){
-      // "uh oh" swell: sines slowly rise from mid-low into low-mid (no attack transient — no jump-scare), then a quieter newsroom chatter bed slides in behind it. Dread, not shock.
-      // Fundamentals are placed above the ~200Hz iPhone-speaker roll-off so the swell is actually audible on mobile; a sub-bass layer is kept underneath for headphones.
+      // "uh oh" cue: three-layer sine swell rises quickly but without an attack transient — perceptible within ~80ms of the tap (no dead silence), sustains as a bed of dread, then a quiet newsroom chatter comes in behind.
+      // Primary fundamentals are placed 240Hz+ so they are ABOVE the ~200Hz iPhone-speaker roll-off from the very start of the ramp — not just at the end. Sub-bass layer is kept for headphone body but never load-bearing on phone.
       const t0=this.ctx.currentTime, sfxOut=this.sfxGain||this.master;
       const mkSwell=(f0,f1,peak,dur,riseDur)=>{
         const o=this.ctx.createOscillator(),g=this.ctx.createGain();
@@ -1232,12 +1230,12 @@ const Audio8={
         o.connect(g);g.connect(sfxOut);
         o.start(t0);o.stop(t0+dur+0.05);
       };
-      // primary swell — audible on phone speakers
-      mkSwell(140,220,0.24,1.70,0.40);
-      // upper harmonic layer — brightens the swell so it reads as "cue" not "hum"
-      mkSwell(280,440,0.11,1.40,0.42);
+      // primary swell — 240 -> 340 Hz, comfortably in the phone-audible band throughout. 120ms rise is fast enough that the sound is CLEARLY perceptible from the first tap and reaches peak before the button-click SFX has finished decaying.
+      mkSwell(240,340,0.30,1.70,0.12);
+      // upper harmonic — brightens the swell so it reads as an intentional cue, not room noise
+      mkSwell(440,680,0.16,1.45,0.13);
       // sub-bass — inaudible on phone, felt on headphones/subwoofers
-      mkSwell(70,100,0.18,1.60,0.38);
+      mkSwell(90,140,0.22,1.60,0.14);
       // chatter bed — a touch quieter than the original but well above where I had it (it was inaudible under a sub-bass I couldn't hear either)
       const chatterDelay=0.30, chatterDur=1.10;
       const voices=[
