@@ -204,8 +204,8 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 .alert-scrim{position:fixed;inset:0;z-index:100;background:rgba(10,5,5,.88);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px}
 .alert-scrim.show{display:flex;animation:alertFade .3s}
 @keyframes alertFade{from{opacity:0}to{opacity:1}}
-.alert-box{max-width:440px;width:100%;background:linear-gradient(160deg,#2a0e0e,#1a0808);border:2px solid var(--red);border-radius:22px;overflow:hidden;box-shadow:0 0 60px rgba(220,38,38,.4);animation:alertPop .45s cubic-bezier(.3,1.4,.5,1)}
-@keyframes alertPop{0%{transform:scale(.85) translateY(20px);opacity:0}100%{transform:scale(1);opacity:1}}
+.alert-box{max-width:440px;width:100%;background:linear-gradient(160deg,#2a0e0e,#1a0808);border:2px solid var(--red);border-radius:22px;overflow:hidden;box-shadow:0 0 60px rgba(220,38,38,.4);animation:alertPop .55s ease-out both;animation-delay:.18s;opacity:0}
+@keyframes alertPop{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
 .alert-top{background:var(--red-d);padding:8px;text-align:center;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:3px;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px}
 .alert-top .siren{animation:siren 1s infinite}
 @keyframes siren{0%,100%{opacity:1}50%{opacity:.3}}
@@ -896,7 +896,7 @@ function pickNewsOrFomc(){
 function fireAlert(sh){
   $('alertKicker').textContent=sh.kicker||'BREAKING';$('alertIco').textContent=sh.ico||'🚨';
   $('alertHeadline').textContent=sh.alertHeadline||sh.headline;$('alertDesc').innerHTML=sh.alertDesc||sh.body;
-  $('alertScrim').classList.add('show');Audio8.sfx('alarm');shake();
+  $('alertScrim').classList.add('show');Audio8.sfx('alarm');
   $('alertBtn').onclick=()=>{$('alertScrim').classList.remove('show');showEvent(sh);};
 }
 function showDataPrint(dp){
@@ -1179,13 +1179,22 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // socket-wrench ratchet: 8 rapid metallic clicks (~15 clicks/sec) — the sound of a hand ratchet cranking down a bolt. No thunk, no highs above the click band, no ring; just impulsive click-click-click-click.
-      const clicks=8, spacing=0.065;
+      // ratchet tightening: 7 distinct pawl clicks, spacing WIDENS as tension rises (harder to turn), each click a bright metallic tick (~2.6kHz) with a hint of low body, then a final "seat" thud when the bolt lands.
+      const clicks=7;
+      let delay=0;
       for(let i=0;i<clicks;i++){
-        const delay=i*spacing+(Math.random()-0.5)*0.008;
-        // each click: brief mid-band noise impulse (~1kHz) — sharp attack, near-zero decay so there's no metallic ring
-        this.noiseBurst(0.005,0.18+Math.random()*0.04,'bandpass',900+Math.random()*220,7,delay);
+        const t=i/(clicks-1);
+        // spacing grows from ~55ms to ~120ms — the "getting tighter" feel
+        const step=0.055+t*0.065+(Math.random()-0.5)*0.006;
+        // bright metallic pawl tick — high bandpass w/ resonance for the "tink"
+        this.noiseBurst(0.006,0.16+Math.random()*0.04,'bandpass',2400+Math.random()*400,12,delay);
+        // subtle low body under each click so it feels mechanical, not just static
+        this.noiseBurst(0.004,0.05,'bandpass',260,3,delay);
+        delay+=step;
       }
+      // final "seat" thud — bolt bottoms out
+      this.tone([{freq:180,type:'sine',gain:0.18},{freq:110,type:'sine',gain:0.10}],{attack:0.003,decay:0.09,delay:delay+0.03});
+      this.noiseBurst(0.008,0.09,'bandpass',1800,6,delay+0.03);
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
@@ -1209,17 +1218,28 @@ const Audio8={
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
     else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
     else if(type==='alarm'){
-      // breaking-news: two low drum thuds, then a chorus of formant "voices" through a phone-band tint (chaotic newsroom feel, no intelligible speech)
+      // "uh oh" swell: sub-bass sine slowly rises (no attack transient — no jump-scare), then a quieter newsroom chatter bed slides in behind it. Dread, not shock.
       const t0=this.ctx.currentTime, sfxOut=this.sfxGain||this.master;
-      // low drum thud only — no bright stab or shimmer (both read as "beep" over the chatter)
-      this.tone([{freq:100,type:'sine',gain:0.26}],{attack:0.002,decay:0.10,delay:0});
-      this.tone([{freq:70,type:'sine',gain:0.20}],{attack:0.002,decay:0.12,delay:0.14});
-      // chatter: 3 formant voices, syllable-gated, staggered
-      const chatterDelay=0.18, chatterDur=1.55;
+      // sub-bass swell — 60→90 Hz over 0.4s, slow linear ramp (no click), then long exponential tail
+      const mkSwell=(f0,f1,peak,dur)=>{
+        const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+        o.type='sine';
+        o.frequency.setValueAtTime(f0,t0);
+        o.frequency.linearRampToValueAtTime(f1,t0+0.40);
+        g.gain.setValueAtTime(0,t0);
+        g.gain.linearRampToValueAtTime(peak,t0+0.35);
+        g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+        o.connect(g);g.connect(sfxOut);
+        o.start(t0);o.stop(t0+dur+0.05);
+      };
+      mkSwell(60,90,0.22,1.60);
+      mkSwell(96,140,0.10,1.20);
+      // chatter bed — quieter, later, shorter than before; feels like ambient newsroom, not the main event
+      const chatterDelay=0.32, chatterDur=0.95;
       const voices=[
-        {pitch:118,f1:[600,780],f2:[1050,1250],gain:0.14},
-        {pitch:205,f1:[480,720],f2:[1700,1980],gain:0.13},
-        {pitch:142,f1:[440,660],f2:[1450,1800],gain:0.11}
+        {pitch:118,f1:[600,780],f2:[1050,1250],gain:0.070},
+        {pitch:205,f1:[480,720],f2:[1700,1980],gain:0.065},
+        {pitch:142,f1:[440,660],f2:[1450,1800],gain:0.055}
       ];
       voices.forEach((V,vi)=>{
         const start=t0+chatterDelay+vi*0.07, end=start+chatterDur;
@@ -1247,10 +1267,8 @@ const Audio8={
         osc.connect(f1);f1.connect(f2);f2.connect(hp);hp.connect(lp);lp.connect(g);g.connect(sfxOut);
         osc.start(start);lfo.start(start);osc.stop(end+0.05);lfo.stop(end+0.05);
       });
-      // room hiss behind the chatter
-      this.noiseBurst(0.5,0.018,'bandpass',1600,1.5,0.22);
-      this.noiseBurst(0.5,0.018,'bandpass',2200,1.5,0.72);
-      this.noiseBurst(0.5,0.018,'bandpass',1900,1.5,1.22);
+      // room hiss — one thin layer only, kept low so the swell stays dominant
+      this.noiseBurst(0.9,0.010,'bandpass',1900,1.4,0.35);
     }
     else if(type==='win'){
       // coin-bag drop: bag body thud, cascading metallic pings (front-loaded), a few late settling clinks
