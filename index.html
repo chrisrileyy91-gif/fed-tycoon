@@ -1179,24 +1179,14 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // socket-wrench ratchet: 5 rapid papery clicks (each 10% louder than the last, "cranking down") + firm seating thunk
-      const clicks=5, spacing=0.048;
-      for(let i=0;i<clicks;i++){
-        const delay=i*spacing+(Math.random()-0.5)*0.008;
-        const boost=1+i*0.10;
-        // click body: very short lowpassed noise — papery/wooden, not metallic
-        this.noiseBurst(0.006,0.22*boost,'lowpass',780+Math.random()*180,0.8,delay);
-        // tiny bright transient just to give each tick a hard edge (not a ring)
-        this.noiseBurst(0.003,0.05*boost,'highpass',3500,1,delay);
-      }
-      // firm seat thunk: low sine kick + wood-body midrange + low noise weight
-      const thunkDelay=clicks*spacing+0.025;
-      this.tone([
-        {freq:95,type:'sine',gain:0.26},
-        {freq:140,type:'sine',gain:0.10},
-        {freq:280,type:'triangle',gain:0.06}
-      ],{attack:0.001,decay:0.10,delay:thunkDelay});
-      this.noiseBurst(0.05,0.09,'lowpass',350,1,thunkDelay);
+      // vault-clunk tighten: firm dark engage-thud + heavier seating chunk. No high-frequency content — reads as heavy/mechanical, distinct from the scissor's bright swish.
+      // engage thud (bolt catches)
+      this.tone([{freq:120,type:'sine',gain:0.20},{freq:65,type:'sine',gain:0.16},{freq:230,type:'triangle',gain:0.05}],{attack:0.001,decay:0.08});
+      this.noiseBurst(0.03,0.10,'lowpass',380,0.9);
+      // seat chunk (heavier — the "tighten")
+      const chunkDelay=0.13;
+      this.tone([{freq:75,type:'sine',gain:0.34},{freq:100,type:'sine',gain:0.18},{freq:190,type:'triangle',gain:0.08}],{attack:0.001,decay:0.16,delay:chunkDelay});
+      this.noiseBurst(0.06,0.14,'lowpass',280,0.9,chunkDelay);
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
@@ -1220,12 +1210,11 @@ const Audio8={
     else if(type==='heart'){this.blip(1046,0.09,'triangle',0.18);setTimeout(()=>this.blip(1318,0.12,'triangle',0.16),80);}
     else if(type==='bad'){this.tone([{freq:120,type:'sine',gain:0.16},{freq:180,type:'sine',gain:0.12}],{attack:0.03,decay:0.35});this.noiseBurst(0.2,0.06,'lowpass',400);}
     else if(type==='alarm'){
-      // breaking-news hybrid: sub-kick + bright fifth stab + shimmer, then a chorus of formant "voices" through a phone-band tint (Charlie-Brown-adults style — reads as chaotic newsroom without pretending to be real speech)
+      // breaking-news: two low drum thuds, then a chorus of formant "voices" through a phone-band tint (chaotic newsroom feel, no intelligible speech)
       const t0=this.ctx.currentTime, sfxOut=this.sfxGain||this.master;
-      // news sting
-      this.tone([{freq:100,type:'sine',gain:0.24}],{attack:0.002,decay:0.09,delay:0});
-      this.tone([{freq:660,type:'sine',gain:0.20},{freq:990,type:'triangle',gain:0.12},{freq:1320,type:'sine',gain:0.06}],{attack:0.005,hold:0.08,decay:0.22,delay:0.02});
-      this.noiseBurst(0.05,0.09,'bandpass',5200,3,0.02);
+      // low drum thud only — no bright stab or shimmer (both read as "beep" over the chatter)
+      this.tone([{freq:100,type:'sine',gain:0.26}],{attack:0.002,decay:0.10,delay:0});
+      this.tone([{freq:70,type:'sine',gain:0.20}],{attack:0.002,decay:0.12,delay:0.14});
       // chatter: 3 formant voices, syllable-gated, staggered
       const chatterDelay=0.18, chatterDur=1.55;
       const voices=[
@@ -1399,38 +1388,6 @@ function animateNum(el,from,to,dur,fmtFn){
 $('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMute();$('muteBtn').textContent=m?'🔇':'🔊';});
 
 function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
-// intro greeting — "Welcome, Fed Chair. And good luck." via browser TTS
-// autoplay path only touches SpeechSynthesis; AudioContext creation is kept strictly inside
-// real user gestures (touch/click). iOS locks any AudioContext created outside a gesture in a
-// permanently-suspended state, which silently kills all audio — the earlier bug.
-let greetingDone=false;
-function speakGreeting(){
-  if(greetingDone)return;
-  if(!('speechSynthesis' in window)){greetingDone=true;return;}
-  try{
-    // iOS Safari can leave the synth in a paused state — resume before speaking, or speak() silently no-ops
-    if(speechSynthesis.paused){try{speechSynthesis.resume();}catch(e){}}
-    const voices=speechSynthesis.getVoices()||[];
-    const preferred=voices.find(v=>/samantha|karen|zira|susan|allison|victoria|serena|moira|tessa|fiona|female/i.test(v.name))
-                 ||voices.find(v=>/^en[-_]/i.test(v.lang||''))
-                 ||voices[0];
-    const u=new SpeechSynthesisUtterance('Welcome, Fed Chair. And good luck.');
-    if(preferred)u.voice=preferred;
-    u.pitch=0.85;u.rate=0.85;u.volume=1;
-    // only mark done once speech actually starts — so iOS (which silently blocks pre-gesture speak) can retry via the touch handler
-    u.onstart=()=>{greetingDone=true;};
-    // NOTE: no speechSynthesis.cancel() before speak() — on iOS Safari that can cancel the utterance we just queued.
-    speechSynthesis.speak(u);
-  }catch(e){}
-}
-const greetingAutoTimer=setTimeout(speakGreeting,1500);
-const greetingOnTouch=()=>{clearTimeout(greetingAutoTimer);
-  try{Audio8.init();}catch(e){}
-  speakGreeting();
-  document.removeEventListener('touchstart',greetingOnTouch);
-  document.removeEventListener('click',greetingOnTouch);};
-document.addEventListener('touchstart',greetingOnTouch,{passive:true});
-document.addEventListener('click',greetingOnTouch);
 $('startBtn').addEventListener('click',()=>{Audio8.init();S=freshState(SC.state);$('introScreen').classList.remove('active');$('gameScreen').classList.add('active');nextTurn();});
 $('resetBtn').addEventListener('click',()=>{$('gameScreen').classList.remove('active');$('introScreen').classList.add('active');$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';$('consequence').classList.remove('show');$('falloutScrim').classList.remove('show');$('plumbDr').classList.remove('show');boot();});
 boot();
