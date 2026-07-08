@@ -323,9 +323,11 @@ const SHOCKS=[
   responses:[
     {ico:'🛡️',t:'Signal stability — Fed stands ready',desc:'Reassure markets the Fed will provide liquidity as needed.',stakes:[{t:'↓ panic',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
       fx:{reserves:150,stress:-10},react:{banks:8,treasury:4,congress:2,people:3},
+      hl:'Fed Vows Liquidity as Strikes Roil Markets',
       outcome:'You promised liquidity. Markets steady — <b>the Fed is the anchor in the storm</b>. But you\'ve signaled easy money into an inflationary oil shock. The hawks are uneasy.'},
     {ico:'⏸️',t:'Hold — assess before acting',desc:'Don\'t react to the first headline. Wait for data.',stakes:[{t:'Prudent',c:'info'},{t:'Looks passive',c:'neg'}],
       fx:{},react:{banks:-3,treasury:0,congress:-4,people:-5},
+      hl:'Fed "Monitoring" Wartime Panic — No Signal Given',
       outcome:'You said you\'re "monitoring." Disciplined — but in a crisis, <b>silence reads as absence</b>. Markets wanted a signal. The panic runs another day.'}
   ]},
 {id:'pandemic',minMonth:8,prob:.07,alert:true,ico:'🦠',kicker:'GLOBAL EMERGENCY',
@@ -337,9 +339,11 @@ const SHOCKS=[
   responses:[
     {ico:'💵',t:'Slash rates to zero + emergency QE',desc:'Everything, everywhere, all at once.',stakes:[{t:'↓ collapse',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Future inflation',c:'neg'}],
       fx:{rateOverride:0.25,qeTaps:100,growthPush:.4},react:{banks:10,treasury:8,congress:10,people:8},
+      hl:'Fed Goes Nuclear: Rates to Zero, QE Unleashed',
       outcome:'You went nuclear — rates to the floor, QE unleashed. <b>Tap to inject reserves.</b> You likely prevented a depression. But you also seeded the inflation that will define your term\'s back half. There was no other choice. There rarely is.'},
     {ico:'🏦',t:'Targeted facilities only',desc:'Support credit markets without going to zero.',stakes:[{t:'Measured',c:'info'},{t:'May be too slow',c:'neg'}],
       fx:{reserves:300,stress:-10,rate:-1.0},react:{banks:3,treasury:-3,congress:-6,people:-8},
+      hl:'Fed Deploys Targeted Facilities — Critics Call It Timid',
       outcome:'You held back the bazooka. History may call it prudent or timid. In a freefall, <b>markets punish half-measures</b>. The recovery may be slower for it.'}
   ]},
 {id:'fxCrisis',minMonth:5,prob:.10,alert:false,ico:'💱',
@@ -349,9 +353,11 @@ const SHOCKS=[
   responses:[
     {ico:'⏸️',t:'Let the safe-haven flows work',desc:'The dollar\'s strength is a vote of confidence.',stakes:[{t:'↑ reserves',c:'pos'},{t:'↓ exports',c:'neg'}],
       fx:{},react:{banks:4,treasury:5,congress:-2,people:0},
+      hl:'Dollar Surges as Fed Lets Safe-Haven Flows Run',
       outcome:'Treasuries rally, reserves swell — <b>the dollar is the world\'s refuge, and that\'s power</b>. But exporters and Congress grumble about the strong dollar.'},
     {ico:'🌍',t:'Coordinate with foreign central banks',desc:'Swap lines to stabilize the global system.',stakes:[{t:'Global stability',c:'pos'},{t:'Congress 😠',c:'neg'}],
       fx:{stress:-8},react:{banks:5,treasury:6,congress:-6,people:0},
+      hl:'Fed Opens Swap Lines to Stabilize Global Markets',
       outcome:'You opened dollar swap lines — <b>quiet plumbing that keeps the global system from seizing</b>. Insiders praise the statesmanship. Congress asks why you\'re "bailing out foreigners."'}
   ]},
 {id:'oilCartel',minMonth:4,prob:.10,alert:false,ico:'🛢️',
@@ -361,9 +367,11 @@ const SHOCKS=[
   responses:[
     {ico:'📣',t:'Look through the shock',desc:'Supply shocks are temporary. Don\'t tighten into a slowdown.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'}],
       fx:{},react:{banks:-2,treasury:0,congress:4,people:2},
+      hl:'Fed Looks Past Oil Shock — No Rate Response',
       outcome:'You signaled patience — "energy shocks pass." Consumers appreciate not adding rate pain to gas pain. But if inflation expectations <b>un-anchor</b>, you\'ll pay later. A calculated bet.'},
     {ico:'⚠️',t:'Signal vigilance on inflation',desc:'Protect price credibility even for a supply shock.',stakes:[{t:'Credibility',c:'pos'},{t:'Growth risk',c:'neg'},{t:'People 😠',c:'neg'}],
       fx:{infPush:-.15},react:{banks:4,treasury:2,congress:-4,people:-4},
+      hl:'Fed Talks Tough as Oil Prices Spike',
       outcome:'You talked tough. Bond markets trust you — <b>expectations stay anchored</b>. But hawkishness into an oil slowdown risks squeezing an economy already hurting from expensive energy.'}
   ]},
 {id:'chinaSlowdown',minMonth:8,prob:.10,alert:false,ico:'🏭',
@@ -373,9 +381,11 @@ const SHOCKS=[
   responses:[
     {ico:'🌍',t:'Coordinate — open swap lines',desc:'Stabilize the global system. The Fed as lender of last resort to the world.',stakes:[{t:'↓ contagion',c:'pos'},{t:'Congress 😠',c:'neg'}],
       fx:{stress:-8},react:{banks:5,treasury:6,congress:-5,people:0},
+      hl:'Fed Extends Dollar Lines as China Falters',
       outcome:'You opened dollar swap lines to stabilize global markets. It worked — quietly, behind the scenes. But Congress asked why the American central bank is propping up foreign economies. <b>Global plumbing is invisible until it breaks.</b>'},
     {ico:'⏸️',t:'Monitor — this isn\'t our problem yet',desc:'China\'s economy is not America\'s mandate.',stakes:[{t:'Prudent',c:'info'},{t:'If contagion spreads…',c:'neg'}],
       fx:{},react:{banks:-2,treasury:-3,congress:3,people:0},
+      hl:'Fed Sits Out China Crisis — Contagion Risk Lingers',
       outcome:'You stayed out of it. Domestically popular — but the global financial system runs on dollars, and when you don\'t provide them, <b>the plumbing tightens everywhere</b>. Contagion risk lingers.'}
   ]},
 {id:'euDebt',minMonth:12,prob:.08,alert:false,ico:'📉',
@@ -385,9 +395,11 @@ const SHOCKS=[
   responses:[
     {ico:'🏦',t:'Backstop — dollar swap lines at scale',desc:'The global system needs dollars and you\'re the only source.',stakes:[{t:'Global stability',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Balance sheet ↑',c:'info'}],
       fx:{reserves:200,stress:-12},react:{banks:6,treasury:5,congress:-8,people:-2},
+      hl:'Fed Floods Europe With Dollars, Congress Fumes',
       outcome:'You flooded the world with dollars through swap lines. The crisis contained itself because markets knew the Fed would provide. Congress is furious about foreign entanglements. <b>You just learned why the dollar is a responsibility, not just a privilege.</b>'},
     {ico:'⏸️',t:'Stand back — protect the domestic mandate',desc:'Your job is American prices and jobs. Period.',stakes:[{t:'Domestic focus',c:'info'},{t:'Global risk',c:'neg'}],
       fx:{stress:10},react:{banks:-3,treasury:-4,congress:4,people:2},
+      hl:'Fed Declines Europe Backstop — Stress Climbs',
       outcome:'You kept your hands clean. The crisis deepened before the ECB managed to contain it — barely. Financial stress climbed and global growth took a hit. <b>In a dollar world, neutrality is a policy choice with consequences.</b>'}
   ]}
 ];
@@ -400,9 +412,11 @@ const NEWS=[
   responses:[
     {ico:'🎤',t:'Address the nation — signal resolve',desc:'Use the podium. Promise price stability. (Rates locked till FOMC.)',stakes:[{t:'People react',c:'info'},{t:'Credibility test',c:'neg'}],
       fx:{},react:{banks:2,treasury:0,congress:-3,people:2},
+      hl:'Chair Vows Price Stability in National Address',
       outcome:'You spoke to the country, promising to defend price stability. Buys goodwill — but <b>the people want lower prices, not speeches</b>. The next CPI print had better cooperate.'},
     {ico:'⏸️',t:'Stay quiet — let the data speak',desc:'Don\'t feed the panic.',stakes:[{t:'Disciplined',c:'info'},{t:'People 😠',c:'neg'}],
       fx:{},react:{banks:3,treasury:0,congress:-4,people:-5},
+      hl:'Fed Silent on Grocery Prices — Congress Pounces',
       outcome:'You stayed silent. Principled — but in your absence, <b>Congress filled the vacuum with blame</b>. Aimed at you.'}
   ]},
 {id:'congressSpend',turn:[4,18],prob:.5,type:'fiscal',
@@ -412,9 +426,11 @@ const NEWS=[
   responses:[
     {ico:'✅',t:'Publicly support it',desc:'Endorse the fiscal boost.',stakes:[{t:'↑ growth',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'↑ inflation',c:'neg'}],
       fx:{growthPush:.2,infPush:.03},react:{banks:2,treasury:-8,congress:12,people:6},
+      hl:'Fed Chair Endorses $380B Infrastructure Bill',
       outcome:'You backed the bill. Growth gets a jolt — but Treasury drained the system to fund it, and <b>inflation hasn\'t read the "transitory" memo</b>. Watch your stress gauge.'},
     {ico:'🚫',t:'Warn on inflation and deficits',desc:'Push back publicly. Your voice moves markets.',stakes:[{t:'Credibility',c:'pos'},{t:'Congress 😠',c:'neg'}],
       fx:{},react:{banks:3,treasury:8,congress:-10,people:-4},
+      hl:'Fed Warns Against Spending Bill — Congress Erupts',
       outcome:'You warned against it. It passes anyway — <b>you\'re the Fed, not Congress</b> — but markets heard your hawkishness. Treasury is grateful. Congress is furious.'}
   ]},
 {id:'pressPressure',turn:[10,30],prob:.5,type:'',
@@ -424,9 +440,11 @@ const NEWS=[
   responses:[
     {ico:'🗣️',t:'Defend independence publicly',desc:'The Fed answers to data, not politics.',stakes:[{t:'Credibility ++',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'People 😠',c:'neg'}],
       fx:{},react:{banks:6,treasury:5,congress:-6,people:-7},
+      hl:'Chair Defends Fed Independence Against President',
       outcome:'You held the line publicly. The President fumes, the people feel ignored — but <b>the bond market just priced in Fed independence</b>. Long yields ease as expectations anchor. Painful now, valuable forever.'},
     {ico:'🤝',t:'Stay diplomatically silent',desc:'Don\'t escalate. Don\'t capitulate.',stakes:[{t:'Avoids fight',c:'info'},{t:'Looks weak',c:'neg'}],
       fx:{},react:{banks:0,treasury:0,congress:2,people:0},
+      hl:'Fed Silent as White House Demands Rate Cuts',
       outcome:'You declined to engage. No fight — but <b>silence in the face of pressure invites more of it</b>. The President reads it as weakness and turns up the heat.'}
   ]},
 {id:'housingBubble',turn:[8,28],prob:.45,type:'',
@@ -436,9 +454,11 @@ const NEWS=[
   responses:[
     {ico:'⚠️',t:'Warn about financial stability risks',desc:'Use the podium to cool speculation.',stakes:[{t:'Credibility +',c:'pos'},{t:'Banks 😠',c:'neg'},{t:'People ❤️',c:'pos'}],
       fx:{cred:2},react:{banks:-5,treasury:2,congress:2,people:5},
+      hl:'Fed Sounds Alarm on Housing Froth',
       outcome:'You warned publicly about housing froth. Mortgage lenders hate the scrutiny, but first-time buyers appreciated someone in power acknowledging the problem. <b>Jawboning isn\'t policy — but it\'s not nothing.</b>'},
     {ico:'⏸️',t:'Not the Fed\'s mandate — let markets work',desc:'Asset prices aren\'t in your mandate. Inflation and employment are.',stakes:[{t:'Discipline',c:'info'},{t:'People 😠',c:'neg'}],
       fx:{},react:{banks:4,treasury:0,congress:-2,people:-4},
+      hl:'Fed Declines to Weigh in on Housing Bubble',
       outcome:'You stayed silent on housing. Purists respected the restraint — the Fed\'s mandate is prices and employment, not home values. But to a generation locked out of homeownership, <b>the silence was the message.</b>'}
   ]},
 {id:'techLayoffs',turn:[6,26],prob:.45,type:'',
@@ -448,9 +468,11 @@ const NEWS=[
   responses:[
     {ico:'📊',t:'Point to the broader data — labor market is fine',desc:'Tech layoffs dominate headlines but total payrolls are growing.',stakes:[{t:'Data-driven',c:'pos'},{t:'Looks cold',c:'neg'}],
       fx:{},react:{banks:3,treasury:2,congress:-2,people:-4},
+      hl:'Fed Cites Strong Payrolls, Waves Off Tech Layoffs',
       outcome:'You cited the data: total employment growing, claims stable, other sectors hiring. All true. But to the laid-off engineer watching you say the economy is "strong," <b>aggregate data is cold comfort for individual pain.</b>'},
     {ico:'🎤',t:'Acknowledge the hardship — signal you\'re watching',desc:'Show empathy without changing policy.',stakes:[{t:'People ❤️',c:'pos'},{t:'Markets wonder',c:'neg'}],
       fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
+      hl:'Chair Voices Concern for Laid-Off Workers',
       outcome:'You acknowledged the pain without overpromising. Markets briefly dipped on the dovish tone, then recovered when you clarified nothing had changed. <b>Communication is the Fed\'s first tool — and its trickiest.</b>'}
   ]},
 {id:'debtCeiling',turn:[24,46],prob:.40,type:'fiscal',
@@ -460,9 +482,11 @@ const NEWS=[
   responses:[
     {ico:'📣',t:'Publicly urge Congress to act',desc:'Break protocol and wade into fiscal politics.',stakes:[{t:'↓ stress',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Independence risk',c:'neg'}],
       fx:{stress:-8,cred:-2},react:{banks:4,treasury:8,congress:-8,people:3},
+      hl:'Chair Warns Congress: Default Would Break the System',
       outcome:'You stepped into the arena and told Congress the consequences of default. Treasury was grateful. Congress accused you of overreach. <b>You spent credibility to buy stability</b> — a trade you\'ll make more than once.'},
     {ico:'🤐',t:'Stay out of it — fiscal policy isn\'t your lane',desc:'Protect independence. Prepare contingency plans quietly.',stakes:[{t:'Independence',c:'pos'},{t:'Stress builds',c:'neg'}],
       fx:{},react:{banks:-2,treasury:-5,congress:3,people:0},
+      hl:'Fed Silent on Debt Ceiling — Stress Builds',
       outcome:'You said nothing publicly while preparing emergency liquidity facilities behind the scenes. Independence preserved — but Treasury felt abandoned, and the stress gauge climbed. <b>Silence has a cost when the clock is ticking.</b>'}
   ]},
 {id:'autoStrike',turn:[14,38],prob:.40,type:'',
@@ -472,9 +496,11 @@ const NEWS=[
   responses:[
     {ico:'📣',t:'Look through it — temporary supply disruption',desc:'Strikes end. Don\'t tighten into a transitory shock.',stakes:[{t:'Protects growth',c:'pos'},{t:'Wage expectations',c:'neg'}],
       fx:{},react:{banks:-2,treasury:0,congress:3,people:4},
+      hl:'Fed Calls Auto Strike Impact "Transitory"',
       outcome:'You called it transitory — and you were probably right. But the wage settlement set a benchmark: <b>workers everywhere now know what\'s possible</b>. Whether that feeds inflation depends on what happens next.'},
     {ico:'⚠️',t:'Flag the wage-price risk',desc:'Big settlements seed expectations for every contract negotiation.',stakes:[{t:'Credibility',c:'pos'},{t:'People 😠',c:'neg'}],
       fx:{infPush:-.05},react:{banks:4,treasury:2,congress:-3,people:-5},
+      hl:'Fed Warns of Wage-Price Spiral Risk',
       outcome:'You warned that large wage settlements could feed a wage-price spiral. Workers felt the Fed was rooting against their paycheck. <b>The Phillips Curve doesn\'t care about your sympathies.</b>'}
   ]},
 {id:'confCollapse',turn:[20,42],prob:.45,type:'',
@@ -484,9 +510,11 @@ const NEWS=[
   responses:[
     {ico:'📢',t:'Counter the narrative — the economy is stronger than sentiment',desc:'Use the podium before pessimism becomes reality.',stakes:[{t:'↑ confidence',c:'pos'},{t:'Looks political',c:'neg'}],
       fx:{growthPush:.08},react:{banks:2,treasury:0,congress:2,people:3},
+      hl:'Fed Pushes Back on Recession Fears',
       outcome:'You made the case for optimism — citing data, not spin. Some confidence returned. <b>Central bankers manage expectations as much as money supply</b>, and right now expectations needed managing.'},
     {ico:'⏸️',t:'Let the data speak — don\'t be a cheerleader',desc:'If confidence is falling, there might be a reason.',stakes:[{t:'Discipline',c:'info'},{t:'Self-fulfilling risk',c:'neg'}],
       fx:{},react:{banks:0,treasury:0,congress:-2,people:-3},
+      hl:'Fed Declines to Cheerlead — Confidence Slides',
       outcome:'You declined to talk up the economy. The numbers are the numbers. But confidence is fragile, and <b>your silence let the pessimism harden</b>. Sometimes the data needs a narrator.'}
   ]},
 {id:'tradeWar',turn:[26,46],prob:.40,type:'fiscal',
@@ -496,9 +524,11 @@ const NEWS=[
   responses:[
     {ico:'📊',t:'Look through it — one-time price level shift',desc:'Tariffs raise prices once; they don\'t cause persistent inflation.',stakes:[{t:'Economically correct',c:'pos'},{t:'People see prices rise',c:'neg'}],
       fx:{},react:{banks:2,treasury:0,congress:-3,people:-3},
+      hl:'Fed Calls Tariff Hit "One-Time" — Public Feels Prices',
       outcome:'You were technically right — a tariff shifts the price level once, not the inflation rate permanently. But telling people "it\'s a one-time increase" while groceries get more expensive <b>is the kind of technically-right that\'s politically wrong.</b>'},
     {ico:'⚠️',t:'Warn that tariffs complicate the inflation picture',desc:'Acknowledge the policy is making your job harder — without naming sides.',stakes:[{t:'Honest',c:'pos'},{t:'Administration 😠',c:'neg'}],
       fx:{cred:2},react:{banks:3,treasury:3,congress:-4,people:2},
+      hl:'Fed Flags Tariffs as Inflation Complication',
       outcome:'You said, carefully, that trade policy was adding uncertainty to the inflation outlook. Economists applauded the honesty. The administration read it as criticism. <b>Independence means saying true things powerful people don\'t want to hear.</b>'}
   ]},
 {id:'wageSpike',turn:[3,20],prob:.45,type:'',
@@ -508,9 +538,11 @@ const NEWS=[
   responses:[
     {ico:'🎉',t:'Welcome it — workers deserve this',desc:'Real wage growth is a good thing. Don\'t be the villain.',stakes:[{t:'People ❤️',c:'pos'},{t:'Inflation risk',c:'neg'}],
       fx:{},react:{banks:-3,treasury:-2,congress:5,people:8},
+      hl:'Fed Cheers Wage Gains — Bond Market Reprices',
       outcome:'You publicly welcomed the wage data. Workers felt seen. But the bond market noted your comfort with 5% wage growth and <b>repriced rate cut expectations to zero</b>. What you say as Chair has consequences you can\'t unring.'},
     {ico:'📊',t:'Flag it as an inflation risk — stay vigilant',desc:'5% wage growth isn\'t compatible with 2% inflation long-term.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'}],
       fx:{cred:2},react:{banks:5,treasury:3,congress:-4,people:-6},
+      hl:'Fed Warns Rising Wages Threaten 2% Target',
       outcome:'You said what the textbook says: sustained wage growth above productivity gains feeds inflation. True, important, and <b>incredibly unpopular with anyone who just got a raise</b>. The bond market loved it. Twitter did not.'}
   ]}
 ];
@@ -522,9 +554,11 @@ banks:{tag:'🏦 BANKING SECTOR',headline:'Bank lobby launches campaign against 
   responses:[
     {ico:'🤝',t:'Meet with the bank CEOs — smooth it over',desc:'Signal you hear them. Costs a little credibility (looks captured).',stakes:[{t:'Banks ❤️',c:'pos'},{t:'Credibility −',c:'neg'}],
       fx:{cred:-3},react:{banks:14,treasury:0,congress:0,people:-3},
+      hl:'Chair Meets Bank CEOs — Critics Cry Capture',
       outcome:'You met privately with the big banks. Approval recovers — but the optics of the Fed cozying up to Wall Street cost you with the public and dinged your credibility. A trade.'},
     {ico:'🛡️',t:'Hold firm — you don\'t answer to the lobby',desc:'Independence over appeasement. They stay mad and lending tightens.',stakes:[{t:'Credibility +',c:'pos'},{t:'↑ stress',c:'neg'},{t:'Banks 😠',c:'neg'}],
       fx:{cred:3,stress:12},react:{banks:-4,treasury:2,congress:0,people:4},
+      hl:'Fed Rebuffs Bank Lobby — Lending Tightens in Protest',
       outcome:'You refused to be lobbied. The public respects it — but banks quietly tightened lending in protest, and financial stress ticked up. Principle has a price.'}
   ]},
 congress:{tag:'🏫 CONGRESS',headline:'Congress opens hearings into the Fed',
@@ -532,9 +566,11 @@ congress:{tag:'🏫 CONGRESS',headline:'Congress opens hearings into the Fed',
   responses:[
     {ico:'🎙️',t:'Testify with confidence — defend the record',desc:'Face them head-on. Risky, but a strong showing builds credibility.',stakes:[{t:'Credibility +',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'High-stakes',c:'info'}],
       fx:{cred:4,pressure:-12},react:{banks:3,treasury:3,congress:6,people:5},
+      hl:'Chair Faces Congress — Testimony Wins Grudging Respect',
       outcome:'You testified and held your own — measured, data-driven, unshakeable. Lawmakers who came to grill you left grudgingly impressed. Pressure eased and your credibility grew. This is what independence looks like under fire.'},
     {ico:'😤',t:'Push back hard — attack their spending',desc:'Name the real cause of inflation: their bills. A fight.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Congress 😠😠',c:'neg'}],
       fx:{pressure:-6},react:{banks:5,treasury:4,congress:-12,people:6},
+      hl:'Chair Blames Congress Spending for Inflation',
       outcome:'You went on offense — pointing at the spending bills as the true inflation driver. The public loved the spine. Congress is now openly at war with you. You won the round and made a lasting enemy.'}
   ]},
 people:{tag:'👥 THE PUBLIC',headline:'Protests erupt over the cost of living',
@@ -542,9 +578,11 @@ people:{tag:'👥 THE PUBLIC',headline:'Protests erupt over the cost of living',
   responses:[
     {ico:'📺',t:'Address the public directly — show empathy',desc:'Acknowledge the pain. Humanize the institution.',stakes:[{t:'People ❤️',c:'pos'},{t:'↓ pressure',c:'pos'}],
       fx:{pressure:-8},react:{banks:-2,treasury:0,congress:2,people:12},
+      hl:'Chair Speaks to Nation, Acknowledges Hardship',
       outcome:'You went on air and spoke plainly about the hardship people feel, without overpromising. It humanized the Fed. Approval recovered and some pressure lifted. Words aren\'t policy — but sometimes they matter.'},
     {ico:'🎯',t:'Stay technocratic — results, not sympathy',desc:'You\'re not a politician. Let the data speak.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
       fx:{cred:3,pressure:6},react:{banks:3,treasury:2,congress:-2,people:-6},
+      hl:'Fed Stays Above the Fray as Public Approval Sinks',
       outcome:'You stayed above the fray — "the Fed doesn\'t do politics." Purists respect it. But to a hurting public it read as cold, approval sank further, and the administration took note. Pressure climbed.'}
   ]},
 treasury:{tag:'🏛️ THE TREASURY',headline:'Treasury Secretary publicly breaks with the Fed',
@@ -552,9 +590,11 @@ treasury:{tag:'🏛️ THE TREASURY',headline:'Treasury Secretary publicly break
   responses:[
     {ico:'🤝',t:'Repair the relationship privately',desc:'Coordinate quietly. Smooth the plumbing.',stakes:[{t:'Treasury ❤️',c:'pos'},{t:'↓ pressure',c:'pos'}],
       fx:{pressure:-6,reserves:100},react:{banks:2,treasury:14,congress:0,people:0},
+      hl:'Fed and Treasury Quietly Mend Fences',
       outcome:'You mended fences with Treasury behind closed doors. Coordination on issuance resumed, reserves steadied, and the public feud cooled. Boring, effective statesmanship — the kind nobody notices when it works.'},
     {ico:'⚖️',t:'Assert Fed independence from Treasury',desc:'The Fed is not an arm of the administration. Draw the line.',stakes:[{t:'Credibility +',c:'pos'},{t:'Treasury 😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
       fx:{cred:4,pressure:8},react:{banks:4,treasury:-8,congress:-2,people:3},
+      hl:'Chair Reasserts Fed Independence From Treasury',
       outcome:'You publicly reaffirmed that the Fed answers to its mandate, not the administration. Institutionally correct and credibility-building — but the rift with Treasury widened and the administration\'s pressure grew.'}
   ]}
 };
@@ -566,9 +606,11 @@ const PRESSURE_EVENTS={
   responses:[
     {ico:'🛡️',t:'Reaffirm independence — politely but firmly',desc:'Signal you won\'t be moved. Builds credibility, holds pressure.',stakes:[{t:'Credibility +',c:'pos'},{t:'Pressure holds',c:'info'}],
       fx:{cred:3},react:{banks:5,treasury:2,congress:-3,people:0},
+      hl:'Chair Reaffirms Fed Independence Amid Whispers',
       outcome:'You issued a calm, firm statement about the Fed\'s mandate. Markets read it as backbone. The administration noted it. The line is drawn — for now.'},
     {ico:'🤐',t:'Say nothing — don\'t dignify it',desc:'Ignore the pressure. It may escalate.',stakes:[{t:'Avoids fight',c:'info'},{t:'↑ pressure',c:'neg'}],
       fx:{pressure:5},react:{banks:0,treasury:0,congress:0,people:0},
+      hl:'Fed Silent as Political Pressure Builds',
       outcome:'You let it pass without comment. No confrontation — but silence emboldened them. The pressure quietly climbed.'}
   ]},
 2:{tag:'⚠️ POLITICAL PRESSURE',headline:'Administration floats replacing the Fed Chair',
@@ -576,9 +618,11 @@ const PRESSURE_EVENTS={
   responses:[
     {ico:'⚖️',t:'Stand your ground — the Fed serves the economy, not the White House',desc:'The defining stand. Credibility soars, pressure holds high.',stakes:[{t:'Credibility ++',c:'pos'},{t:'History remembers this',c:'info'}],
       fx:{cred:6},react:{banks:8,treasury:4,congress:-4,people:2},
+      hl:'Chair Refuses to Bend — Independence Held',
       outcome:'You refused to bend, publicly and unmistakably. The bond market rallied on the signal of a truly independent Fed. The administration is furious — but you just became the kind of Chair history writes about. The pressure remains, but so does your spine.'},
     {ico:'🕊️',t:'Signal flexibility — hint you\'ll consider their view',desc:'De-escalate. Lowers pressure now, costs credibility.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Credibility −−',c:'neg'}],
       fx:{cred:-8,pressure:-20},react:{banks:-4,treasury:3,congress:4,people:2},
+      hl:'Chair Signals Flexibility — Markets Sense a Blink',
       outcome:'You quietly signaled willingness to align with the administration. Pressure dropped sharply — but the market noticed the Fed just blinked, and your credibility took a real hit. You bought peace with independence. Every future decision now carries the whiff of politics.'}
   ]},
 3:{tag:'🚨 CONSTITUTIONAL CRISIS',headline:'Administration moves to force you out',
@@ -588,9 +632,11 @@ const PRESSURE_EVENTS={
   responses:[
     {ico:'🛡️',t:'Refuse to resign — dare them to act',desc:'The ultimate stand for independence. All-or-nothing.',stakes:[{t:'Credibility +++',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Legacy-defining',c:'info'}],
       fx:{cred:10,pressure:-25},react:{banks:10,treasury:5,congress:0,people:6},
+      hl:'Chair Refuses to Resign — Administration Backs Down',
       outcome:'You refused to go, invoking the independence of the institution and daring them to trigger a crisis. The bet paid off — the political cost of forcing you out proved too high, and they backed down. The bond market surged on the vindication of Fed independence. You will be remembered as the Chair who held the line when it mattered most.'},
     {ico:'🏳️',t:'Negotiate a graceful exit path',desc:'Defuse the crisis by conceding ground. Survival over principle.',stakes:[{t:'↓↓ pressure',c:'pos'},{t:'Credibility −−−',c:'neg'}],
       fx:{cred:-15,pressure:-40},react:{banks:-6,treasury:4,congress:6,people:0},
+      hl:'Chair Cuts Deal to Keep Job — Credibility Bruised',
       outcome:'You cut a deal to survive — aligning enough with the administration to keep your chair. The immediate crisis passed. But the market saw a Fed that could be bent by political will, and your credibility never fully recovered. You kept the job. The question history will ask is whether it was still worth having.'}
   ]}
 };
@@ -757,10 +803,12 @@ function makeEquityCrashEvent(){
       {ico:'🚑',t:'Provide emergency liquidity',desc:'Backstop the system. Reserves up, stress down — but you just taught markets the Fed always rescues them.',
         stakes:[{t:'↓ stress',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'Moral hazard',c:'neg'}],
         fx:{reserves:250,stress:amplified?-24:-20,cred:amplified?-5:-3,resetEquityPeak:true},react:{banks:10,treasury:2,congress:-2,people:4},
+        hl:'Fed Floods System With Emergency Liquidity',
         outcome:'You flooded the system with emergency liquidity. Stress eases, banks are relieved, 401ks stop bleeding as fast. But <b>you just confirmed the Fed put</b> — markets now know you\'ll always show up. Moral hazard, deposited for next time.'},
       {ico:'🪨',t:'Let markets find a bottom',desc:'No rescue. Painful, but it preserves discipline — and your credibility.',
         stakes:[{t:'Credibility +',c:'pos'},{t:'Stress stays high',c:'neg'},{t:'Banks/People 😠',c:'neg'}],
         fx:{cred:5,resetEquityPeak:true},react:{banks:-6,treasury:0,congress:2,people:-5},
+        hl:'Fed Refuses to Rescue — Markets Left to Bottom',
         outcome:'You stood back. It hurt — portfolios stayed underwater longer, and banks and the public were furious you didn\'t step in. But <b>the market learned that risk still has consequences</b>. Discipline over comfort.'}
     ]};
 }
@@ -771,10 +819,12 @@ function makeEquityBubbleEvent(){
       {ico:'⚠️',t:'Warn about valuations',desc:'Use the podium to cool speculation before it goes further.',
         stakes:[{t:'On record',c:'pos'},{t:'Equities dip',c:'neg'},{t:'Banks 😠',c:'neg'}],
         fx:{equitiesDelta:-8},react:{banks:-4,treasury:0,congress:1,people:1},
+        hl:'Chair Warns of "Irrational Exuberance" in Equities',
         outcome:'You warned publicly about stretched valuations — "irrational exuberance," in substance if not in name. Equities dipped on the jawboning. Traders grumbled. <b>You\'re on the record now — for better or worse.</b>'},
       {ico:'🤐',t:'Stay silent',desc:'Say nothing. No immediate cost — but if this bursts later, the reckoning will be worse for the warning you didn\'t give.',
         stakes:[{t:'No immediate cost',c:'info'},{t:'Future risk ↑',c:'neg'}],
         fx:{bubbleIgnore:true},react:{banks:2,treasury:0,congress:0,people:0},
+        hl:'Fed Silent on Market Froth as Rally Rolls On',
         outcome:'You said nothing. The rally continues, unremarked upon. <b>History suggests silence during a bubble is a decision, not an absence of one</b> — and decisions have consequences that arrive late.'}
     ]};
 }
@@ -823,18 +873,23 @@ function pickNewsOrFomc(){
     responses:[
       {ico:'📈',t:'Hike +25bp',desc:'Tighten. Cool inflation, cost jobs (lagged).',stakes:[{t:'↓ inflation',c:'pos'},{t:'↑ unemployment',c:'neg'}],
         fx:{rate:.25},react:{banks:5,treasury:3,congress:-4,people:-4},needsFomc:true,
+        hl:'Fed Raises Rates 25 Basis Points',
         outcome:'You hiked. Effects land over <b>2-3 months</b> — patience. The tightening works through the pipeline slowly.'},
       {ico:'📈📈',t:'Hike +50bp',desc:'Aggressive. Strong signal on inflation.',stakes:[{t:'↓↓ inflation',c:'pos'},{t:'↑↑ unemployment',c:'neg'},{t:'Banks 😠',c:'neg'}],
         fx:{rate:.5},react:{banks:-6,treasury:2,congress:-6,people:-2},needsFomc:true,
+        hl:'Fed Delivers Jumbo 50bp Hike, Signals Resolve',
         outcome:'A jumbo hike — not fully priced. Yields jump. <b>You\'re serious about inflation</b>, and the economy is about to feel it hard.'},
       {ico:'⏸️',t:'Hold steady',desc:'Let prior moves work.',stakes:[{t:'No change',c:'info'}],
         fx:{},react:{banks:2,treasury:0,congress:-1,people:0},needsFomc:true,
+        hl:'Fed Holds Rates Steady, Awaits More Data',
         outcome:'You held. Previous decisions still working through the system. <b>Sometimes the best move is no move.</b>'},
       {ico:'📉',t:'Cut −25bp',desc:'Ease. Stimulate growth, risk inflation.',stakes:[{t:'↑ growth',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
         fx:{rate:-.25},react:{banks:-4,treasury:-2,congress:5,people:5},needsFomc:true,
+        hl:'Fed Cuts Rates 25 Basis Points',
         outcome:'You cut. Cheaper borrowing, a growth nudge — but <b>inflation just got permission to climb</b>. Watch the next CPI print.'},
       {ico:'📉📉',t:'Cut −50bp',desc:'Aggressive ease. Emergency-level signal.',stakes:[{t:'↑↑ growth',c:'pos'},{t:'↑↑ inflation risk',c:'neg'},{t:'Banks 😠',c:'neg'}],
         fx:{rate:-.5},react:{banks:-8,treasury:-4,congress:8,people:8},needsFomc:true,
+        hl:'Fed Delivers Emergency-Sized 50bp Cut',
         outcome:'A jumbo cut — the kind the Fed reserves for genuine fear. Borrowing costs crater, risk assets surge, and Congress loves you today. But <b>a 50bp cut tells the world you see something ugly ahead</b>. If the economy wasn\'t that bad, you just un-anchored expectations for nothing.'}
     ]};
 }
@@ -896,14 +951,14 @@ function chooseResponse(r,ev){
   const showTap=S.qeActive&&S.qeTaps>0;
   const lag=(f.rate||f.rateOverride!==undefined)?`<div class="con-lag">⏳ Rate effects land over 6-18 months — growth moves first, then jobs, then inflation.</div>`:'';
   if(showTap){
-    const body=`<div class="con-head">📰 The Decision</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${lag}`;
+    const body=`<div class="con-head">📰 ${r.hl||'The Decision'}</div><div class="con-body">${r.outcome}</div><div class="con-reactions">${pos.join('')}${neg.join('')}</div>${lag}`;
     const con=$('consequence');con.innerHTML=body;con.classList.add('show');
     $('tapZone').classList.add('show');$('tapNum').textContent='0';$('tapNum').style.color='var(--green)';$('tapSub').textContent=`Each tap = $${S.qePerTap}B created from nothing → into banks`;$('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width='0%';$('advBtn').style.display='none';
     try{render();}catch(e){}
     try{window.scrollTo({top:con.offsetTop-70,behavior:'smooth'});}catch(e){}
   }else{
     const fc=$('falloutCard');
-    fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${r.t}</div><div class="con-body">${r.outcome}</div><div class="rundown">${reactRundown(r.react)}</div>${lag}<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Move On →</button>`;
+    fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${r.hl||r.t}</div><div class="con-body">${r.outcome}</div><div class="rundown">${reactRundown(r.react)}</div>${lag}<button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%">Move On →</button>`;
     $('advBtn').style.display='none';
     const ib=fc.querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
     $('falloutScrim').classList.add('show');
@@ -1026,9 +1081,18 @@ function endGame(win,reason){
   const pickEnd=pool[Math.floor(Math.random()*pool.length)];
   $('breakingSlot').innerHTML=`<div class="breaking ${tone}"><div class="b-tag"><span class="live"></span>${kicker}</div><div class="b-headline">${pickEnd.h}</div><div class="b-body">${pickEnd.b}</div></div>`;
   const medal=winTier===3?'👑':winTier===2?'🏆':winTier===1?'🎖️':'📉';
+  const closingHl=!termDone
+    ? 'Fed Chair Ousted Before Term\'s End'
+    : winTier===0
+      ? 'President Declines to Renominate Chair'
+      : winTier===1
+        ? 'Chair Renominated for Second Term'
+        : winTier===2
+          ? 'Chair Sails to Second Confirmation'
+          : 'Historic Landslide: Chair Reconfirmed for Second Term';
   const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const fc=$('falloutCard');
-  fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${medal} The Record</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button>`;
+  fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${medal} ${closingHl}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button>`;
   $('falloutScrim').classList.add('show');
   if(typeof Audio8!=='undefined'){
     if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('bad');shake();}
