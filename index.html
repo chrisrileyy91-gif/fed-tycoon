@@ -1387,12 +1387,13 @@ $('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMu
 
 function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
 // intro greeting — "Welcome, Fed Chair. And good luck." via browser TTS
-// tries autoplay at ~1.5s (desktop often allows); falls back to first-touch-anywhere on mobile
+// autoplay path only touches SpeechSynthesis; AudioContext creation is kept strictly inside
+// real user gestures (touch/click). iOS locks any AudioContext created outside a gesture in a
+// permanently-suspended state, which silently kills all audio — the earlier bug.
 let greetingDone=false;
 function speakGreeting(){
-  if(greetingDone)return;greetingDone=true;
-  try{Audio8.init();}catch(e){}
-  if(!('speechSynthesis' in window))return;
+  if(greetingDone)return;
+  if(!('speechSynthesis' in window)){greetingDone=true;return;}
   try{
     const voices=speechSynthesis.getVoices()||[];
     const preferred=voices.find(v=>/samantha|karen|zira|susan|allison|victoria|serena|moira|tessa|fiona|female/i.test(v.name))
@@ -1401,11 +1402,15 @@ function speakGreeting(){
     const u=new SpeechSynthesisUtterance('Welcome, Fed Chair. And good luck.');
     if(preferred)u.voice=preferred;
     u.pitch=0.85;u.rate=0.85;u.volume=1;
+    // only mark done once speech actually starts — so iOS (which silently blocks pre-gesture speak) can retry via the touch handler
+    u.onstart=()=>{greetingDone=true;};
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
 const greetingAutoTimer=setTimeout(speakGreeting,1500);
-const greetingOnTouch=()=>{clearTimeout(greetingAutoTimer);speakGreeting();
+const greetingOnTouch=()=>{clearTimeout(greetingAutoTimer);
+  try{Audio8.init();}catch(e){}
+  speakGreeting();
   document.removeEventListener('touchstart',greetingOnTouch);
   document.removeEventListener('click',greetingOnTouch);};
 document.addEventListener('touchstart',greetingOnTouch,{passive:true});
