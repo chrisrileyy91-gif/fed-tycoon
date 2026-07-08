@@ -1179,11 +1179,24 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // ratchet tightening: two clicks (second higher + heavier) + low seat thud + brief metal tail
-      this.noiseBurst(0.025,0.28,'bandpass',1800,8);
-      this.noiseBurst(0.03,0.34,'bandpass',2400,9,0.10);
-      this.tone([{freq:110,type:'sine',gain:0.14}],{attack:0.001,decay:0.06,delay:0.10});
-      this.tone([{freq:3200,type:'triangle',gain:0.05}],{attack:0.002,decay:0.09,delay:0.12});
+      // socket-wrench ratchet: 5 rapid papery clicks (each 10% louder than the last, "cranking down") + firm seating thunk
+      const clicks=5, spacing=0.048;
+      for(let i=0;i<clicks;i++){
+        const delay=i*spacing+(Math.random()-0.5)*0.008;
+        const boost=1+i*0.10;
+        // click body: very short lowpassed noise — papery/wooden, not metallic
+        this.noiseBurst(0.006,0.22*boost,'lowpass',780+Math.random()*180,0.8,delay);
+        // tiny bright transient just to give each tick a hard edge (not a ring)
+        this.noiseBurst(0.003,0.05*boost,'highpass',3500,1,delay);
+      }
+      // firm seat thunk: low sine kick + wood-body midrange + low noise weight
+      const thunkDelay=clicks*spacing+0.025;
+      this.tone([
+        {freq:95,type:'sine',gain:0.26},
+        {freq:140,type:'sine',gain:0.10},
+        {freq:280,type:'triangle',gain:0.06}
+      ],{attack:0.001,decay:0.10,delay:thunkDelay});
+      this.noiseBurst(0.05,0.09,'lowpass',350,1,thunkDelay);
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
@@ -1395,6 +1408,8 @@ function speakGreeting(){
   if(greetingDone)return;
   if(!('speechSynthesis' in window)){greetingDone=true;return;}
   try{
+    // iOS Safari can leave the synth in a paused state — resume before speaking, or speak() silently no-ops
+    if(speechSynthesis.paused){try{speechSynthesis.resume();}catch(e){}}
     const voices=speechSynthesis.getVoices()||[];
     const preferred=voices.find(v=>/samantha|karen|zira|susan|allison|victoria|serena|moira|tessa|fiona|female/i.test(v.name))
                  ||voices.find(v=>/^en[-_]/i.test(v.lang||''))
@@ -1404,7 +1419,8 @@ function speakGreeting(){
     u.pitch=0.85;u.rate=0.85;u.volume=1;
     // only mark done once speech actually starts — so iOS (which silently blocks pre-gesture speak) can retry via the touch handler
     u.onstart=()=>{greetingDone=true;};
-    speechSynthesis.cancel();speechSynthesis.speak(u);
+    // NOTE: no speechSynthesis.cancel() before speak() — on iOS Safari that can cancel the utterance we just queued.
+    speechSynthesis.speak(u);
   }catch(e){}
 }
 const greetingAutoTimer=setTimeout(speakGreeting,1500);
