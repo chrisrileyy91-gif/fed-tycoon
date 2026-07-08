@@ -1179,14 +1179,13 @@ const Audio8={
     if(this.ctx.state==='suspended')this.ctx.resume();
     if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
     else if(type==='hike'){
-      // vault-clunk tighten: firm dark engage-thud + heavier seating chunk. No high-frequency content — reads as heavy/mechanical, distinct from the scissor's bright swish.
-      // engage thud (bolt catches)
-      this.tone([{freq:120,type:'sine',gain:0.20},{freq:65,type:'sine',gain:0.16},{freq:230,type:'triangle',gain:0.05}],{attack:0.001,decay:0.08});
-      this.noiseBurst(0.03,0.10,'lowpass',380,0.9);
-      // seat chunk (heavier — the "tighten")
-      const chunkDelay=0.13;
-      this.tone([{freq:75,type:'sine',gain:0.34},{freq:100,type:'sine',gain:0.18},{freq:190,type:'triangle',gain:0.08}],{attack:0.001,decay:0.16,delay:chunkDelay});
-      this.noiseBurst(0.06,0.14,'lowpass',280,0.9,chunkDelay);
+      // socket-wrench ratchet: 8 rapid metallic clicks (~15 clicks/sec) — the sound of a hand ratchet cranking down a bolt. No thunk, no highs above the click band, no ring; just impulsive click-click-click-click.
+      const clicks=8, spacing=0.065;
+      for(let i=0;i<clicks;i++){
+        const delay=i*spacing+(Math.random()-0.5)*0.008;
+        // each click: brief mid-band noise impulse (~1kHz) — sharp attack, near-zero decay so there's no metallic ring
+        this.noiseBurst(0.005,0.18+Math.random()*0.04,'bandpass',900+Math.random()*220,7,delay);
+      }
     }
     else if(type==='cut'){
       // scissor snip: two crossing metallic blade swishes, sharp snap, brief metal ring
