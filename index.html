@@ -343,7 +343,182 @@ const DECKS=[
 {id:'ai-disruption',title:'AI Disruption',subtitle:'Productivity soars. Jobs vanish. The data says everything\'s fine.',difficulty:2,yr:2026,
 narrative:`The AI productivity boom just reshaped the economy overnight. GDP is growing at <b class="hl">3.2%</b>, inflation is a manageable <b>2.4%</b>, and aggregate unemployment sits at <b>4.2%</b>. Your dashboard says <b class="hl">healthy economy</b>.<br><br>Half the country disagrees. White-collar jobs are evaporating — legal, accounting, content, code. Tech is hiring, but not the people being fired. The <b class="hl">aggregate data is right</b>. The <b class="hl">individual pain is real</b>. And Congress wants to know what the Fed is going to do about it.<br><br>Your tools target the whole economy. The disruption is hitting pieces of it. <b>The numbers say hold steady. The headlines say act.</b> Four years. Your call.`,
 state:{inf:2.4,un:4.2,gr:3.2,rate:3.00,reserves:2800,tga:700,deposits:10500,debt:32000,app:{banks:55,treasury:50,congress:50,people:45}},
-shocks:[],news:[]},
+shocks:[
+{id:'mass-layoff-wave',minMonth:4,prob:.12,alert:true,ico:'📋',kicker:'BREAKING NEWS',
+tag:'⚠️ LABOR CRISIS',headline:'AI restructuring wave — 400,000 white-collar jobs cut',
+alertHeadline:'MASS AI LAYOFFS HIT THE ECONOMY',
+alertDesc:'Five Fortune 500 companies announced AI-driven restructurings in the same week. 400,000 white-collar jobs eliminated — legal, accounting, content, customer support. Unemployment is jumping. But here\'s what the headlines won\'t say: <b>GDP accelerated</b> because these companies are now more productive. The economy is stronger. The people in it are hurting.',
+body:'The layoff wave landed. 400,000 jobs gone in one quarter — not factory workers this time, but lawyers, accountants, writers, analysts. The companies that fired them are posting record productivity. <b>GDP is up. Unemployment is up. Both are true at the same time.</b> Your dashboard says the economy is healthy. Half the country disagrees violently.',
+effects:{unempPush:.8,growthPush:.15},
+responses:[
+{ico:'🎤',t:'Emergency posture — signal the Fed stands with workers',desc:'Use the podium. Acknowledge the crisis. Hint that easing is on the table.',stakes:[{t:'People ❤️',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'Credibility risk',c:'neg'}],
+fx:{cred:-4},react:{banks:-5,treasury:-2,congress:8,people:10},
+outcome:'You gave a speech that felt like leadership and sounded like a rate cut. Markets repriced dovish. But the aggregate economy didn\'t need easing — growth is strong, inflation is stable. You just committed to a direction the data doesn\'t support because the headlines were loud. <b>The bond market noticed.</b>'},
+{ico:'📊',t:'Hold the line — the aggregate data is strong',desc:'The Fed\'s mandate is the whole economy. The whole economy is growing.',stakes:[{t:'Data-driven',c:'info'},{t:'Credibility +',c:'pos'},{t:'People 😠😠',c:'neg'}],
+fx:{cred:3},react:{banks:4,treasury:3,congress:-6,people:-8},
+outcome:'You said the economy is strong. You were right. But to the 400,000 people who just lost their jobs, you\'re the government official who looked at their unemployment and called it a healthy economy. <b>The aggregate data doesn\'t feel aggregate when it\'s your career.</b> Congress is furious. The bond market trusts you. Cold comfort.'}
+]},
+{id:'ai-bubble-correction',minMonth:16,prob:.10,alert:true,requires:'ai-startup-frenzy',ico:'📉',kicker:'MARKET CRASH',
+tag:'⚠️ MARKETS',headline:'AI bubble bursts — flagship company misses earnings catastrophically',
+alertHeadline:'AI BUBBLE BURSTS',
+alertDesc:'After 18 months of "AI changes everything" — massive data center buildouts, GPU shortages, trillion-dollar valuations — a flagship AI company just missed earnings catastrophically. Most enterprise AI deployments aren\'t generating revenue. <b>The market isn\'t rotating. It\'s panicking.</b> AI stocks have cratered 35% in two weeks. The echoes of 1999 are deafening.',
+body:'The narrative flipped overnight. The companies that were going to change the world can\'t show revenue. Venture funding is frozen. AI stocks are down 35% in two weeks and falling. <b>The real economy is about to feel what happens when a trillion dollars of speculative capital evaporates.</b>',
+effects:{growthPush:-.4,stress:12},
+responses:[
+{ico:'🚑',t:'Provide liquidity — backstop the correction',desc:'Open facilities, signal the Fed won\'t let a tech correction become a financial crisis.',stakes:[{t:'↓ stress',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'Moral hazard',c:'neg'}],
+fx:{reserves:200,stress:-15,cred:-3},react:{banks:8,treasury:2,congress:-4,people:2},
+outcome:'You backstopped it. Stress fell, banks stabilized, and the correction didn\'t cascade into the real economy. But you just told every investor in America that the Fed rescues speculation. <b>The next bubble will be bigger because of what you did today.</b> That\'s the trade — and you\'ll make it again.'},
+{ico:'🪨',t:'Let markets clear — this correction is healthy',desc:'Overvaluation corrected. That\'s markets working. Don\'t intervene.',stakes:[{t:'Credibility +',c:'pos'},{t:'Stress stays',c:'neg'},{t:'Banks 😠',c:'neg'}],
+fx:{cred:4},react:{banks:-6,treasury:0,congress:2,people:-3},
+outcome:'You let it burn. Painful — portfolios bled, startups folded, and the layoffs extended beyond AI into adjacent sectors. But the market found a real floor, not a Fed-supported one. <b>The next cycle will be more honest because of what you didn\'t do today.</b>'}
+]},
+{id:'ai-flash-crash',minMonth:8,prob:.10,alert:false,ico:'⚡',
+tag:'⚠️ MARKETS',headline:'AI-driven flash crash wipes 8% off equities in 90 minutes',
+body:'Algorithmic trading systems — most of them AI-driven — triggered a cascading sell-off that wiped 8% off equities in 90 minutes before stabilizing. By close, half the losses recovered. No fundamental cause. Pure machine feedback loops. Congress is demanding the Fed "do something about AI in the markets." <b>The actual economic impact is approximately zero.</b>',
+effects:{stress:6},
+responses:[
+{ico:'🔍',t:'Announce a review of AI in financial markets',desc:'Signal you take the risk seriously. Buy time with a study.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Banks 😠',c:'neg'}],
+fx:{stress:-4},react:{banks:-4,treasury:0,congress:5,people:4},
+outcome:'You announced a review. It calmed the room — Congress felt heard, the public felt protected. Banks are worried you\'ll regulate their trading systems. The review will take 18 months and recommend nothing actionable. <b>But the announcement itself was the product</b> — central banking as theater, and sometimes that\'s the job.'},
+{ico:'⏸️',t:'Markets recovered. No systemic risk. Move on.',desc:'A 90-minute event with no fundamental cause isn\'t a policy issue.',stakes:[{t:'Data-driven',c:'info'},{t:'Congress 😠',c:'neg'}],
+fx:{cred:2},react:{banks:3,treasury:2,congress:-5,people:-3},
+outcome:'You called it correctly — a technical glitch, not a systemic event. But "the Fed doesn\'t care about your 401k" became the headline. <b>Technically right, publicly cold.</b> The market respected the non-reaction. The public remembered the indifference.'}
+]}
+],
+news:[
+{id:'productivity-boom',turn:[2,12],prob:.55,type:'',
+tag:'ECONOMIC DATA',headline:'Productivity surges 4.2% — fastest growth in two decades',
+body:'Output per worker is soaring. Companies producing more with fewer people. The textbook says this is unambiguously great — <b>productivity growth is the engine of long-term prosperity</b>. But workers being "produced without" don\'t feel prosperous. The data is a dream. The mood is a nightmare.',
+effects:{growthPush:.12},
+responses:[
+{ico:'🎉',t:'Celebrate it — productivity growth is the goal',desc:'This is what good looks like. Say so.',stakes:[{t:'Economically correct',c:'pos'},{t:'People 😠',c:'neg'}],
+fx:{},react:{banks:4,treasury:3,congress:-2,people:-5},
+outcome:'You praised the data and you were right to — sustained productivity growth raises living standards for everyone, eventually. But "eventually" is a timeline that doesn\'t pay this month\'s mortgage. <b>Displaced workers heard the Chair of the Fed call the economy that fired them a success story.</b>'},
+{ico:'🤝',t:'Acknowledge the human cost alongside the data',desc:'Good aggregate numbers can coexist with real suffering. Say both.',stakes:[{t:'Balanced',c:'info'},{t:'People ❤️',c:'pos'}],
+fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
+outcome:'You threaded the needle — "strong productivity gains that also require attention to transition costs." Nobody loved it, nobody hated it. <b>The honest middle ground rarely makes headlines, which is exactly when it\'s working.</b>'}
+]},
+{id:'unemployment-divergence',turn:[3,16],prob:.50,type:'',
+tag:'LABOR DATA',headline:'Two economies — tech hiring surges while office jobs vanish',
+body:'Tech sector unemployment: <b>2.1%</b>. Legal, accounting, and administrative: <b>8.4%</b>. Same country, same quarter, completely different realities. Aggregate unemployment looks manageable. The composition is ugly. Your mandate says "maximum employment" — <b>does that mean the average, or does it mean everyone?</b>',
+effects:{unempPush:.15},
+responses:[
+{ico:'📊',t:'The aggregate labor market remains strong',desc:'Point to total payrolls, total employment, total hours worked.',stakes:[{t:'Data-driven',c:'info'},{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'}],
+fx:{cred:2},react:{banks:3,treasury:2,congress:-3,people:-5},
+outcome:'You cited the numbers and the numbers backed you up. But a legal assistant watching you say "the labor market is strong" while she applies for her 40th job doesn\'t care about aggregates. <b>The data was correct. The communication landed like a brick.</b>'},
+{ico:'🎤',t:'Acknowledge the sectoral pain — signal you\'re watching',desc:'Note the divergence without overpromising. Empathy without policy change.',stakes:[{t:'People ❤️',c:'pos'},{t:'Markets wonder',c:'neg'}],
+fx:{},react:{banks:-2,treasury:0,congress:3,people:6},
+outcome:'You said the quiet part — that aggregate data masks real suffering in specific sectors. Markets briefly twitched on the dovish read, then settled when you clarified no policy change was coming. <b>You sounded human. That matters more than economists think.</b>'}
+]},
+{id:'wage-divergence',turn:[4,18],prob:.50,type:'',
+tag:'LABOR DATA',headline:'AI engineers earn $400K. Displaced workers earn unemployment.',
+body:'Average wage growth: <b>3.8%</b>. AI-sector wages: up 12%. Displaced-sector wages: falling. The average is a statistical phantom — almost nobody is actually experiencing 3.8% growth. The Phillips Curve still works in aggregate, but <b>the aggregate is lying about the distribution</b>. Your rate decision affects both groups identically. Their situations are not identical.',
+effects:{infPush:.06},
+responses:[
+{ico:'📊',t:'Wage growth remains consistent with the 2% target',desc:'3.8% average growth is manageable. The distribution isn\'t your lever.',stakes:[{t:'Data-driven',c:'info'},{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'}],
+fx:{cred:1},react:{banks:3,treasury:2,congress:-2,people:-4},
+outcome:'You cited the average. The average was fine. But the average was also a lie — a number describing a reality nobody actually inhabits. <b>Correct, credible, and completely disconnected from lived experience.</b> Welcome to modern central banking.'},
+{ico:'🤝',t:'Note that averages mask concerning divergence',desc:'Honest about the data\'s limitations. No policy change, just transparency.',stakes:[{t:'People ❤️',c:'pos'},{t:'Balanced',c:'info'}],
+fx:{},react:{banks:-1,treasury:0,congress:2,people:4},
+outcome:'You admitted the average wage number hides a bifurcation. Markets shrugged — you didn\'t signal policy change. <b>The public heard a Chair who understands that data and reality aren\'t always the same thing.</b> Small gesture, large impact on trust.'}
+]},
+{id:'consumer-bifurcation',turn:[5,20],prob:.50,type:'',
+tag:'CONSUMER DATA',headline:'Two Americas — luxury spending booms while middle-class tightens',
+body:'Aggregate consumer spending looks healthy. Under the hood, it\'s two different economies. High-income households are flush — stock portfolios up, AI-adjacent salaries soaring. Middle-income spending is flat, lower-income is contracting. <b>Your aggregate gauge reads green. The distribution reads red.</b> Monetary policy is a blunt instrument — it doesn\'t come with a targeting dial.',
+effects:{growthPush:-.06},
+responses:[
+{ico:'📊',t:'The aggregate data supports current policy',desc:'Consumer spending is growing. That\'s what you measure.',stakes:[{t:'Data-driven',c:'info'},{t:'People 😠',c:'neg'}],
+fx:{},react:{banks:2,treasury:2,congress:-2,people:-4},
+outcome:'You read the top-line number and it said "fine." You were right — aggregate demand is holding. But the aggregate masks a fracture that\'s politically explosive and potentially unstable. <b>When half the country is pulling back, the other half\'s spending might not carry the load forever.</b>'},
+{ico:'📢',t:'Note the distributional concerns',desc:'Highlight the divergence without changing policy.',stakes:[{t:'Balanced',c:'info'},{t:'People ❤️',c:'pos'}],
+fx:{},react:{banks:-2,treasury:0,congress:2,people:4},
+outcome:'You flagged the distributional split in your statement. It was honest, and it mattered — if middle-income spending continues to weaken, the aggregate will eventually follow. <b>You didn\'t change policy, you changed the narrative. Sometimes that\'s the same thing.</b>'}
+]},
+{id:'congress-ai-hearing',turn:[6,22],prob:.50,type:'',requires:'mass-layoff-wave',
+tag:'POLITICAL',headline:'Congress demands answers — "What is the Fed doing about AI job losses?"',
+body:'The Senate Banking Committee wants you to testify on AI displacement. The honest answer — "monetary policy can\'t retrain workers, that\'s fiscal policy" — is correct and will be received as arrogant deflection. <b>The alternative is to imply the Fed can help, which it can\'t.</b> Welcome to the hearing room.',
+effects:{},
+responses:[
+{ico:'🎙️',t:'Testify — defend the Fed\'s lane clearly',desc:'Explain what monetary policy can and can\'t do. Respectfully firm.',stakes:[{t:'Credibility +',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Principled',c:'info'}],
+fx:{cred:3},react:{banks:3,treasury:4,congress:-6,people:-2},
+outcome:'You explained, patiently and clearly, that the Fed controls interest rates and reserves — not retraining programs, not industrial policy, not who gets hired and who doesn\'t. Senators didn\'t enjoy the civics lesson. <b>But you just defined the Fed\'s boundaries on the public record</b>, and that matters when the pressure comes to overstep them.'},
+{ico:'🕊️',t:'Express concern — signal the Fed is "part of the solution"',desc:'Don\'t fight Congress. Show empathy. Imply coordination.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Credibility risk',c:'neg'}],
+fx:{cred:-3},react:{banks:-3,treasury:-2,congress:8,people:5},
+outcome:'You told Congress what they wanted to hear — that the Fed is "deeply concerned" and "committed to supporting the American worker through this transition." Warm, reassuring, and subtly dishonest. <b>The Fed can\'t retrain workers. You just created an expectation you can\'t meet.</b> The bill comes due when they ask what you actually did.'}
+]},
+{id:'ai-startup-frenzy',turn:[7,22],prob:.45,type:'',
+tag:'FINANCIAL MARKETS',headline:'VC funding hits $180B — "Every company is an AI company now"',
+body:'Venture capital is flooding into anything with "AI" in the pitch deck. Valuations are stretched. Most of these startups will fail — that\'s normal. But the scale of capital allocation to a single thesis is creating concentration risk. <b>If the narrative breaks, the unwind will be violent.</b> The Fed doesn\'t regulate venture capital. But you\'re watching a bubble form in real time and you have a podium.',
+effects:{growthPush:.1},
+responses:[
+{ico:'⚠️',t:'Note the concentration risk publicly',desc:'You\'ve seen this movie before. Say so — carefully.',stakes:[{t:'On record',c:'pos'},{t:'Prudent',c:'info'},{t:'Banks 😠',c:'neg'}],
+fx:{cred:2},react:{banks:-4,treasury:0,congress:2,people:0},
+outcome:'You flagged the concentration risk in public remarks — not an alarm, just an observation about capital allocation. Investors grumbled. <b>If the bubble pops later, you\'ll be the person who warned them. If it doesn\'t, you\'ll be the person who doubted the future.</b> Either way, you\'re on the record.'},
+{ico:'🤐',t:'Stay silent — asset allocation isn\'t your mandate',desc:'You regulate banks, not VC firms. Let the market allocate.',stakes:[{t:'No immediate cost',c:'info'},{t:'Future risk',c:'neg'}],
+fx:{},react:{banks:3,treasury:0,congress:0,people:0},
+outcome:'You said nothing. The money kept flowing. If these investments produce real value, your silence was wisdom. <b>If they don\'t, your silence was the same silence that preceded every bubble nobody wanted to name until it popped.</b>'}
+]},
+{id:'ai-energy-spike',turn:[8,24],prob:.45,type:'',
+tag:'ENERGY / SUPPLY',headline:'Data centers strain the grid — electricity prices spike in tech hubs',
+body:'AI compute needs electricity — a lot of it. Data center construction is outrunning grid capacity. Energy prices are spiking in regions near AI infrastructure — a localized supply pressure created by domestic demand, not foreign disruption. Nationally, the effect is modest. <b>Locally, it\'s brutal.</b> And it feeds CPI through the energy component.',
+effects:{infPush:.08},
+responses:[
+{ico:'📣',t:'Look through it — localized and temporary',desc:'Grid capacity will catch up. Don\'t tighten for a regional energy squeeze.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'}],
+fx:{},react:{banks:0,treasury:0,congress:2,people:2},
+outcome:'You called it what it was — a growing pain, not a structural shift. Grid investment is coming, and the price spike should moderate. <b>If you\'re right, patience was the correct call. If energy buildout takes longer than expected, you\'ll wish you\'d flagged it sooner.</b>'},
+{ico:'⚠️',t:'Flag it as an emerging inflation input',desc:'Energy feeds everything. Even localized spikes warrant monitoring.',stakes:[{t:'Vigilant',c:'info'},{t:'Growth risk',c:'neg'}],
+fx:{cred:1},react:{banks:2,treasury:2,congress:-1,people:-2},
+outcome:'You put it on the radar publicly. Not an alarm, just an acknowledgment that AI\'s energy footprint is becoming macroeconomically relevant. <b>The Fed\'s job is to see around corners, even blurry ones.</b>'}
+]},
+{id:'ai-retraining-bill',turn:[10,28],prob:.45,type:'fiscal',requires:'congress-ai-hearing',
+tag:'FISCAL POLICY',headline:'Congress passes $280B AI Worker Transition Act',
+body:'Retraining centers, community college funding, relocation assistance, extended UI — all funded by <b>new Treasury issuance</b>. Growth now, debt later. The economy doesn\'t need stimulus — it\'s already growing at 3%+. But the displaced workers need something, and Congress just decided what.',
+effects:{debt:280,growthPush:.2,infPush:.04,reserves:-150,tga:150},
+responses:[
+{ico:'✅',t:'Support the intent — workers need the help',desc:'The human case is real even if the macro case isn\'t. Back the bill.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
+fx:{growthPush:.1},react:{banks:-2,treasury:-6,congress:10,people:8},
+outcome:'You backed fiscal stimulus into an already-growing economy because the human argument was compelling. It was. But GDP didn\'t need another push, and inflation might have opinions about that $280B. <b>Treasury is quietly furious — you just made the debt math harder.</b>'},
+{ico:'🚫',t:'Warn on fiscal expansion into a growing economy',desc:'Workers need retraining. They don\'t need retraining funded by inflationary debt.',stakes:[{t:'Credibility +',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Economically correct',c:'info'}],
+fx:{cred:2},react:{banks:4,treasury:6,congress:-8,people:-5},
+outcome:'You said what Treasury couldn\'t — that $280B in new debt into a strong economy risks overheating. Congress passed it anyway. They always do. <b>But the bond market heard your warning and priced accordingly.</b> You can\'t stop fiscal policy. You can make sure markets understand its implications.'}
+]},
+{id:'fed-cant-fix-debate',turn:[12,32],prob:.45,type:'',requires:'congress-ai-hearing',
+tag:'PUBLIC DEBATE',headline:'Nobel laureate: "Monetary policy is irrelevant to AI displacement"',
+body:'A prominent economist published a widely-read argument that the Fed\'s tools — interest rates, reserves, QE — are structurally incapable of addressing AI-driven labor market transformation. <b>She\'s right.</b> But publicly agreeing weakens your perceived authority. Publicly disagreeing is intellectually dishonest. And saying nothing lets the narrative harden without you in it.',
+effects:{},
+responses:[
+{ico:'✅',t:'Agree — and define what the Fed CAN do',desc:'Acknowledge the limits honestly. Redirect to your actual mandate.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'},{t:'Intellectually honest',c:'info'}],
+fx:{cred:3},react:{banks:2,treasury:3,congress:-4,people:-3},
+outcome:'You agreed publicly with a Nobel laureate that the Fed can\'t fix structural displacement. It was honest, rare, and deeply uncomfortable for an institution that derives power partly from the perception of omnipotence. <b>Markets respected the clarity. The public heard "we can\'t help you."</b>'},
+{ico:'🕊️',t:'Push back gently — the Fed supports conditions for adjustment',desc:'Don\'t concede the whole frame. The Fed maintains stability while transitions happen.',stakes:[{t:'Preserves authority',c:'info'},{t:'Intellectually soft',c:'neg'}],
+fx:{cred:-2},react:{banks:0,treasury:0,congress:3,people:3},
+outcome:'You argued that the Fed creates the stable conditions under which labor markets can adjust. It\'s not wrong — stability matters. But it\'s also the kind of unfalsifiable claim institutions make when they don\'t want to admit their limits. <b>You preserved authority by slightly overstating your relevance.</b>'}
+]},
+{id:'public-protests',turn:[14,36],prob:.45,type:'',requires:'mass-layoff-wave',
+tag:'PUBLIC UNREST',headline:'Tens of thousands march — "The Fed chose robots over people"',
+body:'The protests aren\'t about the Fed specifically — they\'re about the entire system that prioritized efficiency over employment. But you\'re the most visible economic policymaker in government, and <b>your face is on the signs</b>. "Abolish the Fed" is trending again. The administration is watching the polls. The irony: the economy is growing. The people marching are growing angrier.',
+effects:{},
+responses:[
+{ico:'📺',t:'Address the public — show empathy without overpromising',desc:'Acknowledge the fear. Don\'t pretend you can fix it.',stakes:[{t:'People ❤️',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Principled',c:'info'}],
+fx:{cred:1},react:{banks:-2,treasury:0,congress:2,people:8},
+outcome:'You spoke directly to the country. You acknowledged the disruption is real, the fear is legitimate, and the transition will take time. You didn\'t promise rate cuts or magic. <b>You treated people like adults. It helped more than economists would predict</b> — because trust is a variable the models don\'t capture.'},
+{ico:'🏛️',t:'Stay above it — the Fed doesn\'t respond to protests',desc:'Institutions respond to data, not signs. Engaging politicizes you.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
+fx:{cred:2},react:{banks:3,treasury:2,congress:-3,people:-7},
+outcome:'You stayed in the marble building while the country marched past it. Institutionally correct — the Fed answers to its mandate, not the crowd. <b>But institutions that ignore the public long enough eventually find the public ignoring them.</b> The pressure climbed.'}
+]},
+{id:'housing-foreshadow',turn:[36,46],prob:.65,type:'',
+tag:'HOUSING DATA',headline:'Shelter costs quietly climbing — CPI\'s stickiest component stirs',
+body:'While the AI story dominated your term, something quieter has been building. Shelter costs — the largest single component of CPI — have been drifting upward for months. Mortgage rates remain elevated, freezing existing home supply. New construction can\'t keep pace. First-time buyers are increasingly priced out. It\'s not a crisis yet. <b>Whoever sits in this chair next will have to deal with it.</b>',
+effects:{infPush:.06},
+responses:[
+{ico:'📋',t:'Flag it in your final remarks',desc:'Leave a warning for your successor. Put it on the record.',stakes:[{t:'Credibility +',c:'pos'},{t:'Forward-looking',c:'info'}],
+fx:{cred:1},react:{banks:-1,treasury:2,congress:0,people:0},
+outcome:'You noted the shelter trend in your public remarks — a quiet warning that the next term\'s inflation fight might be driven not by AI or trade but by the cost of having a roof. <b>The next Chair will either thank you for the warning or curse you for not acting on it.</b>'},
+{ico:'⏸️',t:'Not your problem anymore — focus on the current mandate',desc:'You\'ve got months left. Don\'t open a new front.',stakes:[{t:'Discipline',c:'info'},{t:'No immediate cost',c:'info'}],
+fx:{},react:{banks:1,treasury:0,congress:0,people:0},
+outcome:'You let it pass. Shelter costs continued their quiet climb, unremarked upon by the outgoing Chair. <b>The next person in this seat will discover the problem as if it appeared from nowhere. It didn\'t.</b> You just chose not to name it.'}
+]}
+]},
 
 {id:'housing-trap',title:'The Housing Trap',subtitle:'Shelter drives inflation. Your tool makes it worse.',difficulty:2,yr:2026,
 narrative:`Your predecessor hiked aggressively and inflation fell — <b class="hl">for everything except housing</b>. Shelter costs are the stickiest component of CPI and they\'re driving inflation at <b class="hl">3.5%</b>. Rates sit at <b class="hl">4.75%</b>.<br><br>Here\'s the trap: higher rates <b>freeze housing supply</b> — nobody with a 3% mortgage sells into a 7% rate environment. Existing home sales have cratered. First-time buyers are locked out. Rents keep climbing because supply isn\'t being built fast enough.<br><br>Your inflation-fighting tool <b class="hl">makes the one thing driving inflation worse</b>. Hike more and you freeze the market further. Hold and inflation stays sticky. Cut and you lose credibility. An entire generation is watching — and they <b class="hl">blame you personally</b>.`,
@@ -674,7 +849,7 @@ function checkEquityEvents(){
 }
 function nextTurn(){
   if(checkEquityEvents())return;
-  ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
+  ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(sh.requires&&!S.fired[sh.requires])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
   const alertShock=S.pendingShocks.find(s=>s.alert);
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
@@ -696,12 +871,12 @@ function nextTurn(){
     }
   }
   if(isFomc()){showEvent(pickNewsOrFomc());return;}
-  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.5){const ev=pick(domestic);S.fired[ev.id]=true;showEvent(ev);}
   else{showDataPrint(makeDataPrint());}
 }
 function pickNewsOrFomc(){
-  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.55){const ev=pick(domestic);S.fired[ev.id]=true;return ev;}
   return{kind:'fomc',tag:'🔔 FOMC MEETING',headline:pick(['Rate decision day','The Committee convenes','All eyes on the Fed','Markets await your call']),
     body:`FOMC meeting. Inflation <b>${S.inf.toFixed(1)}%</b>, unemployment <b>${S.un.toFixed(1)}%</b>, growth <b>${S.gr.toFixed(1)}%</b>. One of your <b>6 chances a year</b> to move rates. Between meetings, your hands are tied. Choose.`,
