@@ -39,6 +39,27 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .hl{color:var(--gold);font-weight:700}
 .intro-btn{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#1a1000;font-family:var(--serif);font-size:18px;font-weight:800;border:none;border-radius:14px;padding:18px 48px;cursor:pointer;box-shadow:0 0 30px var(--gold-glow),0 6px 0 #9a7510;transition:transform .08s;letter-spacing:.5px}
 .intro-btn:active{transform:translateY(3px);box-shadow:0 0 16px var(--gold-glow),0 2px 0 #9a7510}
+#deckPicker{display:flex;flex-direction:column;align-items:center;padding:30px 16px 40px}
+.deck-list{width:100%;max-width:460px;display:flex;flex-direction:column;gap:10px}
+.deck-card{background:var(--card);border:2px solid #2a3548;border-radius:16px;padding:14px 16px;cursor:pointer;transition:all .2s;position:relative}
+.deck-card:active{transform:scale(.98)}
+.deck-card:hover{border-color:var(--gold);box-shadow:0 0 16px var(--gold-glow)}
+.deck-card.locked{opacity:.45;cursor:not-allowed;border-style:dashed}
+.deck-card.locked:hover{border-color:#2a3548;box-shadow:none}
+.deck-card .dc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.deck-card .dc-title{font-family:var(--serif);font-size:17px;font-weight:800;color:var(--gold)}
+.deck-card.locked .dc-title{color:var(--dimmer)}
+.deck-card .dc-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--dimmer)}
+.deck-card .dc-badge.score{color:var(--green)}
+.deck-card .dc-sub{font-size:12.5px;color:var(--dim);line-height:1.4;margin-bottom:6px}
+.deck-card .dc-diff{font-size:12px;letter-spacing:1px}
+.deck-card .dc-lock-msg{font-family:var(--mono);font-size:9.5px;color:var(--dimmer);letter-spacing:.5px;margin-top:4px}
+#deckDetail{display:none;flex-direction:column;align-items:center;padding:20px 24px 40px;text-align:center}
+#deckDetail.show{display:flex}
+.deck-back{align-self:flex-start;font-family:var(--mono);font-size:12px;color:var(--dim);cursor:pointer;padding:4px 0;margin-bottom:12px;letter-spacing:.5px}
+.deck-back:active{color:var(--gold)}
+.deck-detail-title{font-family:var(--serif);font-size:28px;font-weight:900;margin-bottom:4px}
+.deck-detail-diff{font-size:14px;letter-spacing:1px;margin-bottom:20px;color:var(--dim)}
 #gameScreen{padding:0 0 40px}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
 .tb-left{display:flex;align-items:center;gap:8px}
@@ -223,11 +244,20 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 </head>
 <body>
 <div class="screen active" id="introScreen">
-  <div class="intro-seal">₣</div>
-  <div class="intro-title">You've Been<br>Appointed Chair.</div>
-  <div class="intro-sub">Federal Reserve · 4-Year Term</div>
-  <div class="intro-narrative" id="introNarrative"></div>
-  <button class="intro-btn" id="startBtn">Take the Oath</button>
+  <div id="deckPicker">
+    <div class="intro-seal" style="width:60px;height:60px;font-size:28px;margin-bottom:16px">₣</div>
+    <div class="intro-title" style="font-size:28px;margin-bottom:4px">CHAIR</div>
+    <div class="intro-sub" style="margin-bottom:20px">Select Your Term</div>
+    <div class="deck-list" id="deckList"></div>
+  </div>
+  <div id="deckDetail" style="display:none">
+    <div class="deck-back" id="deckBack">← Back</div>
+    <div class="intro-seal" style="width:70px;height:70px;font-size:32px;margin-bottom:18px">₣</div>
+    <div class="deck-detail-title" id="detailTitle"></div>
+    <div class="deck-detail-diff" id="detailDiff"></div>
+    <div class="intro-narrative" id="introNarrative"></div>
+    <button class="intro-btn" id="startBtn">Take the Oath</button>
+  </div>
 </div>
 <div class="screen" id="gameScreen">
   <div class="topbar">
@@ -307,248 +337,49 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const FOMC_MONTHS=[0,2,4,6,8,10];
 
-const SCENARIOS=[
-{title:"The AI Boom",yr:2025,narrative:`Silicon Valley just triggered the biggest capital race since the internet. Congress passed the <span class="hl">$420B American AI Dominance Act</span> — the largest tech subsidy in history — and the Treasury issued massive debt to fund it, draining reserves.<br><br>Inflation runs hot at <b class="hl">4.2%</b>. Unemployment is <b>3.8%</b> — below the level where wage pressure builds. Growth is <b>3.2%</b> and accelerating. Your predecessor <b class="hl">left rates at 2.50%</b> — behind the curve. You inherit a <b class="hl">$3T balance sheet</b> and an economy that's overheating.<br><br>Your term is <b>four years — 48 months.</b> Data comes monthly. You move rates only at FOMC meetings. And the world <b class="hl">will not wait</b> for your calendar.`,
-state:{inf:4.2,un:3.8,gr:3.2,rate:2.50,reserves:2400,tga:600,deposits:11000,debt:31000,app:{banks:65,treasury:45,congress:55,people:38}}},
-{title:"The Slowdown",yr:2025,narrative:`The previous chair hiked aggressively to kill inflation and <b class="hl">succeeded — at a cost</b>.<br><br>Inflation is tame at <b>1.9%</b>, but unemployment drifted to <b class="hl">5.8%</b> and growth is a fragile <b>0.8%</b>. Layoff headlines run daily. Two regional banks failed last month.<br><br>Congress is split — House wants stimulus, Senate wants cuts. Your rate sits at <b class="hl">4.75%</b>. The question on every desk: <b>did the last chair overtighten?</b><br><br>Four-year term. Monthly data. Rates move only at FOMC. The world writes its own headlines.`,
-state:{inf:1.9,un:5.8,gr:0.8,rate:4.75,reserves:1800,tga:500,deposits:8800,debt:33000,app:{banks:40,treasury:45,congress:42,people:38}}},
-{title:"Election Year",yr:2025,narrative:`It's an election year and <b class="hl">everyone wants something from you</b>.<br><br>The President trails in polls and needs a strong economy — his team publicly pressures you to cut. Congress passed a <b>$200B pre-election spending bill</b> over Treasury objections. Inflation sits at <b>2.6%</b>, unemployment <b>4.5%</b>, growth <b>1.6%</b>.<br><br>Nothing's on fire. Nothing's comfortable. The danger is <b class="hl">political pressure to do the wrong thing for the right reasons</b>.<br><br>Four years. Monthly data. FOMC-locked rates. Independence is about to be tested.`,
-state:{inf:2.6,un:4.5,gr:1.6,rate:3.75,reserves:2600,tga:800,deposits:10200,debt:30000,app:{banks:50,treasury:48,congress:55,people:50}}}
+const DECK_ORDER=['ai-disruption','housing-trap','tariff-shock','geopolitical-fracture','debt-reckoning','fiscal-dominance'];
+
+const DECKS=[
+{id:'ai-disruption',title:'AI Disruption',subtitle:'Productivity soars. Jobs vanish. The data says everything\'s fine.',difficulty:2,yr:2026,
+narrative:`The AI productivity boom just reshaped the economy overnight. GDP is growing at <b class="hl">3.2%</b>, inflation is a manageable <b>2.4%</b>, and aggregate unemployment sits at <b>4.2%</b>. Your dashboard says <b class="hl">healthy economy</b>.<br><br>Half the country disagrees. White-collar jobs are evaporating — legal, accounting, content, code. Tech is hiring, but not the people being fired. The <b class="hl">aggregate data is right</b>. The <b class="hl">individual pain is real</b>. And Congress wants to know what the Fed is going to do about it.<br><br>Your tools target the whole economy. The disruption is hitting pieces of it. <b>The numbers say hold steady. The headlines say act.</b> Four years. Your call.`,
+state:{inf:2.4,un:4.2,gr:3.2,rate:3.00,reserves:2800,tga:700,deposits:10500,debt:32000,app:{banks:55,treasury:50,congress:50,people:45}},
+shocks:[],news:[]},
+
+{id:'housing-trap',title:'The Housing Trap',subtitle:'Shelter drives inflation. Your tool makes it worse.',difficulty:2,yr:2026,
+narrative:`Your predecessor hiked aggressively and inflation fell — <b class="hl">for everything except housing</b>. Shelter costs are the stickiest component of CPI and they\'re driving inflation at <b class="hl">3.5%</b>. Rates sit at <b class="hl">4.75%</b>.<br><br>Here\'s the trap: higher rates <b>freeze housing supply</b> — nobody with a 3% mortgage sells into a 7% rate environment. Existing home sales have cratered. First-time buyers are locked out. Rents keep climbing because supply isn\'t being built fast enough.<br><br>Your inflation-fighting tool <b class="hl">makes the one thing driving inflation worse</b>. Hike more and you freeze the market further. Hold and inflation stays sticky. Cut and you lose credibility. An entire generation is watching — and they <b class="hl">blame you personally</b>.`,
+state:{inf:3.5,un:4.0,gr:1.8,rate:4.75,reserves:2200,tga:600,deposits:9800,debt:33000,app:{banks:48,treasury:50,congress:45,people:35}},
+shocks:[],news:[]},
+
+{id:'tariff-shock',title:'Tariff Shock',subtitle:'Prices rise. Growth falls. Your lever doesn\'t reach the problem.',difficulty:3,yr:2027,
+narrative:`The economy looks balanced. Inflation <b>2.2%</b>, unemployment <b>3.9%</b>, growth <b>2.4%</b>. Rates at a neutral <b>2.75%</b>. A soft landing, by any measure. <b class="hl">Enjoy it while it lasts.</b><br><br>Trade policy is about to detonate. Cascading tariff announcements will drive prices up through the <b class="hl">supply side, not demand</b>. Imports get more expensive. Retaliation follows. Supply chains scramble. Prices rise <b>not because your economy is too hot</b> — but because inputs cost more.<br><br>Your rate lever cools demand brilliantly. It <b class="hl">can\'t make imports cheaper</b>. Every instinct will scream "inflation is high, hike." The textbook says "don\'t tighten into a supply shock." The textbook has never met a <b class="hl">midterm election</b>.`,
+state:{inf:2.2,un:3.9,gr:2.4,rate:2.75,reserves:2600,tga:700,deposits:10200,debt:33500,app:{banks:52,treasury:50,congress:50,people:50}},
+shocks:[],news:[]},
+
+{id:'geopolitical-fracture',title:'Geopolitical Fracture',subtitle:'Oil, chips, capital, allies — everything cracks at once.',difficulty:3,yr:2027,
+narrative:`The post-war order is fracturing along every axis simultaneously. Military conflict disrupts energy. <b class="hl">Semiconductor export controls</b> sever supply chains. Sanctions redirect global capital flows. Allied nations are choosing sides — and not always yours.<br><br>Inflation at <b>2.8%</b>, unemployment <b>4.3%</b>, growth <b>2.0%</b>. Nothing catastrophic yet — but the shocks are coming, and <b class="hl">each one hits a different channel</b>. An oil embargo is a supply shock. Capital flight floods your reserves. Sanctions disrupt trade. De-dollarization moves threaten the foundation of your institution.<br><br>You learned one playbook. This term demands <b class="hl">several, simultaneously</b>.`,
+state:{inf:2.8,un:4.3,gr:2.0,rate:3.25,reserves:2400,tga:650,deposits:10000,debt:34000,app:{banks:50,treasury:48,congress:48,people:45}},
+shocks:[],news:[]},
+
+{id:'debt-reckoning',title:'The Debt Reckoning',subtitle:'The government\'s debt is so large your tools start fighting themselves.',difficulty:4,yr:2028,
+narrative:`The numbers finally caught up. National debt at <b class="hl">$38 trillion</b>. Federal interest payments now <b class="hl">exceed the defense budget</b>. Inflation lingers at <b>3.2%</b>, unemployment at <b>4.8%</b>, growth limping at <b>1.4%</b>.<br><br>Your predecessor\'s hikes worked on inflation — but they also made the government\'s debt <b class="hl">dramatically more expensive</b>. Every 25bp hike increases annual interest costs by tens of billions. That spending flows to bondholders, partially <b>stimulating</b> the economy, partially <b class="hl">offsetting your tightening</b>.<br><br>Tighten and you help inflation but worsen the deficit. Ease and you help growth but let prices run. Your primary tool is now connected to a <b class="hl">spring pushing back</b>. The margin for error just got very small.`,
+state:{inf:3.2,un:4.8,gr:1.4,rate:4.50,reserves:2000,tga:500,deposits:9200,debt:38000,app:{banks:42,treasury:40,congress:42,people:38}},
+shocks:[],news:[]},
+
+{id:'fiscal-dominance',title:'Fiscal Dominance',subtitle:'Your tools are broken. The deficit runs the show.',difficulty:4,yr:2028,
+narrative:`This is the scenario every central banker knows about and <b class="hl">nobody wants to name out loud</b>.<br><br>Inflation at <b class="hl">4.8%</b>. Unemployment <b class="hl">5.5%</b>. Growth a near-recessionary <b>0.6%</b>. Debt at <b class="hl">$42 trillion</b>. Rates already at <b>5.25%</b>. Every faction is angry. And the worst part: <b class="hl">your tools don\'t fully work anymore</b>.<br><br>Government borrowing needs are so large that they <b>functionally override your policy</b>. Hike rates → interest bill explodes → deficit widens → more government spending flows into the economy → partially offsets the hike. You push the lever and the economy <b class="hl">doesn\'t respond the way the textbook says</b>.<br><br>There may not be a clean path through this. The question isn\'t whether you can win — it\'s whether you can <b class="hl">survive</b>.`,
+state:{inf:4.8,un:5.5,gr:0.6,rate:5.25,reserves:1600,tga:400,deposits:8500,debt:42000,app:{banks:35,treasury:32,congress:35,people:30}},
+shocks:[],news:[]}
 ];
 
-const SHOCKS=[
-{id:'war',minMonth:6,prob:.10,alert:true,ico:'💥',kicker:'BREAKING NEWS',
-  tag:'⚠️ GEOPOLITICAL',headline:'U.S. launches strikes on foreign adversary',
-  alertHeadline:'U.S. STRIKES FOREIGN NATION',
-  alertDesc:'Military action just began overseas. Oil is spiking, markets are in freefall, and capital is fleeing to safety. <b>This is not a drill.</b> The whole world just changed and you have to respond.',
-  body:'Conflict erupts. Oil surges on supply fears, equities crater, and global capital floods into dollars and Treasuries. Inflation pressure up from energy; growth threatened by uncertainty. <b>You didn\'t choose this — but it\'s yours now.</b>',
-  effects:{supplyShock:1.8,growthPush:-.3,reserves:200},
-  responses:[
-    {ico:'🛡️',t:'Signal stability — Fed stands ready',desc:'Reassure markets the Fed will provide liquidity as needed.',stakes:[{t:'↓ panic',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
-      fx:{reserves:150,stress:-10},react:{banks:8,treasury:4,congress:2,people:3},
-      hl:'Fed Vows Liquidity as Strikes Roil Markets',
-      outcome:'You promised liquidity. Markets steady — <b>the Fed is the anchor in the storm</b>. But you\'ve signaled easy money into an inflationary oil shock. The hawks are uneasy.'},
-    {ico:'⏸️',t:'Hold — assess before acting',desc:'Don\'t react to the first headline. Wait for data.',stakes:[{t:'Prudent',c:'info'},{t:'Looks passive',c:'neg'}],
-      fx:{},react:{banks:-3,treasury:0,congress:-4,people:-5},
-      hl:'Fed "Monitoring" Wartime Panic — No Signal Given',
-      outcome:'You said you\'re "monitoring." Disciplined — but in a crisis, <b>silence reads as absence</b>. Markets wanted a signal. The panic runs another day.'}
-  ]},
-{id:'pandemic',minMonth:8,prob:.07,alert:true,ico:'🦠',kicker:'GLOBAL EMERGENCY',
-  tag:'⚠️ PANDEMIC',headline:'Novel virus triggers global lockdowns',
-  alertHeadline:'PANDEMIC DECLARED',
-  alertDesc:'A fast-spreading virus just shut down the global economy overnight. Markets are in freefall. Unemployment is about to explode. <b>Every playbook is out the window.</b>',
-  body:'The economy freezes. Businesses shutter, unemployment about to spike violently, growth collapses. Deflationary shock now, massive fiscal response coming. This is <b>2020 all over again</b> — and you hold the wheel.',
-  effects:{growthPush:-1.2,unempPush:1.5,infPush:-.3,stress:20},
-  responses:[
-    {ico:'💵',t:'Slash rates to zero + emergency QE',desc:'Everything, everywhere, all at once.',stakes:[{t:'↓ collapse',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Future inflation',c:'neg'}],
-      fx:{rateOverride:0.25,qeTaps:100,growthPush:.4},react:{banks:10,treasury:8,congress:10,people:8},
-      hl:'Fed Goes Nuclear: Rates to Zero, QE Unleashed',
-      outcome:'You went nuclear — rates to the floor, QE unleashed. <b>Tap to inject reserves.</b> You likely prevented a depression. But you also seeded the inflation that will define your term\'s back half. There was no other choice. There rarely is.'},
-    {ico:'🏦',t:'Targeted facilities only',desc:'Support credit markets without going to zero.',stakes:[{t:'Measured',c:'info'},{t:'May be too slow',c:'neg'}],
-      fx:{reserves:300,stress:-10,rate:-1.0},react:{banks:3,treasury:-3,congress:-6,people:-8},
-      hl:'Fed Deploys Targeted Facilities — Critics Call It Timid',
-      outcome:'You held back the bazooka. History may call it prudent or timid. In a freefall, <b>markets punish half-measures</b>. The recovery may be slower for it.'}
-  ]},
-{id:'fxCrisis',minMonth:5,prob:.10,alert:false,ico:'💱',
-  tag:'⚠️ CURRENCY',headline:'Emerging-market currency crisis — capital floods to dollars',
-  body:'A major emerging economy defaulted. Capital is stampeding into the dollar, pushing it higher. U.S. exporters hurt, but Treasuries are in massive demand — <b>yields falling, reserves flooding in</b>.',
-  effects:{reserves:300,growthPush:-.15,deposits:100},
-  responses:[
-    {ico:'⏸️',t:'Let the safe-haven flows work',desc:'The dollar\'s strength is a vote of confidence.',stakes:[{t:'↑ reserves',c:'pos'},{t:'↓ exports',c:'neg'}],
-      fx:{},react:{banks:4,treasury:5,congress:-2,people:0},
-      hl:'Dollar Surges as Fed Lets Safe-Haven Flows Run',
-      outcome:'Treasuries rally, reserves swell — <b>the dollar is the world\'s refuge, and that\'s power</b>. But exporters and Congress grumble about the strong dollar.'},
-    {ico:'🌍',t:'Coordinate with foreign central banks',desc:'Swap lines to stabilize the global system.',stakes:[{t:'Global stability',c:'pos'},{t:'Congress 😠',c:'neg'}],
-      fx:{stress:-8},react:{banks:5,treasury:6,congress:-6,people:0},
-      hl:'Fed Opens Swap Lines to Stabilize Global Markets',
-      outcome:'You opened dollar swap lines — <b>quiet plumbing that keeps the global system from seizing</b>. Insiders praise the statesmanship. Congress asks why you\'re "bailing out foreigners."'}
-  ]},
-{id:'oilCartel',minMonth:4,prob:.10,alert:false,ico:'🛢️',
-  tag:'⚠️ ENERGY',headline:'Oil cartel slashes production — prices spike 30%',
-  body:'A coordinated production cut sends energy prices soaring. Gas jumps overnight. A classic <b>supply-side inflation shock</b> — raises prices while dragging growth. Your rate lever can cool demand but can\'t make oil.',
-  effects:{supplyShock:1.3,growthPush:-.2},
-  responses:[
-    {ico:'📣',t:'Look through the shock',desc:'Supply shocks are temporary. Don\'t tighten into a slowdown.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'}],
-      fx:{},react:{banks:-2,treasury:0,congress:4,people:2},
-      hl:'Fed Looks Past Oil Shock — No Rate Response',
-      outcome:'You signaled patience — "energy shocks pass." Consumers appreciate not adding rate pain to gas pain. But if inflation expectations <b>un-anchor</b>, you\'ll pay later. A calculated bet.'},
-    {ico:'⚠️',t:'Signal vigilance on inflation',desc:'Protect price credibility even for a supply shock.',stakes:[{t:'Credibility',c:'pos'},{t:'Growth risk',c:'neg'},{t:'People 😠',c:'neg'}],
-      fx:{infPush:-.15},react:{banks:4,treasury:2,congress:-4,people:-4},
-      hl:'Fed Talks Tough as Oil Prices Spike',
-      outcome:'You talked tough. Bond markets trust you — <b>expectations stay anchored</b>. But hawkishness into an oil slowdown risks squeezing an economy already hurting from expensive energy.'}
-  ]},
-{id:'chinaSlowdown',minMonth:8,prob:.10,alert:false,ico:'🏭',
-  tag:'⚠️ GLOBAL',headline:'China\'s economy stalls — global demand craters',
-  body:'China\'s property sector collapsed, taking consumer spending with it. Global commodity prices are falling. U.S. exporters are getting crushed, but cheaper imports mean <b>disinflation is coming for free</b>. The dollar is surging as capital flees to safety.',
-  effects:{growthPush:-.3,reserves:150,infPush:-.1},
-  responses:[
-    {ico:'🌍',t:'Coordinate — open swap lines',desc:'Stabilize the global system. The Fed as lender of last resort to the world.',stakes:[{t:'↓ contagion',c:'pos'},{t:'Congress 😠',c:'neg'}],
-      fx:{stress:-8},react:{banks:5,treasury:6,congress:-5,people:0},
-      hl:'Fed Extends Dollar Lines as China Falters',
-      outcome:'You opened dollar swap lines to stabilize global markets. It worked — quietly, behind the scenes. But Congress asked why the American central bank is propping up foreign economies. <b>Global plumbing is invisible until it breaks.</b>'},
-    {ico:'⏸️',t:'Monitor — this isn\'t our problem yet',desc:'China\'s economy is not America\'s mandate.',stakes:[{t:'Prudent',c:'info'},{t:'If contagion spreads…',c:'neg'}],
-      fx:{},react:{banks:-2,treasury:-3,congress:3,people:0},
-      hl:'Fed Sits Out China Crisis — Contagion Risk Lingers',
-      outcome:'You stayed out of it. Domestically popular — but the global financial system runs on dollars, and when you don\'t provide them, <b>the plumbing tightens everywhere</b>. Contagion risk lingers.'}
-  ]},
-{id:'euDebt',minMonth:12,prob:.08,alert:false,ico:'📉',
-  tag:'⚠️ GLOBAL',headline:'European sovereign debt crisis — bond markets seize',
-  body:'A major European economy can\'t roll its debt. Bond yields spike across the continent. Capital floods into U.S. Treasuries — <b>yields falling, dollar surging, reserves flooding in</b>. Global recession risk is real.',
-  effects:{reserves:250,growthPush:-.2,infPush:-.05},
-  responses:[
-    {ico:'🏦',t:'Backstop — dollar swap lines at scale',desc:'The global system needs dollars and you\'re the only source.',stakes:[{t:'Global stability',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Balance sheet ↑',c:'info'}],
-      fx:{reserves:200,stress:-12},react:{banks:6,treasury:5,congress:-8,people:-2},
-      hl:'Fed Floods Europe With Dollars, Congress Fumes',
-      outcome:'You flooded the world with dollars through swap lines. The crisis contained itself because markets knew the Fed would provide. Congress is furious about foreign entanglements. <b>You just learned why the dollar is a responsibility, not just a privilege.</b>'},
-    {ico:'⏸️',t:'Stand back — protect the domestic mandate',desc:'Your job is American prices and jobs. Period.',stakes:[{t:'Domestic focus',c:'info'},{t:'Global risk',c:'neg'}],
-      fx:{stress:10},react:{banks:-3,treasury:-4,congress:4,people:2},
-      hl:'Fed Declines Europe Backstop — Stress Climbs',
-      outcome:'You kept your hands clean. The crisis deepened before the ECB managed to contain it — barely. Financial stress climbed and global growth took a hit. <b>In a dollar world, neutrality is a policy choice with consequences.</b>'}
-  ]}
-];
+let activeDeck=null;
+let ACTIVE_SHOCKS=[];
+let ACTIVE_NEWS=[];
 
-const NEWS=[
-{id:'groceryPrices',turn:[2,14],prob:.5,type:'',
-  tag:'CONSUMER PRICES',headline:'Grocery prices up 8% — public outrage builds',
-  body:'Eggs, meat, bread lead the surge. <b>"What is the Fed doing?"</b> trends nationwide. Congress demands a hearing.',
-  effects:{infPush:.2},
-  responses:[
-    {ico:'🎤',t:'Address the nation — signal resolve',desc:'Use the podium. Promise price stability. (Rates locked till FOMC.)',stakes:[{t:'People react',c:'info'},{t:'Credibility test',c:'neg'}],
-      fx:{},react:{banks:2,treasury:0,congress:-3,people:2},
-      hl:'Chair Vows Price Stability in National Address',
-      outcome:'You spoke to the country, promising to defend price stability. Buys goodwill — but <b>the people want lower prices, not speeches</b>. The next CPI print had better cooperate.'},
-    {ico:'⏸️',t:'Stay quiet — let the data speak',desc:'Don\'t feed the panic.',stakes:[{t:'Disciplined',c:'info'},{t:'People 😠',c:'neg'}],
-      fx:{},react:{banks:3,treasury:0,congress:-4,people:-5},
-      hl:'Fed Silent on Grocery Prices — Congress Pounces',
-      outcome:'You stayed silent. Principled — but in your absence, <b>Congress filled the vacuum with blame</b>. Aimed at you.'}
-  ]},
-{id:'congressSpend',turn:[4,18],prob:.5,type:'fiscal',
-  tag:'FISCAL POLICY',headline:'Congress passes $380B infrastructure bill',
-  body:'Roads, bridges, broadband — funded by <b>new Treasury issuance</b>. Reserves will drain to fund it. Growth now, plumbing squeeze later.',
-  effects:{debt:380,growthPush:.3,infPush:.05,reserves:-200,tga:200,deposits:200},
-  responses:[
-    {ico:'✅',t:'Publicly support it',desc:'Endorse the fiscal boost.',stakes:[{t:'↑ growth',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'↑ inflation',c:'neg'}],
-      fx:{growthPush:.2,infPush:.03},react:{banks:2,treasury:-8,congress:12,people:6},
-      hl:'Fed Chair Endorses $380B Infrastructure Bill',
-      outcome:'You backed the bill. Growth gets a jolt — but Treasury drained the system to fund it, and <b>inflation hasn\'t read the "transitory" memo</b>. Watch your stress gauge.'},
-    {ico:'🚫',t:'Warn on inflation and deficits',desc:'Push back publicly. Your voice moves markets.',stakes:[{t:'Credibility',c:'pos'},{t:'Congress 😠',c:'neg'}],
-      fx:{},react:{banks:3,treasury:8,congress:-10,people:-4},
-      hl:'Fed Warns Against Spending Bill — Congress Erupts',
-      outcome:'You warned against it. It passes anyway — <b>you\'re the Fed, not Congress</b> — but markets heard your hawkishness. Treasury is grateful. Congress is furious.'}
-  ]},
-{id:'pressPressure',turn:[10,30],prob:.5,type:'',
-  tag:'POLITICAL',headline:'President demands rate cuts on national TV',
-  body:'"<b>The Fed is holding this economy hostage.</b>" Prime time, 40 million viewers, 62% agree. Every move now reads through a political lens.',
-  effects:{},
-  responses:[
-    {ico:'🗣️',t:'Defend independence publicly',desc:'The Fed answers to data, not politics.',stakes:[{t:'Credibility ++',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'People 😠',c:'neg'}],
-      fx:{},react:{banks:6,treasury:5,congress:-6,people:-7},
-      hl:'Chair Defends Fed Independence Against President',
-      outcome:'You held the line publicly. The President fumes, the people feel ignored — but <b>the bond market just priced in Fed independence</b>. Long yields ease as expectations anchor. Painful now, valuable forever.'},
-    {ico:'🤝',t:'Stay diplomatically silent',desc:'Don\'t escalate. Don\'t capitulate.',stakes:[{t:'Avoids fight',c:'info'},{t:'Looks weak',c:'neg'}],
-      fx:{},react:{banks:0,treasury:0,congress:2,people:0},
-      hl:'Fed Silent as White House Demands Rate Cuts',
-      outcome:'You declined to engage. No fight — but <b>silence in the face of pressure invites more of it</b>. The President reads it as weakness and turns up the heat.'}
-  ]},
-{id:'housingBubble',turn:[8,28],prob:.45,type:'',
-  tag:'HOUSING',headline:'Home prices up 18% — "Is this a bubble?"',
-  body:'Shelter costs are the biggest driver of CPI. Mortgage rates haven\'t slowed the market. First-time buyers are priced out. <b>The Fed\'s rate policy directly sets mortgage costs</b> — and everyone knows it.',
-  effects:{infPush:.12},
-  responses:[
-    {ico:'⚠️',t:'Warn about financial stability risks',desc:'Use the podium to cool speculation.',stakes:[{t:'Credibility +',c:'pos'},{t:'Banks 😠',c:'neg'},{t:'People ❤️',c:'pos'}],
-      fx:{cred:2},react:{banks:-5,treasury:2,congress:2,people:5},
-      hl:'Fed Sounds Alarm on Housing Froth',
-      outcome:'You warned publicly about housing froth. Mortgage lenders hate the scrutiny, but first-time buyers appreciated someone in power acknowledging the problem. <b>Jawboning isn\'t policy — but it\'s not nothing.</b>'},
-    {ico:'⏸️',t:'Not the Fed\'s mandate — let markets work',desc:'Asset prices aren\'t in your mandate. Inflation and employment are.',stakes:[{t:'Discipline',c:'info'},{t:'People 😠',c:'neg'}],
-      fx:{},react:{banks:4,treasury:0,congress:-2,people:-4},
-      hl:'Fed Declines to Weigh in on Housing Bubble',
-      outcome:'You stayed silent on housing. Purists respected the restraint — the Fed\'s mandate is prices and employment, not home values. But to a generation locked out of homeownership, <b>the silence was the message.</b>'}
-  ]},
-{id:'techLayoffs',turn:[6,26],prob:.45,type:'',
-  tag:'LABOR MARKET',headline:'Tech sector sheds 120,000 jobs in one quarter',
-  body:'The biggest names in tech are cutting deep. Headlines scream recession — but the rest of the economy is still hiring. A <b>sectoral rotation</b>, not a collapse. The question: does the Fed respond to headlines or data?',
-  effects:{unempPush:.15,growthPush:-.05},
-  responses:[
-    {ico:'📊',t:'Point to the broader data — labor market is fine',desc:'Tech layoffs dominate headlines but total payrolls are growing.',stakes:[{t:'Data-driven',c:'pos'},{t:'Looks cold',c:'neg'}],
-      fx:{},react:{banks:3,treasury:2,congress:-2,people:-4},
-      hl:'Fed Cites Strong Payrolls, Waves Off Tech Layoffs',
-      outcome:'You cited the data: total employment growing, claims stable, other sectors hiring. All true. But to the laid-off engineer watching you say the economy is "strong," <b>aggregate data is cold comfort for individual pain.</b>'},
-    {ico:'🎤',t:'Acknowledge the hardship — signal you\'re watching',desc:'Show empathy without changing policy.',stakes:[{t:'People ❤️',c:'pos'},{t:'Markets wonder',c:'neg'}],
-      fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
-      hl:'Chair Voices Concern for Laid-Off Workers',
-      outcome:'You acknowledged the pain without overpromising. Markets briefly dipped on the dovish tone, then recovered when you clarified nothing had changed. <b>Communication is the Fed\'s first tool — and its trickiest.</b>'}
-  ]},
-{id:'debtCeiling',turn:[24,46],prob:.40,type:'fiscal',
-  tag:'FISCAL CRISIS',headline:'Debt ceiling standoff — Treasury warns of default in 30 days',
-  body:'Congress can\'t agree on raising the debt ceiling. Treasury is burning through the TGA on extraordinary measures. If the U.S. defaults on its debt, <b>the global financial system breaks</b>. This isn\'t your fight — but the fallout would be.',
-  effects:{stress:15,tga:-200},
-  responses:[
-    {ico:'📣',t:'Publicly urge Congress to act',desc:'Break protocol and wade into fiscal politics.',stakes:[{t:'↓ stress',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Independence risk',c:'neg'}],
-      fx:{stress:-8,cred:-2},react:{banks:4,treasury:8,congress:-8,people:3},
-      hl:'Chair Warns Congress: Default Would Break the System',
-      outcome:'You stepped into the arena and told Congress the consequences of default. Treasury was grateful. Congress accused you of overreach. <b>You spent credibility to buy stability</b> — a trade you\'ll make more than once.'},
-    {ico:'🤐',t:'Stay out of it — fiscal policy isn\'t your lane',desc:'Protect independence. Prepare contingency plans quietly.',stakes:[{t:'Independence',c:'pos'},{t:'Stress builds',c:'neg'}],
-      fx:{},react:{banks:-2,treasury:-5,congress:3,people:0},
-      hl:'Fed Silent on Debt Ceiling — Stress Builds',
-      outcome:'You said nothing publicly while preparing emergency liquidity facilities behind the scenes. Independence preserved — but Treasury felt abandoned, and the stress gauge climbed. <b>Silence has a cost when the clock is ticking.</b>'}
-  ]},
-{id:'autoStrike',turn:[14,38],prob:.40,type:'',
-  tag:'LABOR / SUPPLY',headline:'Auto workers strike — production halts nationwide',
-  body:'300,000 workers walk off the line. A <b>supply shock and a wage event in one</b> — production drops and wage settlements will set benchmarks across manufacturing. The Fed can\'t make cars or negotiate contracts.',
-  effects:{supplyShock:.4,growthPush:-.08},
-  responses:[
-    {ico:'📣',t:'Look through it — temporary supply disruption',desc:'Strikes end. Don\'t tighten into a transitory shock.',stakes:[{t:'Protects growth',c:'pos'},{t:'Wage expectations',c:'neg'}],
-      fx:{},react:{banks:-2,treasury:0,congress:3,people:4},
-      hl:'Fed Calls Auto Strike Impact "Transitory"',
-      outcome:'You called it transitory — and you were probably right. But the wage settlement set a benchmark: <b>workers everywhere now know what\'s possible</b>. Whether that feeds inflation depends on what happens next.'},
-    {ico:'⚠️',t:'Flag the wage-price risk',desc:'Big settlements seed expectations for every contract negotiation.',stakes:[{t:'Credibility',c:'pos'},{t:'People 😠',c:'neg'}],
-      fx:{infPush:-.05},react:{banks:4,treasury:2,congress:-3,people:-5},
-      hl:'Fed Warns of Wage-Price Spiral Risk',
-      outcome:'You warned that large wage settlements could feed a wage-price spiral. Workers felt the Fed was rooting against their paycheck. <b>The Phillips Curve doesn\'t care about your sympathies.</b>'}
-  ]},
-{id:'confCollapse',turn:[20,42],prob:.45,type:'',
-  tag:'CONSUMER DATA',headline:'Consumer confidence hits decade low — spending stalls',
-  body:'People have stopped spending. Sentiment surveys show deep pessimism. Retail is hurting. <b>Confidence can be self-fulfilling</b> — if people believe a recession is coming, they pull back, and the recession comes.',
-  effects:{growthPush:-.2},
-  responses:[
-    {ico:'📢',t:'Counter the narrative — the economy is stronger than sentiment',desc:'Use the podium before pessimism becomes reality.',stakes:[{t:'↑ confidence',c:'pos'},{t:'Looks political',c:'neg'}],
-      fx:{growthPush:.08},react:{banks:2,treasury:0,congress:2,people:3},
-      hl:'Fed Pushes Back on Recession Fears',
-      outcome:'You made the case for optimism — citing data, not spin. Some confidence returned. <b>Central bankers manage expectations as much as money supply</b>, and right now expectations needed managing.'},
-    {ico:'⏸️',t:'Let the data speak — don\'t be a cheerleader',desc:'If confidence is falling, there might be a reason.',stakes:[{t:'Discipline',c:'info'},{t:'Self-fulfilling risk',c:'neg'}],
-      fx:{},react:{banks:0,treasury:0,congress:-2,people:-3},
-      hl:'Fed Declines to Cheerlead — Confidence Slides',
-      outcome:'You declined to talk up the economy. The numbers are the numbers. But confidence is fragile, and <b>your silence let the pessimism harden</b>. Sometimes the data needs a narrator.'}
-  ]},
-{id:'tradeWar',turn:[26,46],prob:.40,type:'fiscal',
-  tag:'TRADE POLICY',headline:'New tariffs — import prices spike, retaliation begins',
-  body:'The administration slapped tariffs on $300B of imports. Trading partners retaliate. <b>A tariff is a supply shock and a tax in one</b> — raises prices while dragging growth. Sound familiar? You can\'t tariff your way to prosperity, but you can\'t untariff from this chair either.',
-  effects:{supplyShock:.5,growthPush:-.12},
-  responses:[
-    {ico:'📊',t:'Look through it — one-time price level shift',desc:'Tariffs raise prices once; they don\'t cause persistent inflation.',stakes:[{t:'Economically correct',c:'pos'},{t:'People see prices rise',c:'neg'}],
-      fx:{},react:{banks:2,treasury:0,congress:-3,people:-3},
-      hl:'Fed Calls Tariff Hit "One-Time" — Public Feels Prices',
-      outcome:'You were technically right — a tariff shifts the price level once, not the inflation rate permanently. But telling people "it\'s a one-time increase" while groceries get more expensive <b>is the kind of technically-right that\'s politically wrong.</b>'},
-    {ico:'⚠️',t:'Warn that tariffs complicate the inflation picture',desc:'Acknowledge the policy is making your job harder — without naming sides.',stakes:[{t:'Honest',c:'pos'},{t:'Administration 😠',c:'neg'}],
-      fx:{cred:2},react:{banks:3,treasury:3,congress:-4,people:2},
-      hl:'Fed Flags Tariffs as Inflation Complication',
-      outcome:'You said, carefully, that trade policy was adding uncertainty to the inflation outlook. Economists applauded the honesty. The administration read it as criticism. <b>Independence means saying true things powerful people don\'t want to hear.</b>'}
-  ]},
-{id:'wageSpike',turn:[3,20],prob:.45,type:'',
-  tag:'LABOR DATA',headline:'Wages up 5.2% year-over-year — hottest in a decade',
-  body:'Workers are getting raises. <b>Good for paychecks, complicated for inflation.</b> The Phillips Curve says this matters — wage growth feeds into prices. But workers haven\'t had real wage growth in years. Do you celebrate or worry?',
-  effects:{infPush:.1,growthPush:.08},
-  responses:[
-    {ico:'🎉',t:'Welcome it — workers deserve this',desc:'Real wage growth is a good thing. Don\'t be the villain.',stakes:[{t:'People ❤️',c:'pos'},{t:'Inflation risk',c:'neg'}],
-      fx:{},react:{banks:-3,treasury:-2,congress:5,people:8},
-      hl:'Fed Cheers Wage Gains — Bond Market Reprices',
-      outcome:'You publicly welcomed the wage data. Workers felt seen. But the bond market noted your comfort with 5% wage growth and <b>repriced rate cut expectations to zero</b>. What you say as Chair has consequences you can\'t unring.'},
-    {ico:'📊',t:'Flag it as an inflation risk — stay vigilant',desc:'5% wage growth isn\'t compatible with 2% inflation long-term.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'}],
-      fx:{cred:2},react:{banks:5,treasury:3,congress:-4,people:-6},
-      hl:'Fed Warns Rising Wages Threaten 2% Target',
-      outcome:'You said what the textbook says: sustained wage growth above productivity gains feeds inflation. True, important, and <b>incredibly unpopular with anyone who just got a raise</b>. The bond market loved it. Twitter did not.'}
-  ]}
-];
+const SAVE_KEY='chair_save_v1';
+function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.v===1)return s;}catch(e){}return{v:1,unlocked:['ai-disruption'],best:{}};}
+function writeSave(save){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
+function unlockNext(deckId){const save=loadSave();const idx=DECK_ORDER.indexOf(deckId);if(idx>=0&&idx<DECK_ORDER.length-1){const next=DECK_ORDER[idx+1];if(!save.unlocked.includes(next)){save.unlocked.push(next);writeSave(save);}}return save;}
+function recordBest(deckId,cred){const save=loadSave();if(!save.best[deckId]||cred>save.best[deckId]){save.best[deckId]=Math.round(cred);writeSave(save);}return save;}
 
 // ---- STAKEHOLDER-ANGER CARDS (fire when a faction crosses into anger; each has its own weapon) ----
 const STAKEHOLDER_CARDS={
@@ -644,10 +475,11 @@ const PRESSURE_EVENTS={
   ]}
 };
 
-let S,SC;
+let S;
 function eqComposite(){return S.lrg*0.6+S.mid*0.25+S.sml*0.15;}
-function freshState(sc){
-  return{month:0,year:sc.yr||2025,termMonth:1,
+function freshState(deck){
+  const sc=deck.state;
+  return{month:0,year:deck.yr||2026,termMonth:1,
     inf:sc.inf,un:sc.un,gr:sc.gr,rate:sc.rate,neutral:2.75,
     transmitted:0,supplyShock:0,infPush:0,unempPush:0,growthPush:0,
     reserves:sc.reserves,tga:sc.tga,deposits:sc.deposits,debt:sc.debt,
@@ -842,7 +674,7 @@ function checkEquityEvents(){
 }
 function nextTurn(){
   if(checkEquityEvents())return;
-  SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
+  ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
   const alertShock=S.pendingShocks.find(s=>s.alert);
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
   if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
@@ -864,12 +696,12 @@ function nextTurn(){
     }
   }
   if(isFomc()){showEvent(pickNewsOrFomc());return;}
-  const domestic=NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.5){const ev=pick(domestic);S.fired[ev.id]=true;showEvent(ev);}
   else{showDataPrint(makeDataPrint());}
 }
 function pickNewsOrFomc(){
-  const domestic=NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.55){const ev=pick(domestic);S.fired[ev.id]=true;return ev;}
   return{kind:'fomc',tag:'🔔 FOMC MEETING',headline:pick(['Rate decision day','The Committee convenes','All eyes on the Fed','Markets await your call']),
     body:`FOMC meeting. Inflation <b>${S.inf.toFixed(1)}%</b>, unemployment <b>${S.un.toFixed(1)}%</b>, growth <b>${S.gr.toFixed(1)}%</b>. One of your <b>6 chances a year</b> to move rates. Between meetings, your hands are tied. Choose.`,
@@ -1070,6 +902,7 @@ const ENDINGS={
 };
 function endGame(win,reason){
   S.gameover=true;
+  if(activeDeck){recordBest(activeDeck.id,S.cred);if(S.cred>=110)unlockNext(activeDeck.id);}
   $('responseSlot').innerHTML='';$('tapZone').classList.remove('show');$('advBtn').style.display='none';$('consequence').classList.remove('show');
   const rec=PK.map(k=>`<span class="cr ${S.app[k]>55?'pos':'neg'}">${S.app[k]>55?'❤️':'😠'} ${PN[k]} ${Math.round(S.app[k])}%</span>`).join('');
   const termDone=S.termMonth>=48;const c=S.cred;
@@ -1095,7 +928,7 @@ function endGame(win,reason){
           : 'Historic Landslide: Chair Reconfirmed for Second Term';
   const verdict=winTier>=1?`Final credibility: <b>${Math.round(c)}/200</b>${winTier===3?' — the master tier. Almost nobody gets here.':winTier===2?' — a strong, respected term.':' — you cleared the bar for a second term.'}`:`Final credibility: <b>${Math.round(c)}/200</b> — short of the 110 needed for reappointment.`;
   const fc=$('falloutCard');
-  fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${medal} ${closingHl}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="location.reload()">↺ New Term</button>`;
+  fc.innerHTML=`<div class="anchor-head"><div class="anchor-seal">CN</div><div class="anchor-brand"><div class="ab1">CAPITAL NEWS</div><div class="ab2">The Decision Desk</div></div></div><div class="anchor-rule"></div><div class="anchor-headline">${medal} ${closingHl}</div><div class="con-body"><b>Final numbers:</b> Inflation ${S.inf.toFixed(1)}% · Unemployment ${S.un.toFixed(1)}% · Growth ${S.gr.toFixed(1)}% · Expectations ${S.exp.toFixed(1)}% · Equities ${Math.round(eqComposite())}<br>Served ${S.termMonth-1} of 48 months<br>${verdict}</div><div class="con-reactions">${rec}</div><button class="advance-btn inline-adv" style="display:block;margin:14px 0 0;width:100%" onclick="backToPicker()">↺ New Term</button>`;
   $('falloutScrim').classList.add('show');
   if(typeof Audio8!=='undefined'){
     if(winTier===3)Audio8.sfx('fanfare');else if(winTier>=1)Audio8.sfx('win');else{Audio8.sfx('lose');shake();}
@@ -1370,9 +1203,57 @@ function animateNum(el,from,to,dur,fmtFn){
 }
 $('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMute();$('muteBtn').textContent=m?'🔇':'🔊';});
 
-function boot(){SC=pick(SCENARIOS);$('introNarrative').innerHTML=SC.narrative;}
-$('startBtn').addEventListener('click',()=>{Audio8.init();S=freshState(SC.state);$('introScreen').classList.remove('active');$('gameScreen').classList.add('active');nextTurn();});
-$('resetBtn').addEventListener('click',()=>{$('gameScreen').classList.remove('active');$('introScreen').classList.add('active');$('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';$('consequence').classList.remove('show');$('falloutScrim').classList.remove('show');$('plumbDr').classList.remove('show');boot();});
+function renderPicker(){
+  const save=loadSave();
+  const list=$('deckList');list.innerHTML='';
+  DECKS.forEach((deck,i)=>{
+    const unlocked=save.unlocked.includes(deck.id);
+    const best=save.best[deck.id];
+    const stars='★'.repeat(deck.difficulty)+'☆'.repeat(4-deck.difficulty);
+    const card=document.createElement('div');
+    card.className='deck-card'+(unlocked?'':' locked');
+    const prevDeck=i>0?DECKS[i-1]:null;
+    const lockMsg=!unlocked&&prevDeck?`🔒 Complete ${prevDeck.title} to unlock`:'';
+    card.innerHTML=`<div class="dc-top"><span class="dc-title">${deck.title}</span><span class="dc-badge${best?' score':''}">${unlocked?(best?'★ '+best:'—'):'🔒'}</span></div><div class="dc-sub">${deck.subtitle}</div><div class="dc-diff">${stars}</div>${lockMsg?'<div class="dc-lock-msg">'+lockMsg+'</div>':''}`;
+    if(unlocked)card.onclick=()=>showDeckDetail(deck);
+    list.appendChild(card);
+  });
+}
+function showDeckDetail(deck){
+  activeDeck=deck;
+  $('deckPicker').style.display='none';
+  $('deckDetail').style.display='flex';
+  $('detailTitle').textContent=deck.title;
+  $('detailDiff').textContent='★'.repeat(deck.difficulty)+'☆'.repeat(4-deck.difficulty)+' · '+deck.yr;
+  $('introNarrative').innerHTML=deck.narrative;
+}
+$('deckBack').addEventListener('click',()=>{
+  $('deckDetail').style.display='none';
+  $('deckPicker').style.display='flex';
+});
+$('startBtn').addEventListener('click',()=>{
+  if(!activeDeck)return;
+  Audio8.init();
+  ACTIVE_SHOCKS=activeDeck.shocks;
+  ACTIVE_NEWS=activeDeck.news;
+  S=freshState(activeDeck);
+  $('introScreen').classList.remove('active');
+  $('gameScreen').classList.add('active');
+  nextTurn();
+});
+function backToPicker(){
+  $('gameScreen').classList.remove('active');
+  $('introScreen').classList.add('active');
+  $('deckDetail').style.display='none';
+  $('deckPicker').style.display='flex';
+  $('breakingSlot').innerHTML='';$('responseSlot').innerHTML='';
+  $('consequence').classList.remove('show');
+  $('falloutScrim').classList.remove('show');
+  $('plumbDr').classList.remove('show');
+  renderPicker();
+}
+$('resetBtn').addEventListener('click',()=>{backToPicker();});
+function boot(){renderPicker();}
 boot();
 })();
 </script>
