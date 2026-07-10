@@ -363,19 +363,19 @@ tag:'⚠️ MARKETS',headline:'AI bubble bursts — flagship company misses earn
 alertHeadline:'AI BUBBLE BURSTS',
 alertDesc:'After 18 months of "AI changes everything" — massive data center buildouts, GPU shortages, trillion-dollar valuations — a flagship AI company just missed earnings catastrophically. Most enterprise AI deployments aren\'t generating revenue. <b>The market isn\'t rotating. It\'s panicking.</b> AI stocks have cratered 35% in two weeks. The echoes of 1999 are deafening.',
 body:'The narrative flipped overnight. The companies that were going to change the world can\'t show revenue. Venture funding is frozen. AI stocks are down 35% in two weeks and falling. <b>The real economy is about to feel what happens when a trillion dollars of speculative capital evaporates.</b>',
-effects:{growthPush:-.4,stress:12},
+effects:{growthPush:-.4,stress:12,equitiesDelta:-30},
 responses:[
 {ico:'🚑',t:'Provide liquidity — backstop the correction',desc:'Open facilities, signal the Fed won\'t let a tech correction become a financial crisis.',stakes:[{t:'↓ stress',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'Moral hazard',c:'neg'}],
-fx:{reserves:200,stress:-15,cred:-3},react:{banks:8,treasury:2,congress:-4,people:2},
+fx:{reserves:200,stress:-15,cred:-3,resetEquityPeak:true},react:{banks:8,treasury:2,congress:-4,people:2},
 outcome:'You backstopped it. Stress fell, banks stabilized, and the correction didn\'t cascade into the real economy. But you just told every investor in America that the Fed rescues speculation. <b>The next bubble will be bigger because of what you did today.</b> That\'s the trade — and you\'ll make it again.'},
 {ico:'🪨',t:'Let markets clear — this correction is healthy',desc:'Overvaluation corrected. That\'s markets working. Don\'t intervene.',stakes:[{t:'Credibility +',c:'pos'},{t:'Stress stays',c:'neg'},{t:'Banks 😠',c:'neg'}],
-fx:{cred:4},react:{banks:-6,treasury:0,congress:2,people:-3},
+fx:{cred:4,resetEquityPeak:true},react:{banks:-6,treasury:0,congress:2,people:-3},
 outcome:'You let it burn. Painful — portfolios bled, startups folded, and the layoffs extended beyond AI into adjacent sectors. But the market found a real floor, not a Fed-supported one. <b>The next cycle will be more honest because of what you didn\'t do today.</b>'}
 ]},
 {id:'ai-flash-crash',minMonth:8,prob:.10,alert:false,ico:'⚡',
 tag:'⚠️ MARKETS',headline:'AI-driven flash crash wipes 8% off equities in 90 minutes',
 body:'Algorithmic trading systems — most of them AI-driven — triggered a cascading sell-off that wiped 8% off equities in 90 minutes before stabilizing. By close, half the losses recovered. No fundamental cause. Pure machine feedback loops. Congress is demanding the Fed "do something about AI in the markets." <b>The actual economic impact is approximately zero.</b>',
-effects:{stress:6},
+effects:{stress:6,equitiesDelta:-10},
 responses:[
 {ico:'🔍',t:'Announce a review of AI in financial markets',desc:'Signal you take the risk seriously. Buy time with a study.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Banks 😠',c:'neg'}],
 fx:{stress:-4},react:{banks:-4,treasury:0,congress:5,people:4},
@@ -452,16 +452,16 @@ body:'Venture capital is flooding into anything with "AI" in the pitch deck. Val
 effects:{growthPush:.1},
 responses:[
 {ico:'⚠️',t:'Note the concentration risk publicly',desc:'You\'ve seen this movie before. Say so — carefully.',stakes:[{t:'On record',c:'pos'},{t:'Prudent',c:'info'},{t:'Banks 😠',c:'neg'}],
-fx:{cred:2},react:{banks:-4,treasury:0,congress:2,people:0},
+fx:{cred:2,equitiesDelta:-8},react:{banks:-4,treasury:0,congress:2,people:0},
 outcome:'You flagged the concentration risk in public remarks — not an alarm, just an observation about capital allocation. Investors grumbled. <b>If the bubble pops later, you\'ll be the person who warned them. If it doesn\'t, you\'ll be the person who doubted the future.</b> Either way, you\'re on the record.'},
 {ico:'🤐',t:'Stay silent — asset allocation isn\'t your mandate',desc:'You regulate banks, not VC firms. Let the market allocate.',stakes:[{t:'No immediate cost',c:'info'},{t:'Future risk',c:'neg'}],
-fx:{},react:{banks:3,treasury:0,congress:0,people:0},
+fx:{bubbleIgnore:true},react:{banks:3,treasury:0,congress:0,people:0},
 outcome:'You said nothing. The money kept flowing. If these investments produce real value, your silence was wisdom. <b>If they don\'t, your silence was the same silence that preceded every bubble nobody wanted to name until it popped.</b>'}
 ]},
 {id:'ai-energy-spike',turn:[8,24],prob:.45,type:'',
 tag:'ENERGY / SUPPLY',headline:'Data centers strain the grid — electricity prices spike in tech hubs',
 body:'AI compute needs electricity — a lot of it. Data center construction is outrunning grid capacity. Energy prices are spiking in regions near AI infrastructure — a localized supply pressure created by domestic demand, not foreign disruption. Nationally, the effect is modest. <b>Locally, it\'s brutal.</b> And it feeds CPI through the energy component.',
-effects:{infPush:.08},
+effects:{supplyShock:.12},
 responses:[
 {ico:'📣',t:'Look through it — localized and temporary',desc:'Grid capacity will catch up. Don\'t tighten for a regional energy squeeze.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'}],
 fx:{},react:{banks:0,treasury:0,congress:2,people:2},
@@ -940,6 +940,7 @@ function applyPassive(e){
   if(e.supplyShock)S.supplyShock+=e.supplyShock;if(e.deposits)S.deposits+=e.deposits;
   if(e.reserves)S.reserves=clamp(S.reserves+e.reserves,0,99999);if(e.tga)S.tga=clamp(S.tga+e.tga,0,99999);
   if(e.debt)S.debt+=e.debt;if(e.stress)S.stress=clamp(S.stress+e.stress,0,150);
+  if(e.equitiesDelta){S.lrg=clamp(S.lrg+e.equitiesDelta,20,250);S.mid=clamp(S.mid+e.equitiesDelta,20,250);S.sml=clamp(S.sml+e.equitiesDelta,20,250);}
 }
 function chooseResponse(r,ev){
   if(S.gameover)return;const f=r.fx||{};
