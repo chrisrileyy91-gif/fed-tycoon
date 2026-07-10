@@ -342,7 +342,7 @@ const DECK_ORDER=['ai-disruption','housing-trap','tariff-shock','geopolitical-fr
 const DECKS=[
 {id:'ai-disruption',title:'AI Disruption',subtitle:'Productivity soars. Jobs vanish. The data says everything\'s fine.',difficulty:2,yr:2026,
 narrative:`The AI productivity boom just reshaped the economy overnight. GDP is growing at <b class="hl">3.2%</b>, inflation is a manageable <b>2.4%</b>, and aggregate unemployment sits at <b>4.2%</b>. Your dashboard says <b class="hl">healthy economy</b>.<br><br>Half the country disagrees. White-collar jobs are evaporating — legal, accounting, content, code. Tech is hiring, but not the people being fired. The <b class="hl">aggregate data is right</b>. The <b class="hl">individual pain is real</b>. And Congress wants to know what the Fed is going to do about it.<br><br>Your tools target the whole economy. The disruption is hitting pieces of it. <b>The numbers say hold steady. The headlines say act.</b> Four years. Your call.`,
-state:{inf:2.4,un:4.2,gr:3.2,rate:3.00,reserves:2800,tga:700,deposits:10500,debt:32000,app:{banks:55,treasury:50,congress:50,people:45}},
+state:{inf:2.4,un:4.2,gr:3.2,rate:2.25,reserves:2800,tga:700,deposits:10500,debt:32000,app:{banks:55,treasury:50,congress:50,people:45}},
 shocks:[
 {id:'mass-layoff-wave',minMonth:4,prob:.12,alert:true,ico:'📋',kicker:'BREAKING NEWS',
 tag:'⚠️ LABOR CRISIS',headline:'AI restructuring wave — 400,000 white-collar jobs cut',
@@ -1427,6 +1427,7 @@ function backToPicker(){
   $('plumbDr').classList.remove('show');
   renderPicker();
 }
+window.backToPicker=backToPicker;
 $('resetBtn').addEventListener('click',()=>{backToPicker();});
 function boot(){renderPicker();}
 boot();
