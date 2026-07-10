@@ -543,7 +543,7 @@ tag:'⚠️ HOUSING EMERGENCY',headline:'Cities declare housing emergencies — 
 alertHeadline:'HOUSING EMERGENCY DECLARED',
 alertDesc:'Twelve major cities just declared housing emergencies simultaneously. Homelessness is up 40% year-over-year. Families are living in cars. <b>The connection between your rate policy and human suffering is now on the evening news every night.</b> Congress is demanding emergency action. The administration is drafting executive orders.',
 body:'This isn\'t abstract anymore. The housing freeze you helped create has cascaded into a humanitarian crisis in major metros. Shelters are full. Eviction filings are at record highs. The median renter is paying 38% of income on housing. <b>Every night, the news shows families in tent cities followed by a clip of you saying inflation is your priority.</b> The public has made the causal connection — rightly or wrongly — between your rate decisions and their inability to afford a home.',
-effects:{unempPush:.2,stress:10},
+effects:{unempPush:.2},
 responses:[
 {ico:'🤝',t:'Coordinate with Treasury on targeted housing relief',desc:'Step outside your lane. Work with fiscal authorities on emergency rental assistance and MBS purchases.',stakes:[{t:'↓ stress',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Credibility risk',c:'neg'},{t:'Independence risk',c:'neg'}],
 fx:{stress:-8,cred:-4,reserves:150},react:{banks:-4,treasury:6,congress:6,people:8},
@@ -572,7 +572,7 @@ body:'Core CPI ex-shelter has fallen to 2.1%. <b>With shelter, it\'s 3.5%.</b> O
 effects:{infPush:.1},
 responses:[
 {ico:'📣',t:'Look through the lag — shelter will catch up to reality',desc:'The market has cooled. CPI is backward-looking. Don\'t overtighten based on stale data.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Credibility risk',c:'neg'},{t:'Growth-protecting',c:'info'}],
-fx:{cred:2},react:{banks:-3,treasury:-2,congress:3,people:3},
+fx:{},react:{banks:-3,treasury:-2,congress:3,people:3},
 outcome:'You told the market you\'re looking through shelter\'s measurement lag — that the real housing market has already cooled and CPI will reflect it in 6-12 months. It\'s the smart read. It\'s probably right. <b>But "probably right in 12 months" is a long time to be wrong about inflation if you\'re wrong.</b> The hawks noticed you just gave yourself permission to cut.'},
 {ico:'📊',t:'Inflation is inflation — we respond to the data as it is',desc:'3.5% is 3.5%. The lag is real but you can\'t set policy on forecasts of where data will be.',stakes:[{t:'Disciplined',c:'info'},{t:'Credibility +',c:'pos'},{t:'Growth risk',c:'neg'}],
 fx:{cred:1},react:{banks:3,treasury:2,congress:-3,people:-4},
@@ -611,7 +611,7 @@ responses:[
 fx:{},react:{banks:2,treasury:0,congress:-2,people:-3},
 outcome:'You called it cyclical and you\'re probably right — builders will resume when financing costs drop. But every month of paused construction is <b>supply that doesn\'t exist 18 months from now.</b> The housing deficit deepens while you wait for the cycle to turn.'},
 {ico:'⚠️',t:'Flag the supply destruction as a concern for future inflation',desc:'Reduced construction today means tighter supply tomorrow. This feeds shelter inflation forward.',stakes:[{t:'Forward-looking',c:'info'},{t:'Credibility +',c:'pos'},{t:'Honest',c:'info'}],
-fx:{cred:2},react:{banks:-1,treasury:2,congress:2,people:3},
+fx:{cred:2},react:{banks:-4,treasury:2,congress:2,people:3},
 outcome:'You publicly connected reduced construction to future shelter inflation pressure. <b>You just made the case, on the record, that your own rate policy is contributing to future inflation through the supply channel.</b> Intellectually brave. Politically complex.'}
 ]},
 {id:'first-time-buyer-crisis',turn:[8,24],prob:.50,type:'',requires:'mortgage-lock-in',
@@ -656,7 +656,7 @@ body:'Your own research staff published a paper estimating that the supply destr
 effects:{},
 responses:[
 {ico:'✅',t:'Embrace the research — the Fed learns and adapts',desc:'Institutional credibility comes from honest self-assessment, not from being infallible.',stakes:[{t:'Credibility +',c:'pos'},{t:'Intellectually brave',c:'info'},{t:'People ❤️',c:'pos'}],
-fx:{cred:3},react:{banks:-2,treasury:2,congress:2,people:5},
+fx:{cred:3},react:{banks:-6,treasury:2,congress:2,people:5},
 outcome:'You publicly cited the paper and said the Fed\'s understanding of the housing transmission mechanism has evolved. It was an extraordinary act of institutional honesty — <b>admitting your own policy had unintended consequences, in real time, while still in the chair.</b> It also gave you intellectual cover to ease, which the hawks noticed immediately.'},
 {ico:'⏸️',t:'One paper isn\'t policy — the research is ongoing',desc:'Don\'t let one study drive the narrative. The full picture is more complex.',stakes:[{t:'Cautious',c:'info'},{t:'Banks ❤️',c:'pos'},{t:'People 😠',c:'neg'}],
 fx:{cred:-1},react:{banks:3,treasury:0,congress:-3,people:-4},
@@ -675,8 +675,8 @@ fx:{},react:{banks:-2,treasury:0,congress:2,people:4},
 outcome:'You stated what was obvious — rate hikes only affect people who need loans. Cash buyers are rate-insensitive. <b>It was the kind of honesty that makes central bankers uncomfortable because it exposes a fundamental limitation of the tool.</b> Trust earned.'}
 ]},
 {id:'homelessness-crisis',turn:[18,36],prob:.45,type:'',requires:'affordable-housing-emergency',
-tag:'PUBLIC CRISIS',headline:'Homelessness up 40% — "This is who the inflation fight is being fought on"',
-body:'Homelessness has surged 40% in two years. Shelters are overflowing. The causal chain is long — rates → housing freeze → rent spikes → evictions → homelessness — but every link connects back to the conditions your policy created. <b>You didn\'t cause this directly. But the country has drawn the line from your decisions to these outcomes.</b> The question isn\'t policy anymore. It\'s moral.',
+tag:'PUBLIC CRISIS',headline:'Homelessness up 65% — "This is who the inflation fight is being fought on"',
+body:'Homelessness has surged 65% since the emergency was declared. Shelters are overflowing. The causal chain is long — rates → housing freeze → rent spikes → evictions → homelessness — but every link connects back to the conditions your policy created. <b>You didn\'t cause this directly. But the country has drawn the line from your decisions to these outcomes.</b> The question isn\'t policy anymore. It\'s moral.',
 effects:{},
 responses:[
 {ico:'📺',t:'Address the nation — this is beyond policy debates',desc:'Some moments transcend the mandate. Speak to the human cost. Don\'t promise what you can\'t deliver.',stakes:[{t:'People ❤️❤️',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Moral authority',c:'info'}],
