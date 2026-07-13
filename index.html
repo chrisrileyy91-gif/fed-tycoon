@@ -741,7 +741,7 @@ responses:[
 fx:{},react:{banks:2,treasury:0,congress:-2,people:-2},
 outcome:'You called it transitional. You might be right — eventually. But "eventually" in supply chain terms means 2-3 years of elevated costs while new factories are built, new contracts negotiated, and new logistics routes established. <b>In the meantime, every month of rerouting costs feeds the inflation your scoring depends on.</b> Patience is the right call if you can afford the time. Can you?'},
 {ico:'⚠️',t:'Flag the structural cost increase — this feeds inflation forward',desc:'Acknowledge that the supply chain restructuring is a persistent cost shock, not a one-time adjustment.',stakes:[{t:'Honest',c:'pos'},{t:'Growth risk',c:'neg'},{t:'Banks 😠',c:'neg'}],
-fx:{cred:2},react:{banks:-3,treasury:2,congress:2,people:0},
+fx:{cred:2},react:{banks:-5,treasury:2,congress:2,people:0},
 outcome:'You publicly acknowledged that supply chain restructuring represents a persistent cost increase — not a blip. Importers and manufacturers appreciated the honesty. Banks worried you were building the case for sustained tight policy into a weakening economy. <b>You named the problem accurately. The problem is that naming it doesn\'t give you any new tools to fix it.</b>'}
 ]}
 ],
@@ -749,7 +749,7 @@ news:[
 {id:'early-trade-tensions',turn:[2,10],prob:.55,type:'',
 tag:'TRADE POLICY',headline:'Tariff proposals gain momentum — markets sense a shift',
 body:'Trade rhetoric is heating up. Congressional leaders from both parties are calling for "tough action" on imports. Specific proposals targeting electronics, steel, and consumer goods are advancing through committee. Nothing is enacted yet, but <b>markets are pricing in the probability.</b> Import-sensitive stocks are falling. The dollar is strengthening on safe-haven flows. The economy is still healthy — but the mood is shifting.',
-effects:{infPush:.05},
+effects:{},
 responses:[
 {ico:'⏸️',t:'Too early to react — proposals aren\'t policy',desc:'Don\'t set monetary policy based on things that might happen. Wait for data.',stakes:[{t:'Disciplined',c:'info'},{t:'If tariffs hit, you\'ll be late',c:'neg'}],
 fx:{},react:{banks:2,treasury:2,congress:-2,people:0},
@@ -758,7 +758,7 @@ outcome:'You declined to react to proposals. Prudent — the Fed doesn\'t set po
 fx:{cred:1},react:{banks:0,treasury:2,congress:-3,people:0},
 outcome:'You flagged trade policy as a risk to the outlook. Markets read it as mild dovish signaling — the Chair is worried about growth. The administration read it as the Fed undermining their trade strategy. <b>Acknowledging a risk isn\'t creating it. But in Washington, naming a risk is seen as choosing a side.</b>'}
 ]},
-{id:'import-price-surge',turn:[4,16],prob:.50,type:'data',
+{id:'import-price-surge',turn:[4,16],prob:.50,type:'data',requires:'tariff-escalation',
 tag:'📊 PRICE DATA',headline:'Import prices up 6.8% — tariff costs flowing through to wholesale',
 body:'The import price index just printed the highest reading in a decade. Wholesale costs for tariffed goods are surging. This is <b>the leading edge of the supply shock</b> — wholesale today becomes retail tomorrow becomes CPI next quarter. The numbers aren\'t in the consumer data yet. They will be.',
 effects:{infPush:.06},
@@ -848,7 +848,7 @@ body:'Anonymous sources report both sides are "close to a framework agreement." 
 effects:{growthPush:.08,equitiesDelta:8},
 responses:[
 {ico:'📢',t:'Welcome the progress — support the confidence recovery',desc:'If businesses start investing again on deal hopes, that\'s real economic activity. Don\'t undermine it.',stakes:[{t:'↑ growth',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'If the deal collapses…',c:'neg'}],
-fx:{},react:{banks:2,treasury:0,congress:4,people:3},
+fx:{cred:-1},react:{banks:0,treasury:0,congress:2,people:2},
 outcome:'You expressed cautious optimism. Business confidence firmed up. Investment thawed slightly. <b>All of it contingent on a deal that doesn\'t exist yet.</b> If it materializes, you look prescient. If talks collapse — and they might — you\'ll have endorsed a rally built on rumors, and the reversal will be ugly. Hope is a legitimate economic input. It\'s also the most fragile one.'},
 {ico:'⏸️',t:'Don\'t comment on trade negotiations — wait for signed agreements',desc:'Rumors aren\'t data. Don\'t set the Fed\'s tone based on anonymous sources.',stakes:[{t:'Disciplined',c:'info'},{t:'Looks pessimistic',c:'neg'}],
 fx:{cred:1},react:{banks:0,treasury:2,congress:-3,people:-2},
@@ -868,7 +868,7 @@ outcome:'You argued that the Fed creates stable conditions under which price adj
 ]},
 {id:'geopolitical-foreshadow',turn:[36,46],prob:.65,type:'',
 tag:'GEOPOLITICAL',headline:'Trade tensions harden into something deeper — allies are choosing sides',
-body:'What started as tariffs is becoming something else. Military posturing in contested waters. Semiconductor export controls tightening. Energy supply agreements being renegotiated along alliance lines. The trade war was about prices. <b>What\'s emerging is about power.</b> Economic channels that were disrupted by tariffs are now being weaponized for strategic advantage. The next Chair won\'t face a trade dispute — they\'ll face a world that\'s <b>fracturing along every axis simultaneously.</b>',
+body:'What started as tariffs is becoming something else. Energy, technology, and alliances are becoming entangled in ways that go beyond trade. The trade war was about prices. <b>What\'s emerging is about power.</b> The economic channels disrupted by tariffs are hardening into something more permanent. The next Chair won\'t face a trade dispute — they\'ll face a world where <b>economics and geopolitics are inseparable.</b>',
 effects:{infPush:.05},
 responses:[
 {ico:'📋',t:'Flag the geopolitical risk in your final remarks',desc:'Leave a warning. The next term\'s shocks will come from multiple directions at once.',stakes:[{t:'Credibility +',c:'pos'},{t:'Forward-looking',c:'info'}],
