@@ -1107,8 +1107,8 @@ outcome:'You drew the line — the Fed manages monetary policy, not municipal fi
 ],
 news:[
 {id:'interest-exceeds-defense',turn:[2,10],prob:.55,type:'data',
-tag:'📊 FISCAL DATA',headline:'Federal interest payments now exceed the defense budget',
-body:'The number just crossed: <b>annual interest on the national debt now exceeds annual defense spending.</b> At current rates, the government pays more to service past borrowing than to defend the country. Every 25bp hike adds roughly $12 billion to the annual interest bill. Your inflation-fighting tool is simultaneously the government\'s biggest new expense. The math that used to be theoretical is now the budget\'s largest line item.',
+tag:'📊 FISCAL DATA',headline:'Federal interest costs still climbing — now 40% above the defense budget',
+body:'The gap keeps widening: <b>annual interest on the national debt is now 40% larger than the entire defense budget — and growing every quarter.</b> At current rates, the government pays more to service past borrowing than to defend the country. Every 25bp hike adds roughly $12 billion to the annual interest bill. Your inflation-fighting tool is simultaneously the government\'s biggest new expense. The math that used to be theoretical is now the budget\'s largest line item.',
 effects:{debt:50,growthPush:.04},
 responses:[
 {ico:'📊',t:'Note the milestone — fiscal sustainability is Congress\'s responsibility',desc:'The Fed sets rates for the economy, not the budget. The fiscal trajectory is a legislative problem.',stakes:[{t:'Correct',c:'info'},{t:'Principled',c:'info'},{t:'Congress 😠',c:'neg'}],
@@ -1139,7 +1139,7 @@ responses:[
 fx:{},react:{banks:2,treasury:-2,congress:0,people:0},
 outcome:'You stayed in your lane. Correct — debt management is Treasury\'s prerogative. <b>But when Treasury issuance is draining reserves faster than your policy assumes, the plumbing is tightening beyond your intent.</b> The economy is getting tighter than your rate stance alone would produce. You\'re not fully in control of your own policy\'s transmission.'},
 {ico:'🤝',t:'Coordinate with Treasury on issuance timing and composition',desc:'Work together behind the scenes to smooth the impact of heavy issuance on reserves and yields.',stakes:[{t:'↓ stress',c:'pos'},{t:'Independence risk',c:'neg'},{t:'Practical',c:'info'}],
-fx:{stress:-4,reserves:80},react:{banks:2,treasury:5,congress:-3,people:0},
+fx:{stress:-4,reserves:80,cred:-2},react:{banks:2,treasury:5,congress:-3,people:0},
 outcome:'You coordinated quietly with Treasury on issuance composition — shifting toward shorter-duration paper to reduce long-yield pressure. The plumbing smoothed out. <b>You also just let fiscal needs influence your reserve management.</b> The coordination was practical and effective. It was also a small step toward the fiscal dominance everyone says you\'re trying to avoid.'}
 ]},
 {id:'foreign-buyer-retreat',turn:[6,20],prob:.45,type:'',requires:'auction-failure',
@@ -1181,7 +1181,7 @@ outcome:'You skipped the decomposition and spoke plainly — mortgage rates are 
 {id:'rate-hike-fiscal-feedback',turn:[8,24],prob:.45,type:'',requires:'auction-failure',
 tag:'FISCAL-MONETARY INTERACTION',headline:'"Every hike costs the Treasury $15B" — the feedback loop goes mainstream',
 body:'A viral analysis calculated that your last 25bp rate hike added roughly $15 billion to the government\'s annual interest bill. That spending flows to bondholders — who spend some of it, <b>partially stimulating the economy you\'re trying to cool.</b> Your tightening is simultaneously making the fiscal position worse AND partially offsetting itself through the interest-payment channel. <b>The lever is connected to a spring. You push, it pushes back.</b>',
-effects:{growthPush:.04,debt:30},
+effects:{growthPush:.12,debt:30},
 responses:[
 {ico:'📊',t:'The Fed sets rates for the economy, not the budget',desc:'Rate decisions cannot be held hostage to fiscal consequences. That IS fiscal dominance.',stakes:[{t:'Credibility +',c:'pos'},{t:'Principled',c:'info'},{t:'People 😠',c:'neg'}],
 fx:{cred:3},react:{banks:4,treasury:-2,congress:-3,people:-3},
@@ -1199,7 +1199,7 @@ responses:[
 fx:{cred:1},react:{banks:2,treasury:0,congress:-3,people:-3},
 outcome:'You called it transmission working as designed. Technically correct — this IS how tightening reaches the real economy. <b>But the tightening is amplified beyond your intent by the fiscal premium.</b> You set 4.50%. The economy is experiencing 6%+. The overshoot isn\'t your rate decision — it\'s the fiscal arithmetic distorting your signal. Control is slipping, and you just called it success.'},
 {ico:'⚠️',t:'Flag that effective financial conditions are tighter than your rate stance implies',desc:'Acknowledge the fiscal amplification. Your 4.50% is transmitting as 6%+ in the real economy.',stakes:[{t:'Honest',c:'pos'},{t:'Banks 😠',c:'neg'},{t:'Might justify easing',c:'info'}],
-fx:{cred:2},react:{banks:-4,treasury:2,congress:2,people:2},
+fx:{},react:{banks:-4,treasury:2,congress:2,people:2},
 outcome:'You admitted publicly that effective financial conditions are significantly tighter than your rate stance alone would produce — because the fiscal premium is amplifying every basis point. <b>It was the intellectual foundation for easing.</b> If the economy is already experiencing 6%+ conditions at a 4.50% rate, you might have room to cut without losing credibility. Banks heard dovish signaling. The argument is sound. Whether you act on it determines whether it was analysis or advocacy.'}
 ]},
 {id:'entitlement-crisis-debate',turn:[12,28],prob:.45,type:'',requires:'cbo-projection-shock',
