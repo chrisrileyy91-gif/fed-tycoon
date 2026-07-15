@@ -1366,9 +1366,11 @@ effects:{growthPush:.15,stress:12},
 responses:[
 {ico:'📣',t:'Name it publicly — the Fed has entered fiscal dominance',desc:'Say what no Chair has ever said: monetary policy has lost traction due to fiscal conditions. The most honest and most dangerous words you could speak.',stakes:[{t:'Credibility +++',c:'pos'},{t:'Markets panic',c:'neg'},{t:'Congress 😠😠',c:'neg'},{t:'Legacy-defining',c:'info'}],
 fx:{cred:6,stress:8},react:{banks:-4,treasury:-6,congress:-8,people:2},
+hl:'Chair Makes History — Declares Fed Has Entered Fiscal Dominance',
 outcome:'You said it out loud. No Fed Chair in history has publicly declared fiscal dominance while sitting in the chair. <b>Markets panicked — the admission that the world\'s most important central bank has lost traction sent shockwaves through every asset class.</b> But the bond market, after the initial shock, began to price in something it hadn\'t before: honesty. Long-term yields actually eased slightly as investors recognized that a Chair who names the problem might be the one who navigates it. You just bet your entire legacy on the belief that truth is more stabilizing than pretense.'},
 {ico:'🛡️',t:'Deny it — the Fed\'s tools are fully operational',desc:'Insist that monetary policy is transmitting normally. Buy time. The alternative is admitting your institution is impaired.',stakes:[{t:'Buys time',c:'info'},{t:'Credibility −',c:'neg'},{t:'Dishonest',c:'neg'}],
 fx:{cred:-4},react:{banks:3,treasury:2,congress:2,people:0},
+hl:'Fed Insists Tools "Fully Operational" Despite Transmission Data',
 outcome:'You denied it. The transmission data says otherwise, and every economist with a calculator knows it. <b>But institutions sometimes need to deny a truth until they\'re ready to act on it.</b> The market accepted the denial — for now — because the alternative is too frightening to price in. You bought time. The question is whether you\'ll use it to find a solution or just to delay the reckoning.'}
 ]},
 {id:'currency-confidence-crisis',minMonth:7,prob:.10,alert:true,requires:'fiscal-offset-overwhelms',ico:'💵',kicker:'DOLLAR CRISIS',
@@ -1380,9 +1382,11 @@ effects:{supplyShock:.6,growthPush:-.15,stress:10},
 responses:[
 {ico:'📈',t:'Emergency rate hike — defend the currency',desc:'Hike aggressively to halt the dollar decline. Signal that the Fed will defend the currency at any cost to growth.',stakes:[{t:'Dollar stabilizes',c:'pos'},{t:'Recession deepens',c:'neg'},{t:'Fiscal spiral worsens',c:'neg'}],
 fx:{rate:.5,cred:2,stress:-6},react:{banks:4,treasury:-4,congress:-6,people:-4},
+hl:'Fed Hikes 50bp in Emergency Move to Halt Dollar Collapse',
 outcome:'You hiked 50bp in an emergency inter-meeting move — the most dramatic signal possible. The dollar stabilized immediately. Capital flight slowed. <b>But you just hiked into a recession, added another $25B to the annual interest bill, and tightened conditions on an economy that\'s already breaking.</b> The dollar is saved. The economy may not be. And the fiscal math just got worse again. You bought currency stability with economic pain and fiscal deterioration.'},
 {ico:'🌐',t:'Coordinate with allied central banks — joint intervention',desc:'Rally the G7 for coordinated dollar support. Swap lines, joint statements, shared intervention.',stakes:[{t:'Dollar support',c:'pos'},{t:'Independence risk',c:'neg'},{t:'Buys time',c:'info'}],
 fx:{stress:-8,reserves:200,cred:-2},react:{banks:2,treasury:4,congress:-4,people:0},
+hl:'Fed Rallies G7 for Joint Dollar Defense — Independence Traded for Stability',
 outcome:'You rallied allied central banks for coordinated dollar support. The joint intervention stabilized the currency — shared credibility is stronger than any single institution. <b>But you just made the Fed\'s independence contingent on foreign cooperation.</b> The dollar\'s defense now depends on allied central banks\' willingness to keep supporting it. That willingness has limits. And the fiscal fundamentals that caused the crisis haven\'t changed.'}
 ]},
 {id:'institutional-legitimacy-crisis',minMonth:10,prob:.10,alert:true,requires:'fiscal-offset-overwhelms',ico:'🏛️',kicker:'INSTITUTIONAL CRISIS',
@@ -1394,9 +1398,11 @@ effects:{stress:8},
 responses:[
 {ico:'📺',t:'Address the nation — radical transparency about what\'s happening and why',desc:'Tell the country the truth: fiscal conditions have impaired monetary policy. The Fed can\'t fix this alone. It needs fiscal reform.',stakes:[{t:'Honest',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Unprecedented',c:'info'}],
 fx:{cred:3},react:{banks:-3,treasury:2,congress:-6,people:8},
+hl:'Chair Tells Country: "Fiscal Policy Has Broken Our Tools"',
 outcome:'You went on national television and told the country the truth — that fiscal conditions have degraded the Fed\'s ability to control inflation, and that no amount of rate hikes can fix a problem that originates in the government\'s balance sheet. <b>It was the most extraordinary act of institutional honesty in the Fed\'s history.</b> The public respected it. Congress was furious — you just told the country their spending broke your tools. Whether this moment saves the institution or accelerates its dismantling depends entirely on what Congress does next.'},
 {ico:'🛡️',t:'Defend the institution — the Fed is working, the environment is unprecedented',desc:'Push back on the narrative. The Fed\'s tools work. The conditions are historically extreme.',stakes:[{t:'Institutional defense',c:'info'},{t:'Looks out of touch',c:'neg'},{t:'People 😠',c:'neg'}],
-fx:{cred:-2},react:{banks:3,treasury:0,congress:2,people:-6},
+fx:{cred:-2},react:{banks:5,treasury:0,congress:3,people:-6},
+hl:'Fed Defends Record as Public Trust Hits Historic Low of 11%',
 outcome:'You defended the institution. The tools work. The environment is unprecedented. Both statements are true. <b>Neither matters to the 89% of the country that doesn\'t trust you.</b> Defending an institution that isn\'t delivering results reads as an institution protecting itself rather than serving its mandate. The poll numbers didn\'t recover. The legitimacy deficit widened.'}
 ]}
 ],news:[
@@ -1407,9 +1413,11 @@ effects:{growthPush:.06},
 responses:[
 {ico:'📊',t:'Acknowledge the degradation internally — don\'t publicize',desc:'The data is real but publicizing it would panic markets. Keep it in the FOMC minutes.',stakes:[{t:'Buys time',c:'info'},{t:'If it leaks…',c:'neg'}],
 fx:{cred:1},react:{banks:0,treasury:2,congress:0,people:0},
+hl:'Fed Buries Transmission Data — FOMC Minutes Hint at "Evolving Dynamics"',
 outcome:'You kept the transmission data internal. The FOMC discussed it behind closed doors. The minutes will hint at "evolving transmission dynamics" — Fed-speak for "our tools are degraded." <b>If the full analysis leaks, the market response will be worse for having been hidden.</b> But sometimes buying time is the only move available.'},
 {ico:'📢',t:'Publish the analysis — institutional transparency over institutional comfort',desc:'Release the staff paper. Let the market see what the Fed sees. Trust that honesty stabilizes more than secrecy.',stakes:[{t:'Credibility +',c:'pos'},{t:'Markets react',c:'neg'},{t:'Honest',c:'info'}],
 fx:{cred:2},react:{banks:-4,treasury:-2,congress:-3,people:3},
+hl:'Fed Publishes Own Evidence of Impaired Transmission — Markets Reel',
 outcome:'You published the analysis. Markets sold off initially — <b>the confirmation that the Fed\'s own models show impaired transmission is not the kind of transparency anyone was ready for.</b> But after the initial shock, something shifted. Long-term expectations actually stabilized slightly. A central bank that publishes evidence of its own limitations is either suicidal or supremely confident. The market couldn\'t decide which, and that ambiguity — for once — worked in your favor.'}
 ]},
 {id:'interest-spiral-data',turn:[3,14],prob:.50,type:'data',
@@ -1419,9 +1427,11 @@ effects:{debt:80,growthPush:.05},
 responses:[
 {ico:'📊',t:'Interest costs are Congress\'s problem — the Fed sets rates for the economy',desc:'The Fed cannot let the government\'s borrowing costs dictate monetary policy. That line must hold.',stakes:[{t:'Principled',c:'info'},{t:'Congress 😠',c:'neg'}],
 fx:{cred:2},react:{banks:3,treasury:-2,congress:-4,people:-2},
+hl:'Fed Holds Line — "$2.4 Trillion in Interest Is a Legislative Problem"',
 outcome:'You held the line — rate decisions serve the mandate, not the budget. The principle is correct and it may also be obsolete. <b>When interest payments are the government\'s largest expense, the distinction between "monetary policy" and "fiscal policy" is a legal fiction.</b> Every rate decision IS a fiscal decision. You can refuse to acknowledge it. You can\'t refuse the arithmetic.'},
 {ico:'⚠️',t:'Publicly flag that the fiscal-monetary boundary has blurred',desc:'The Fed sets rates. Rates determine interest costs. Interest costs determine the deficit. The firewall is gone.',stakes:[{t:'Honest',c:'pos'},{t:'Banks 😠',c:'neg'},{t:'Both sides angry',c:'neg'}],
 fx:{cred:-1},react:{banks:-3,treasury:3,congress:-2,people:2},
+hl:'Chair: Fiscal-Monetary Boundary "No Longer Exists" at $42 Trillion in Debt',
 outcome:'You said what the textbooks haven\'t updated for — that the clean separation between monetary and fiscal policy breaks down when debt is this large. <b>It was true, it was important, and it pleased absolutely nobody.</b> Banks heard a Chair who might subordinate rates to fiscal needs. Congress heard a Chair blaming them. Treasury was the only institution grateful for the honesty.'}
 ]},
 {id:'market-credibility-test',turn:[4,16],prob:.50,type:'',
@@ -1430,10 +1440,12 @@ body:'The 10-year yield just moved 60bp in the opposite direction from your last
 effects:{stress:6,growthPush:-.06},
 responses:[
 {ico:'📈',t:'Reassert control — hike aggressively to force the long end to follow',desc:'Overwhelm the fiscal premium with monetary force. Make the short rate so high the curve has to respond.',stakes:[{t:'Shows resolve',c:'pos'},{t:'Recession risk',c:'neg'},{t:'Fiscal spiral worsens',c:'neg'}],
-fx:{cred:-1,stress:2},react:{banks:4,treasury:-4,congress:-3,people:-3},
+fx:{cred:-1,stress:2},react:{banks:4,treasury:-4,congress:0,people:2},
+hl:'Fed Hikes Hard to Force Long Yields Into Line — the Curve Doesn\'t Budge',
 outcome:'You tried to force the long end into submission with a massive short-rate hike. <b>It didn\'t work.</b> The fiscal premium in long rates absorbed your signal. The curve inverted further. And you just added another layer of interest cost to the government\'s budget, making the fiscal offset even larger. Force doesn\'t work when the opponent is arithmetic.'},
 {ico:'📊',t:'Accept the decoupling — focus on what you can still control',desc:'Acknowledge that long rates are driven by fiscal factors. Focus your tools on the short end and communication.',stakes:[{t:'Realistic',c:'info'},{t:'Looks like retreat',c:'neg'},{t:'Honest',c:'info'}],
 fx:{cred:2},react:{banks:0,treasury:2,congress:-2,people:0},
+hl:'Fed Concedes Long-Rate Control, Pivots to Short End and Messaging',
 outcome:'You acknowledged that the Fed\'s control over long-term rates has diminished due to fiscal factors. It sounded like retreat — and in a sense it was. <b>But retreating to defensible ground is sometimes the wisest military decision.</b> You still control the short rate, reserves, and communication. Pretending to control what you don\'t control costs more credibility than admitting the limits.'}
 ]},
 {id:'stagflation-deepens',turn:[6,20],prob:.50,type:'',requires:'fiscal-offset-overwhelms',
@@ -1443,9 +1455,11 @@ effects:{growthPush:-.1,unempPush:.15,infPush:.08},
 responses:[
 {ico:'📈',t:'Prioritize inflation — hike through the pain',desc:'Volcker proved you can break stagflation by committing to price stability. It costs a deep recession.',stakes:[{t:'Inflation eventually falls',c:'pos'},{t:'Unemployment surges',c:'neg'},{t:'Congress 😠😠',c:'neg'}],
 fx:{cred:3},react:{banks:2,treasury:0,congress:-6,people:-8},
+hl:'Chair Invokes Volcker, Hikes Through Recession Risk to Break Inflation',
 outcome:'You chose Volcker\'s path — crush inflation at any cost to employment. It\'s the textbook answer. <b>But Volcker operated at debt-to-GDP of 30%. You\'re at 120%.</b> Every hike that worked for Volcker generates a fiscal offset at your debt level that didn\'t exist at his. The medicine is the same. The patient is different. Whether the treatment works in a fiscally dominant environment is the question economic theory hasn\'t answered.'},
 {ico:'📉',t:'Prioritize employment — cut to stop the recession from deepening',desc:'People need jobs. Inflation is being driven by fiscal factors you can\'t control. Save what you can save.',stakes:[{t:'↓ unemployment',c:'pos'},{t:'↑ inflation',c:'neg'},{t:'Credibility −−',c:'neg'}],
 fx:{cred:-5},react:{banks:-4,treasury:2,congress:4,people:6},
+hl:'Fed Cuts Rates to Save Jobs, Cedes Ground on Inflation Mandate',
 outcome:'You chose employment over prices. It\'s defensible — the inflation is fiscally driven and your rate lever can\'t reach it anyway, so why cause a recession fighting something you can\'t fix? <b>The logic is sound. The credibility cost is enormous.</b> The market sees a Fed that abandoned its inflation mandate. Every future statement about "price stability" carries an asterisk. You saved jobs. You may have lost the institution.'}
 ]},
 {id:'congress-abolish-fed',turn:[8,24],prob:.45,type:'',requires:'fiscal-offset-overwhelms',
@@ -1455,9 +1469,11 @@ effects:{stress:6},
 responses:[
 {ico:'🛡️',t:'Defend the Fed\'s independence with everything you have',desc:'Testify. Publish. Campaign for institutional survival. The Fed\'s independence is the firewall between monetary policy and political spending.',stakes:[{t:'Credibility +',c:'pos'},{t:'Congressional battle',c:'neg'},{t:'Legacy-defining',c:'info'}],
 fx:{cred:4},react:{banks:5,treasury:3,congress:-8,people:-2},
+hl:'Chair Wages Public Campaign to Save the Fed From Abolition Bill',
 outcome:'You fought for the institution. Testified, published, gave interviews. Made the case that independent monetary policy is the only thing standing between the country and politically-timed inflation cycles. <b>The bill stalled — not because Congress was convinced, but because abolishing the Fed during a crisis scared them more than keeping it.</b> You survived by being the less frightening option. That\'s not how institutional legitimacy is supposed to work. But it worked.'},
 {ico:'🤝',t:'Offer reform — propose structural changes to preserve the core mandate',desc:'Concede something to save the institution. Propose greater transparency, congressional oversight, or mandate reform.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Credibility −',c:'neg'},{t:'Institutional survival',c:'info'}],
 fx:{cred:-3,stress:-4},react:{banks:-2,treasury:2,congress:6,people:4},
+hl:'Fed Offers Oversight Concessions as Price for Institutional Survival',
 outcome:'You offered reforms — greater transparency, structured congressional consultation, a formal review of the mandate. Congress felt heard. The abolition bill lost momentum. <b>But you just negotiated away pieces of the Fed\'s independence under threat of extinction.</b> The institution survives in a diminished form. Whether "diminished but alive" is better than "intact but under siege" is a question for the historians.'}
 ]},
 {id:'imf-intervention-talk',turn:[10,28],prob:.45,type:'',requires:'currency-confidence-crisis',
@@ -1467,9 +1483,11 @@ effects:{stress:4},
 responses:[
 {ico:'📊',t:'Dismiss it — the IMF warns about everything',desc:'The IMF publishes warnings constantly. This changes nothing about the fundamentals.',stakes:[{t:'Projects calm',c:'info'},{t:'Looks complacent',c:'neg'}],
 fx:{},react:{banks:2,treasury:-2,congress:2,people:0},
+hl:'Fed Shrugs Off IMF Warning — "Nothing New Here," Chair Says',
 outcome:'You dismissed the IMF warning. Markets shrugged — the IMF does warn about everything. <b>But there\'s a difference between the IMF warning about Argentina and the IMF warning about America.</b> The former is routine. The latter is historic. Your dismissal may have been the correct short-term signal. It may also have been the moment when complacency became the country\'s defining vulnerability.'},
 {ico:'⚠️',t:'Take it seriously — when the IMF warns the US, the rules have changed',desc:'Acknowledge the unprecedented nature of the warning. The world is telling us something.',stakes:[{t:'Honest',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Statesmanship',c:'info'}],
 fx:{cred:2},react:{banks:-2,treasury:3,congress:-4,people:0},
+hl:'Chair Breaks Precedent, Validates IMF Concern Over US Fiscal Path',
 outcome:'You publicly acknowledged the IMF warning as historically significant. <b>No sitting Fed Chair has ever validated an IMF concern about the United States.</b> Congress was outraged — you just agreed with an international body that America\'s fiscal management is failing. Treasury appreciated the intellectual honesty. The world saw a Fed Chair willing to speak truth to the most powerful government on Earth. Brave, true, and deeply isolating.'}
 ]},
 {id:'grand-bargain-attempt',turn:[12,30],prob:.45,type:'fiscal',requires:'congress-abolish-fed',
@@ -1479,9 +1497,11 @@ effects:{},
 responses:[
 {ico:'✅',t:'Publicly endorse fiscal reform — the fiscal trajectory must change',desc:'Break every norm about Fed neutrality on fiscal matters. Endorse the bargain. The stakes justify the breach.',stakes:[{t:'↓ pressure',c:'pos'},{t:'Independence sacrificed',c:'neg'},{t:'Potentially term-saving',c:'info'}],
 fx:{cred:-4,stress:-8,growthPush:.06},react:{banks:-2,treasury:6,congress:4,people:2},
+hl:'Fed Chair Breaks Neutrality, Endorses Grand Bargain on Entitlements and Taxes',
 outcome:'You endorsed the Grand Bargain publicly. No Fed Chair has ever endorsed specific fiscal legislation. <b>The institutional breach was total — and it may have saved the institution.</b> Your endorsement gave political cover to moderates in both parties. The bill passed its first committee vote. Whether it becomes law depends on forces you can\'t control. But you used the last credibility you had to push the one thing that could actually fix the structural problem your tools can\'t reach.'},
 {ico:'🤐',t:'Stay silent — the Fed doesn\'t endorse legislation',desc:'The Fed\'s independence requires neutrality on fiscal matters. Endorsing a bill, even a good one, crosses the line permanently.',stakes:[{t:'Independence preserved',c:'pos'},{t:'Credibility +',c:'pos'},{t:'Reform may fail',c:'neg'}],
 fx:{cred:2},react:{banks:2,treasury:-4,congress:-2,people:0},
+hl:'Fed Declines to Weigh In as Grand Bargain Fails Committee Vote',
 outcome:'You stayed neutral. The Fed doesn\'t endorse legislation. Period. The principle held. <b>The Grand Bargain failed its committee vote by three votes.</b> Would your endorsement have swung three votes? Possibly. Probably. You\'ll never know. You preserved the institution\'s independence at the cost of the one reform that could have restored its effectiveness. Principle and pragmatism stared at each other across the committee room, and principle won. Whether the country can afford the price is someone else\'s question.'}
 ]},
 {id:'new-monetary-framework',turn:[14,32],prob:.45,type:'',requires:'fiscal-offset-overwhelms',
@@ -1490,10 +1510,12 @@ body:'A coalition of prominent economists published a proposal to replace the Fe
 effects:{},
 responses:[
 {ico:'✅',t:'Engage with the proposal — framework evolution is overdue',desc:'The 2% target was adopted in 2012. Conditions have changed. Intellectual engagement isn\'t the same as adoption.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Banks 😠😠',c:'neg'},{t:'Expectations risk',c:'neg'}],
-fx:{cred:-3},react:{banks:-6,treasury:2,congress:2,people:3},
+fx:{cred:-3},react:{banks:-6,treasury:2,congress:2,people:6},
+hl:'Chair Opens Door to Rethinking Inflation Target, Markets Unnerved',
 outcome:'You engaged publicly with the framework debate. Banks panicked — any suggestion that the 2% target might change sends expectations into freefall. <b>But the 2% target, anchored in an economy where the Fed\'s tools worked, may be an artifact of conditions that no longer exist.</b> Engaging with that reality is either the beginning of institutional evolution or the beginning of institutional collapse. History will decide which.'},
 {ico:'🛡️',t:'Defend the 2% target — it\'s the only anchor left',desc:'Abandoning the target would destroy the last credible commitment the Fed has. Hold the line on 2%.',stakes:[{t:'Credibility +',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'May be defending fiction',c:'neg'}],
 fx:{cred:3},react:{banks:5,treasury:0,congress:0,people:-2},
+hl:'Fed Holds Firm on 2% Target as "Only Anchor Left"',
 outcome:'You defended 2% with conviction. The target is the anchor. Change the anchor and everything drifts. <b>The logic is irrefutable in a world where the Fed can deliver 2%. In a world of fiscal dominance, it may be irrefutable and irrelevant.</b> Defending a target you can\'t hit is either institutional courage or institutional theater. Right now, the distinction is academic. Eventually, it won\'t be.'}
 ]},
 {id:'endgame-reckoning',turn:[18,38],prob:.45,type:'',requires:'institutional-legitimacy-crisis',
@@ -1503,9 +1525,11 @@ effects:{},
 responses:[
 {ico:'✅',t:'Engage with the question — institutional honesty above institutional comfort',desc:'Acknowledge that the current framework faces unprecedented challenges. Propose a path forward, even if it means admitting limitations.',stakes:[{t:'Credibility +',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Banks 😠😠',c:'neg'},{t:'Historic',c:'info'}],
 fx:{cred:3},react:{banks:-6,treasury:2,congress:0,people:5},
+hl:'Chair Confronts "Does the Fed Still Work?" With Rare Institutional Candor',
 outcome:'You engaged with the most dangerous question any Fed Chair can face: <b>does this institution still work?</b> Your answer was honest — the current framework faces structural challenges that rate decisions alone can\'t solve. Fiscal-monetary coordination, in some form, is probably necessary. Banks were terrified. The public was relieved that someone in power was telling the truth. <b>You may have just written the opening chapter of whatever comes next.</b>'},
 {ico:'🛡️',t:'Defend the institution — the Fed has survived worse',desc:'The Fed survived the Depression, the 1970s, and 2008. It will survive this. Don\'t validate the doubters.',stakes:[{t:'Institutional defense',c:'info'},{t:'Looks out of touch',c:'neg'}],
 fx:{cred:-1},react:{banks:4,treasury:0,congress:2,people:-4},
+hl:'Fed Invokes Depression, 1970s Survival to Wave Off Doubters',
 outcome:'You defended the institution. The Fed has survived the Depression, the Great Inflation, and the Financial Crisis. It will survive fiscal dominance. <b>The argument is historically accurate and may be historically wrong.</b> Those prior crises didn\'t involve a fiscal position that structurally impaired the Fed\'s primary tool. This one does. Defending the institution by citing past resilience assumes the current challenge is the same kind of challenge. It isn\'t.'}
 ]},
 {id:'savings-erosion',turn:[8,24],prob:.45,type:'',requires:'fiscal-offset-overwhelms',
@@ -1515,9 +1539,11 @@ effects:{},
 responses:[
 {ico:'🎤',t:'Acknowledge the failure — the Fed has not delivered price stability',desc:'Say what the data says. Inflation has been above target for three years. The mandate is not being met. Own it.',stakes:[{t:'Honest',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Credibility risk',c:'neg'},{t:'Unprecedented',c:'info'}],
 fx:{cred:-2},react:{banks:-4,treasury:0,congress:2,people:10},
+hl:'Chair Admits Fed "Has Not Delivered Price Stability" After Three Years Above Target',
 outcome:'You said it plainly: the Fed has not delivered price stability. Three years of above-target inflation is a mandate failure regardless of the cause. <b>The public heard a Chair who takes responsibility even for outcomes driven by forces outside their control.</b> Markets wobbled — an admission of failure from the Fed Chair is not in any pricing model. But the human response was powerful. Trust, paradoxically, increased. People trust institutions that tell the truth about their own failures more than institutions that explain them away.'},
 {ico:'📊',t:'Contextualize — inflation is fiscally driven and the Fed is working within constraints',desc:'Don\'t accept blame for outcomes your tools can\'t reach. Explain the structural reality.',stakes:[{t:'Accurate',c:'info'},{t:'People 😠',c:'neg'},{t:'Sounds like excuses',c:'neg'}],
 fx:{cred:1},react:{banks:3,treasury:2,congress:-2,people:-6},
+hl:'Fed Blames Fiscal Dominance for Inflation as Households Hear Excuses',
 outcome:'You explained the structural reality — fiscal dominance has impaired monetary transmission, and the inflation the public is experiencing is driven by forces the Fed can\'t control with rate hikes alone. Every word was accurate. <b>To a family watching their savings evaporate, "I can\'t control it" sounds identical to "I won\'t fix it."</b> The explanation was correct. The communication was devastating.'}
 ]},
 {id:'parallel-financial-system',turn:[12,30],prob:.45,type:'',requires:'fiscal-offset-overwhelms',
@@ -1527,9 +1553,11 @@ effects:{growthPush:.04},
 responses:[
 {ico:'⚠️',t:'Flag the systemic risk — unregulated credit is how crises start',desc:'The parallel system creates risk the Fed can\'t monitor and can\'t backstop. Sound the alarm before it breaks.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'Congress 😠',c:'neg'}],
 fx:{cred:2},react:{banks:4,treasury:0,congress:-5,people:-2},
+hl:'Chair Warns Shadow Credit System Poses Risk the Fed Can\'t See',
 outcome:'You warned about the systemic risk of credit growing outside the regulatory perimeter. Banks loved it — you just argued for their relevance. Congress heard the Fed asking for more regulatory authority during an institutional legitimacy crisis. <b>The warning is correct. The timing — asking for expanded authority while your existing authority isn\'t working — is the worst possible.</b> But the risk is real and someone needed to name it.'},
 {ico:'📊',t:'Accept it — the economy is adapting to fiscal dominance faster than the Fed',desc:'Markets route around obstacles. If the Fed\'s tools don\'t work, the economy will find alternatives. That\'s not a failure — it\'s evolution.',stakes:[{t:'Realistic',c:'info'},{t:'Looks like surrender',c:'neg'},{t:'People 😠',c:'neg'}],
-fx:{cred:-2},react:{banks:-4,treasury:0,congress:2,people:-2},
+fx:{cred:-2},react:{banks:-4,treasury:0,congress:5,people:-2},
+hl:'Fed Concedes Private Credit Is Routing Around Its Own Tools',
 outcome:'You called it market evolution — the economy adapting to an institution that can\'t deliver its mandate. It\'s an honest reading. <b>It\'s also the most defeatist thing a sitting Fed Chair has ever said.</b> Banks heard you declare their regulator irrelevant. The public heard you give up. Whether it\'s wisdom or resignation depends on what happens next — and for the first time, that might not be your decision to make.'}
 ]}
 ]}
