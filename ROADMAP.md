@@ -66,10 +66,12 @@ Dependency: Phase 1C complete ✅
 
 ### 2A: Full Audit Pass
 
-- [ ] Per-deck verification: starting conditions, dominant strategies, effect channels, narrative coherence, foreshadow integrity
-- [ ] Positive feedback system verification: praise card conditions, firing order, `praiseFired` tracking, streak display, warm data print routing
-- [ ] Regression check: all prior audit fixes still in place
-- [ ] No double-counting (supplyShock + infPush never on same event)
+- [x] Per-deck verification: starting conditions, dominant strategies, effect channels, narrative coherence, foreshadow integrity
+- [x] Positive feedback system verification: praise card conditions, firing order, `praiseFired` tracking, streak display, warm data print routing
+- [x] Regression check: all prior audit fixes still in place
+- [x] No double-counting (supplyShock + infPush never on same event)
+
+**Completed:** 22 dominant strategies fixed, 168 response headlines added, 0 economics violations, 0 double-counting, 0 broken requires chains. Positive feedback system (praise cards, streak display, warm data prints) verified correct across all decks.
 
 ### 2B: Capacitor Wrapper
 
