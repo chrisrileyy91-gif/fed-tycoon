@@ -769,10 +769,10 @@ body:'Tariffs are now live across multiple sectors. Import costs are spiking. Ma
 effects:{supplyShock:1.0,growthPush:-.2},
 responses:[
 {ico:'📣',t:'Look through the shock — tariffs are a one-time price level shift',desc:'The textbook answer. Tariffs raise prices once; they don\'t cause persistent inflation. Don\'t hike into a supply shock.',stakes:[{t:'Protects growth',c:'pos'},{t:'Expectations risk',c:'neg'},{t:'Economically correct',c:'info'}],
-fx:{cred:2},react:{banks:-4,treasury:-2,congress:-5,people:-3},
+fx:{cred:2},hl:'Fed Declares Tariffs a "One-Time Price Shift" — Won\'t Hike',react:{banks:-4,treasury:-2,congress:-5,people:-3},
 outcome:'You told the country you won\'t tighten into a supply shock. Economically correct — a tariff shifts the price level once, not the inflation rate permanently. But telling people "it\'s a one-time increase" while groceries get more expensive is the kind of technically-right that\'s politically wrong. <b>Everyone heard "the Fed isn\'t going to do anything about prices."</b> If expectations stay anchored, you\'re a genius. If they don\'t, you\'re the Chair who let inflation run.'},
 {ico:'⚠️',t:'Signal vigilance — inflation is inflation regardless of source',desc:'The market needs to know you\'ll defend 2% no matter what\'s causing the deviation. Credibility first.',stakes:[{t:'Credibility signal',c:'pos'},{t:'Growth risk',c:'neg'},{t:'People 😠',c:'neg'}],
-fx:{cred:-1},react:{banks:5,treasury:3,congress:2,people:-4},
+fx:{cred:-1},hl:'Chair Signals Hawkish Stance Despite Supply-Side Inflation',react:{banks:5,treasury:3,congress:2,people:-4},
 outcome:'You signaled hawkishness into a supply shock. The bond market loved it — expectations anchored, your credibility held. But you just told the economy that tightening is coming on top of a tariff tax that\'s already squeezing margins and consumers. <b>If you follow through at the next FOMC, you\'ll cause a recession to fight inflation you can\'t actually fix.</b> If you don\'t follow through, you\'ve lost credibility for nothing.'}
 ]},
 {id:'allied-retaliation',minMonth:10,prob:.10,alert:true,requires:'tariff-escalation',ico:'🌍',kicker:'TRADE WAR ESCALATES',
@@ -783,10 +783,10 @@ body:'The retaliation landed. Allied nations imposed coordinated counter-tariffs
 effects:{supplyShock:.5,growthPush:-.15},
 responses:[
 {ico:'🌐',t:'Advocate for de-escalation — the Fed\'s voice carries weight internationally',desc:'Break protocol. Signal publicly that the trade war is damaging the economy and needs a diplomatic resolution.',stakes:[{t:'↓ uncertainty',c:'pos'},{t:'Independence risk',c:'neg'},{t:'Congress 😠',c:'neg'}],
-fx:{cred:-3},react:{banks:2,treasury:4,congress:-8,people:3},
+fx:{cred:-3},hl:'Fed Chair Breaks Protocol — Calls for Trade War Ceasefire',react:{banks:2,treasury:4,congress:-8,people:3},
 outcome:'You stepped into trade policy — not your lane, and everyone noticed. Congress accused you of undermining the administration\'s negotiating position. But international markets heard the Fed Chair say the trade war needs to end, and <b>the dollar\'s credibility gave your words weight that no trade negotiator\'s could match.</b> Whether the diplomatic signal helps depends on whether anyone in the room is still listening.'},
 {ico:'⏸️',t:'Stay in your lane — trade policy is not the Fed\'s mandate',desc:'You control rates and reserves. Trade deals are for diplomats. Don\'t wade in.',stakes:[{t:'Independence',c:'pos'},{t:'Principled',c:'info'},{t:'Growth risk',c:'neg'}],
-fx:{cred:2},react:{banks:2,treasury:-2,congress:3,people:-3},
+fx:{cred:2},hl:'Fed Stays Silent as Allied Retaliation Hammers US Exports',react:{banks:2,treasury:-2,congress:3,people:-3},
 outcome:'You stayed out of it. Institutionally correct — the Fed has no business in trade negotiations. But the economy is deteriorating from a policy you can\'t offset and won\'t comment on. <b>Independence is a principle. It\'s also, right now, a cage.</b> The growth numbers will get worse and you\'ll have said nothing about why.'}
 ]},
 {id:'supply-chain-severing',minMonth:8,prob:.10,alert:false,requires:'tariff-escalation',ico:'🔗',
@@ -795,10 +795,10 @@ body:'Companies are scrambling to find alternative suppliers outside tariffed co
 effects:{supplyShock:.4,growthPush:-.12},
 responses:[
 {ico:'📊',t:'This is transitional — supply chains will optimize over time',desc:'Markets adjust. The rerouting costs will come down as new relationships mature.',stakes:[{t:'Patient',c:'info'},{t:'Credibility risk if wrong',c:'neg'}],
-fx:{},react:{banks:2,treasury:0,congress:-2,people:-2},
+fx:{cred:2},hl:'Fed Calls Supply Chain Rerouting "Transitional" — Patience Urged',react:{banks:2,treasury:0,congress:-2,people:-2},
 outcome:'You called it transitional. You might be right — eventually. But "eventually" in supply chain terms means 2-3 years of elevated costs while new factories are built, new contracts negotiated, and new logistics routes established. <b>In the meantime, every month of rerouting costs feeds the inflation your scoring depends on.</b> Patience is the right call if you can afford the time. Can you?'},
 {ico:'⚠️',t:'Flag the structural cost increase — this feeds inflation forward',desc:'Acknowledge that the supply chain restructuring is a persistent cost shock, not a one-time adjustment.',stakes:[{t:'Honest',c:'pos'},{t:'Growth risk',c:'neg'},{t:'Banks 😠',c:'neg'}],
-fx:{cred:2},react:{banks:-5,treasury:2,congress:2,people:0},
+fx:{cred:1},hl:'Chair Warns Supply Chain Costs Are Permanent, Not Temporary',react:{banks:-5,treasury:2,congress:2,people:0},
 outcome:'You publicly acknowledged that supply chain restructuring represents a persistent cost increase — not a blip. Importers and manufacturers appreciated the honesty. Banks worried you were building the case for sustained tight policy into a weakening economy. <b>You named the problem accurately. The problem is that naming it doesn\'t give you any new tools to fix it.</b>'}
 ]}
 ],
@@ -809,10 +809,10 @@ body:'Trade rhetoric is heating up. Congressional leaders from both parties are 
 effects:{},
 responses:[
 {ico:'⏸️',t:'Too early to react — proposals aren\'t policy',desc:'Don\'t set monetary policy based on things that might happen. Wait for data.',stakes:[{t:'Disciplined',c:'info'},{t:'If tariffs hit, you\'ll be late',c:'neg'}],
-fx:{},react:{banks:2,treasury:2,congress:-2,people:0},
+fx:{},hl:'Fed Declines to React to Tariff Proposals — "Not Policy Yet"',react:{banks:2,treasury:2,congress:-2,people:0},
 outcome:'You declined to react to proposals. Prudent — the Fed doesn\'t set policy on speculation. But if tariffs do land, you\'ll have given no forward guidance and markets will reprice violently. <b>The difference between "prudent patience" and "caught flat-footed" is whether the thing you\'re waiting for actually happens.</b>'},
 {ico:'📣',t:'Acknowledge the risk in your public remarks',desc:'Note that trade policy uncertainty is a downside risk to the outlook. Put it on the radar.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Administration 😠',c:'neg'}],
-fx:{cred:1},react:{banks:0,treasury:2,congress:-3,people:0},
+fx:{cred:1},hl:'Chair Puts Trade Policy on the Risk Radar — Markets Take Note',react:{banks:0,treasury:2,congress:-3,people:0},
 outcome:'You flagged trade policy as a risk to the outlook. Markets read it as mild dovish signaling — the Chair is worried about growth. The administration read it as the Fed undermining their trade strategy. <b>Acknowledging a risk isn\'t creating it. But in Washington, naming a risk is seen as choosing a side.</b>'}
 ]},
 {id:'import-price-surge',turn:[4,16],prob:.50,type:'data',requires:'tariff-escalation',
@@ -821,10 +821,10 @@ body:'The import price index just printed the highest reading in a decade. Whole
 effects:{infPush:.06},
 responses:[
 {ico:'📊',t:'Note the data — monitor transmission to consumer prices',desc:'Import prices lead CPI by 2-3 quarters. Watch, don\'t react yet.',stakes:[{t:'Data-driven',c:'info'},{t:'Hawks worry',c:'neg'}],
-fx:{},react:{banks:0,treasury:0,congress:-1,people:-2},
+fx:{cred:2},hl:'Fed Monitors Import Surge — "Leading Indicator, Not Policy Trigger"',react:{banks:0,treasury:0,congress:-1,people:-2},
 outcome:'You acknowledged the data without changing your stance. The right approach for a leading indicator — it tells you what\'s coming, not what\'s here. <b>But everyone in the room knows this print is the first domino.</b> When it hits CPI in three months, "we were monitoring" won\'t feel like enough.'},
 {ico:'⚠️',t:'Warn that tariff costs are beginning to transmit through the supply chain',desc:'Get ahead of the data. The wholesale-to-retail pipeline is filling up.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Growth risk',c:'neg'}],
-fx:{cred:1},react:{banks:-2,treasury:2,congress:-2,people:2},
+fx:{cred:1},hl:'Chair Warns Tariff Costs Are Filling the Inflation Pipeline',react:{banks:-2,treasury:2,congress:-2,people:2},
 outcome:'You got ahead of the curve — warning that wholesale price surges will reach consumers within quarters. The public appreciated the honesty. Banks worried the warning was a prelude to tightening into what they see as a supply shock. <b>Being right early is better than being right late. But it also means living with the consequences of your prediction longer.</b>'}
 ]},
 {id:'business-investment-freeze',turn:[5,18],prob:.50,type:'',
@@ -833,10 +833,10 @@ body:'Capital expenditure has fallen 14% year-over-year. Not because demand is w
 effects:{growthPush:-.12},
 responses:[
 {ico:'📊',t:'Uncertainty effects are real but typically reverse when resolved',desc:'Once trade policy settles — in any direction — investment will resume. Don\'t overreact to a pause.',stakes:[{t:'Patient',c:'info'},{t:'If uncertainty persists…',c:'neg'}],
-fx:{},react:{banks:2,treasury:0,congress:-2,people:-2},
+fx:{cred:2},hl:'Fed Frames Investment Freeze as Temporary Pause, Not Collapse',react:{banks:2,treasury:0,congress:-2,people:-2},
 outcome:'You framed it as a pause, not a collapse. Probably right — investment typically snaps back once policy uncertainty resolves. <b>But "resolves" is doing a lot of work in that sentence.</b> If the trade war drags on for years, the pause becomes a structural shortfall in productive capacity. Patience requires a timeline, and trade wars don\'t come with one.'},
 {ico:'📢',t:'Flag trade uncertainty as a material drag on the outlook',desc:'Name the cause. Business investment is falling because of policy uncertainty, not monetary conditions.',stakes:[{t:'Honest',c:'pos'},{t:'Administration 😠',c:'neg'},{t:'Congress 😠',c:'neg'}],
-fx:{cred:1},react:{banks:0,treasury:3,congress:-4,people:2},
+fx:{cred:1},hl:'Chair Blames Trade Uncertainty for Investment Collapse',react:{banks:0,treasury:3,congress:-4,people:2},
 outcome:'You said what everyone in the business community was thinking — that trade policy uncertainty, not interest rates, was freezing investment. It was true and it was pointed. <b>The administration heard the Fed blaming their trade strategy for an economic slowdown.</b> Treasury appreciated the intellectual cover. Congress did not. Truth and diplomacy pulled in opposite directions.'}
 ]},
 {id:'consumer-sticker-shock',turn:[6,20],prob:.50,type:'',requires:'tariff-escalation',
@@ -845,10 +845,10 @@ body:'The wholesale price surge has reached retail. Electronics up 12%. Applianc
 effects:{infPush:.1},
 responses:[
 {ico:'📊',t:'Tariff costs are a one-time price level shift, not persistent inflation',desc:'The textbook distinction matters. Prices shifted up; the RATE of increase will normalize.',stakes:[{t:'Economically correct',c:'info'},{t:'People 😠😠',c:'neg'}],
-fx:{cred:1},react:{banks:3,treasury:2,congress:-3,people:-6},
+fx:{cred:1},hl:'Fed Explains Price Level vs Inflation Rate — Public Unconvinced',react:{banks:3,treasury:2,congress:-3,people:-6},
 outcome:'You explained the difference between a price level shift and ongoing inflation. Correct, important, and <b>completely incomprehensible to anyone standing in a grocery store.</b> "It\'s a one-time increase" doesn\'t land when last week\'s "one-time increase" was gas, and next week\'s will be rent. The economics is right. The communication failed.'},
 {ico:'🎤',t:'Acknowledge the pain — prices are unacceptably high',desc:'Don\'t hide behind jargon. People are hurting and the Fed needs to say so — without overpromising.',stakes:[{t:'People ❤️',c:'pos'},{t:'Hawks worry',c:'neg'},{t:'Expectations risk',c:'neg'}],
-fx:{cred:-2},react:{banks:-3,treasury:-2,congress:4,people:7},
+fx:{cred:-2},hl:'Chair Ditches Jargon — "Prices Are Unacceptably High"',react:{banks:-3,treasury:-2,congress:4,people:7},
 outcome:'You ditched the jargon and spoke plainly about prices being too high. The public heard a human, not an economist. Markets briefly panicked — <b>"unacceptably high" sounds like a Chair about to hike into a supply shock.</b> If you don\'t follow through with a hike, you look soft. If you do, you cause a recession that the tariffs were already threatening. You just narrowed your own room to maneuver.'}
 ]},
 {id:'farm-retaliation',turn:[8,24],prob:.45,type:'fiscal',requires:'tariff-escalation',
@@ -857,10 +857,10 @@ body:'Counter-tariffs targeted American agriculture with surgical precision. Soy
 effects:{growthPush:-.08,debt:60},
 responses:[
 {ico:'⏸️',t:'Stay out of the fiscal debate — the Fed doesn\'t do bailouts',desc:'Farm subsidies are Congress\'s decision. Your mandate is prices and jobs, not agricultural trade.',stakes:[{t:'Independence',c:'pos'},{t:'Principled',c:'info'},{t:'Congress 😠',c:'neg'}],
-fx:{cred:2},react:{banks:2,treasury:3,congress:-6,people:-3},
+fx:{cred:2},hl:'Fed Draws Line — "We Don\'t Do Bailouts or Trade Policy"',react:{banks:2,treasury:3,congress:-6,people:-3},
 outcome:'You drew the line. The Fed doesn\'t do farm policy, trade policy, or bailouts. Correct, clean, and deeply unpopular in the farm states that are bleeding. <b>Independence means saying "not my job" while real people are hurting from a policy chain you\'re connected to.</b> Congress funded the bailout anyway — they always do — and remembered your silence.'},
 {ico:'🎤',t:'Acknowledge the pain — trade disruption is hitting real communities',desc:'Don\'t endorse the bailout, but name the human cost. Show the Fed sees beyond the dashboard.',stakes:[{t:'People ❤️',c:'pos'},{t:'Balanced',c:'info'},{t:'Hawks worry',c:'neg'}],
-fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
+fx:{},hl:'Chair Acknowledges Farm Crisis Without Endorsing Bailout',react:{banks:-2,treasury:0,congress:3,people:5},
 outcome:'You acknowledged the agricultural devastation without endorsing any specific policy response. It walked the line — empathy without overreach. <b>Congress read it as implicit support for the bailout. Markets read it as dovish concern about growth. You meant neither.</b> Communication is the Fed\'s most powerful tool and its most dangerous one.'}
 ]},
 {id:'currency-war-accusation',turn:[7,22],prob:.45,type:'',
@@ -869,10 +869,10 @@ body:'The Treasury Department just labeled two major trading partners as "curren
 effects:{},
 responses:[
 {ico:'🛡️',t:'Reaffirm the Fed doesn\'t target exchange rates',desc:'The dollar floats. Rate decisions serve the domestic mandate, not trade strategy. Draw the line now.',stakes:[{t:'Credibility +',c:'pos'},{t:'Independence',c:'info'},{t:'Administration 😠',c:'neg'}],
-fx:{cred:3},react:{banks:4,treasury:2,congress:-4,people:0},
+fx:{cred:3},hl:'Fed Declares Dollar Is Not a Trade Weapon — Administration Bristles',react:{banks:4,treasury:2,congress:-4,people:0},
 outcome:'You stated, firmly, that the Fed sets interest rates for price stability and employment — not to strengthen or weaken the dollar for trade advantage. It was exactly the right institutional signal. <b>The administration heard you refuse to weaponize the dollar, and they\'re not happy about it.</b> But the bond market just priced in a Fed that won\'t be conscripted into trade wars. That\'s worth more than one news cycle.'},
 {ico:'🤐',t:'Stay silent — don\'t get dragged into a currency fight',desc:'Any comment on exchange rates creates headlines. Silence is safer than engagement.',stakes:[{t:'Avoids fight',c:'info'},{t:'Looks complicit',c:'neg'}],
-fx:{},react:{banks:0,treasury:0,congress:0,people:0},
+fx:{},hl:'Fed Stays Quiet as Currency War Accusations Dominate Headlines',react:{banks:2,treasury:0,congress:3,people:0},
 outcome:'You said nothing. The currency manipulation accusation dominated a news cycle without Fed comment. Markets weren\'t sure if your silence meant agreement, disagreement, or indifference. <b>On exchange rate questions, silence is ambiguous — and ambiguity is read as weakness by both sides.</b> The next time the administration mentions the dollar, the pressure will be harder to ignore.'}
 ]},
 {id:'congress-trade-hearing',turn:[8,22],prob:.50,type:'',requires:'tariff-escalation',
@@ -881,10 +881,10 @@ body:'The House Financial Services Committee has called you to testify on rising
 effects:{},
 responses:[
 {ico:'🎙️',t:'Testify — explain supply vs demand inflation clearly',desc:'Teach the country the difference. Supply shocks need patience, not rate hikes. This is your moment to educate.',stakes:[{t:'Credibility +',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Principled',c:'info'}],
-fx:{cred:3},react:{banks:3,treasury:3,congress:-5,people:-2},
+fx:{cred:3},hl:'Chair Tells Congress: Rate Hikes Can\'t Fix Tariff Inflation',react:{banks:3,treasury:3,congress:-5,people:-2},
 outcome:'You explained, patiently and clearly, that tariff-driven price increases are supply-side — your rate lever works on demand, not supply. Hiking would cause a recession without lowering the tariff-driven prices. <b>It was a masterclass in economic communication. Congress didn\'t understand it. The clip was exactly what you feared.</b> But the transcript will matter more than the clip, eventually. The Fed\'s credibility is built in paragraphs, not soundbites.'},
 {ico:'🕊️',t:'Express concern — signal you\'re "closely monitoring" inflation',desc:'The safest testimony is the vaguest one. Monitor, assess, data-dependent. Say nothing fireable.',stakes:[{t:'Avoids confrontation',c:'info'},{t:'Looks evasive',c:'neg'},{t:'Credibility risk',c:'neg'}],
-fx:{cred:-2},react:{banks:0,treasury:0,congress:2,people:0},
+fx:{cred:-2},hl:'Fed Offers "Data-Dependent" Non-Answer as Congress Fumes',react:{banks:0,treasury:0,congress:2,people:0},
 outcome:'You gave the most carefully hedged testimony in Fed history. "Closely monitoring." "Data-dependent." "Assessing the evolving outlook." Nobody could quote you saying anything wrong because you didn\'t say anything at all. <b>The safest testimony is also the most forgettable.</b> You survived the hearing. You didn\'t build any credibility from it. Congress left unsatisfied and will call you back.'}
 ]},
 {id:'reshoring-mirage',turn:[10,28],prob:.45,type:'',requires:'tariff-escalation',
@@ -893,10 +893,10 @@ body:'Companies are announcing plans to bring production back to the US. Headlin
 effects:{growthPush:.06,supplyShock:.15},
 responses:[
 {ico:'🎉',t:'Welcome the investment — domestic production strengthens the economy long-term',desc:'Reshoring means jobs, capital investment, and reduced trade dependence. Celebrate it.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Inflation risk',c:'neg'}],
-fx:{cred:-2},react:{banks:-2,treasury:-3,congress:6,people:5},
+fx:{cred:-2},hl:'Fed Celebrates Reshoring Wave as Manufacturing Returns',react:{banks:-2,treasury:-3,congress:6,people:5},
 outcome:'You celebrated the reshoring wave. Popular, politically smart, and economically incomplete. The jobs are real. The investment is real. <b>The permanently higher cost base is also real, and you just endorsed the process that\'s creating it.</b> When domestic production costs show up in CPI, you\'ll be the Chair who cheered the inflation you\'re mandated to fight.'},
 {ico:'📊',t:'Note the tradeoff — jobs gained, costs increased',desc:'Reshoring creates employment at a higher price point. Both effects are real. Say both.',stakes:[{t:'Honest',c:'pos'},{t:'Congress 😠',c:'neg'},{t:'Balanced',c:'info'}],
-fx:{cred:2},react:{banks:2,treasury:3,congress:-4,people:-2},
+fx:{cred:2},hl:'Chair: Reshoring Creates Jobs but Raises Costs Permanently',react:{banks:2,treasury:3,congress:-4,people:-2},
 outcome:'You said the quiet part — reshoring creates jobs but raises costs. Both are true. Both matter. <b>Congress heard you criticize their industrial policy achievement. Economists heard you state the obvious.</b> Being the person who names tradeoffs that nobody else will acknowledge is thankless work. It\'s also the entire job.'}
 ]},
 {id:'trade-deal-hope',turn:[12,30],prob:.45,type:'',requires:'tariff-escalation',
@@ -905,10 +905,10 @@ body:'Anonymous sources report both sides are "close to a framework agreement." 
 effects:{growthPush:.08,equitiesDelta:8},
 responses:[
 {ico:'📢',t:'Welcome the progress — support the confidence recovery',desc:'If businesses start investing again on deal hopes, that\'s real economic activity. Don\'t undermine it.',stakes:[{t:'↑ growth',c:'pos'},{t:'Congress ❤️',c:'pos'},{t:'If the deal collapses…',c:'neg'}],
-fx:{cred:-1},react:{banks:0,treasury:0,congress:2,people:2},
+fx:{cred:-1},hl:'Fed Voices Cautious Optimism as Trade Deal Rumors Lift Markets',react:{banks:0,treasury:0,congress:2,people:2},
 outcome:'You expressed cautious optimism. Business confidence firmed up. Investment thawed slightly. <b>All of it contingent on a deal that doesn\'t exist yet.</b> If it materializes, you look prescient. If talks collapse — and they might — you\'ll have endorsed a rally built on rumors, and the reversal will be ugly. Hope is a legitimate economic input. It\'s also the most fragile one.'},
 {ico:'⏸️',t:'Don\'t comment on trade negotiations — wait for signed agreements',desc:'Rumors aren\'t data. Don\'t set the Fed\'s tone based on anonymous sources.',stakes:[{t:'Disciplined',c:'info'},{t:'Looks pessimistic',c:'neg'}],
-fx:{cred:1},react:{banks:0,treasury:2,congress:-3,people:-2},
+fx:{cred:1},hl:'Fed Declines to Comment on Trade Deal Rumors — "Not Signed Yet"',react:{banks:0,treasury:2,congress:-3,people:-2},
 outcome:'You refused to comment on rumors. Disciplined and correct — the Fed shouldn\'t move on anonymous sources. But the economy was enjoying a confidence recovery and you just poured cold water on it. <b>The recovery was fragile and your caution didn\'t help.</b> If the deal materializes, you\'ll look like you missed the turn. If it doesn\'t, you\'ll look wise. Central banking as prediction market.'}
 ]},
 {id:'fed-cant-fix-tariffs',turn:[14,32],prob:.45,type:'',requires:'congress-trade-hearing',
@@ -917,10 +917,10 @@ body:'A widely-shared analysis argues that the Fed\'s entire toolkit — rates, 
 effects:{},
 responses:[
 {ico:'✅',t:'Agree — and redefine what the Fed CAN do in a supply shock',desc:'Acknowledge the limits. Then redirect: the Fed can anchor expectations, maintain stability, and prevent second-round effects.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠',c:'neg'},{t:'Intellectually honest',c:'info'}],
-fx:{cred:3},react:{banks:2,treasury:3,congress:-3,people:-4},
+fx:{cred:3},hl:'Chair Concedes Fed "Powerless" Against Tariff Inflation',react:{banks:2,treasury:3,congress:-3,people:-4},
 outcome:'You agreed that rate hikes can\'t lower the price of imported steel. You redirected to what the Fed CAN do — anchor expectations so the supply shock doesn\'t feed a wage-price spiral. <b>It was the most honest institutional communication of your term.</b> Markets respected the clarity. The public heard "we can\'t help" and responded accordingly. Sometimes the most important thing an institution can say is what it can\'t do.'},
 {ico:'🕊️',t:'Push back — the Fed maintains the conditions for price stability',desc:'Don\'t concede the whole frame. Monetary policy creates the stable backdrop for ALL prices.',stakes:[{t:'Preserves authority',c:'info'},{t:'Intellectually soft',c:'neg'}],
-fx:{cred:-2},react:{banks:0,treasury:0,congress:2,people:2},
+fx:{cred:-2},hl:'Fed Insists It Maintains "Conditions for Price Stability"',react:{banks:0,treasury:0,congress:2,people:2},
 outcome:'You argued that the Fed creates stable conditions under which price adjustments happen in an orderly way. It\'s not wrong. But it\'s the kind of unfalsifiable institutional claim that sounds like an excuse. <b>You preserved the Fed\'s aura of relevance at the cost of its reputation for honesty.</b> A trade that institutions make more often than they should.'}
 ]},
 {id:'geopolitical-foreshadow',turn:[36,46],prob:.65,type:'',
@@ -929,10 +929,10 @@ body:'What started as tariffs is becoming something else. Energy, technology, an
 effects:{infPush:.05},
 responses:[
 {ico:'📋',t:'Flag the geopolitical risk in your final remarks',desc:'Leave a warning. The next term\'s shocks will come from multiple directions at once.',stakes:[{t:'Credibility +',c:'pos'},{t:'Forward-looking',c:'info'}],
-fx:{cred:1},react:{banks:0,treasury:2,congress:-1,people:0},
+fx:{cred:1},hl:'Outgoing Chair Warns: Geopolitics and Economics Are Now Inseparable',react:{banks:0,treasury:2,congress:-1,people:0},
 outcome:'You noted the geopolitical fracture in your closing remarks — a warning that the next term will face not just trade disruption but a fragmenting world order. <b>Oil, chips, capital, and alliances — all cracking simultaneously.</b> The next Chair will need more than one playbook.'},
 {ico:'⏸️',t:'Not your problem anymore — focus on closing out the term',desc:'Geopolitics is speculative. Don\'t create headlines about threats that haven\'t materialized.',stakes:[{t:'Discipline',c:'info'},{t:'No immediate cost',c:'info'}],
-fx:{},react:{banks:1,treasury:0,congress:0,people:0},
+fx:{},hl:'Chair Exits Without Addressing Deepening Geopolitical Fractures',react:{banks:2,treasury:0,congress:0,people:0},
 outcome:'You let the geopolitical tensions pass without comment. The fractures continued to deepen, unremarked upon by the outgoing Chair. <b>The next person in this seat will face a world where oil, chips, capital, and allies are all contested simultaneously.</b> The warning you didn\'t give might have prepared them.'}
 ]}
 ]},
