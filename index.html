@@ -561,10 +561,12 @@ body:'The math is brutal. A homeowner with a 3.2% mortgage would nearly double t
 effects:{supplyShock:.35,growthPush:-.1},
 responses:[
 {ico:'📋',t:'Acknowledge the lock-in effect — it\'s real and it\'s ours',desc:'Admit publicly that rate policy created a supply freeze. Honest, credibility-building, but you just told the country YOU broke the housing market.',stakes:[{t:'Credibility +',c:'pos'},{t:'On record',c:'info'},{t:'People ❤️',c:'pos'}],
-fx:{cred:3},react:{banks:-2,treasury:3,congress:-3,people:5},
+fx:{cred:3},react:{banks:-2,treasury:3,congress:-3,people:2},
+hl:'Chair Admits Rate Hikes Froze the Housing Market',
 outcome:'You said the quiet part out loud — the Fed\'s rate hikes froze housing supply and that\'s contributing to persistent shelter inflation. The intellectual honesty earned credibility with markets and sympathy from the public. But you also just handed Congress and the administration a clip that says <b>"the Fed Chair admits the Fed broke housing."</b> That clip has a longer half-life than your nuance.'},
 {ico:'🏛️',t:'Housing supply is a structural issue, not a monetary one',desc:'Zoning, permitting, construction costs — these are the real supply constraints. The lock-in effect is transitional.',stakes:[{t:'Deflects blame',c:'info'},{t:'Banks ❤️',c:'pos'},{t:'People 😠',c:'neg'}],
-fx:{cred:-2},react:{banks:4,treasury:0,congress:2,people:-6},
+fx:{cred:-2},react:{banks:6,treasury:0,congress:2,people:-6},
+hl:'Fed Blames Zoning and Permits — Not Rates — for Housing Freeze',
 outcome:'You pointed at zoning laws and building codes — real constraints, but not the reason 85% of homeowners won\'t list their houses. The intellectual dodge was transparent. <b>Everyone with a 3% mortgage knows exactly why they\'re not moving, and it\'s not zoning.</b> You lost credibility because you said something technically partial that everyone knows is incomplete.'}
 ]},
 {id:'affordable-housing-emergency',minMonth:14,prob:.10,alert:true,requires:'mortgage-lock-in',ico:'🏚️',kicker:'NATIONAL EMERGENCY',
@@ -576,9 +578,11 @@ effects:{unempPush:.2},
 responses:[
 {ico:'🤝',t:'Coordinate with Treasury on targeted housing relief',desc:'Step outside your lane. Work with fiscal authorities on emergency rental assistance and MBS purchases.',stakes:[{t:'↓ stress',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Credibility risk',c:'neg'},{t:'Independence risk',c:'neg'}],
 fx:{stress:-8,cred:-4,reserves:150},react:{banks:-4,treasury:6,congress:6,people:8},
+hl:'Fed Crosses Into Housing Policy With Emergency Relief Measures',
 outcome:'You broke protocol and coordinated directly with Treasury on emergency housing relief — targeted MBS purchases and liquidity for rental assistance programs. The human crisis eased at the margins. But you just crossed the line between monetary policy and fiscal policy. <b>The precedent you set — the Fed as a housing policy tool — will be invoked by every future administration that wants something.</b> Independence traded for compassion.'},
 {ico:'🛡️',t:'Housing policy is not the Fed\'s mandate — express empathy, hold the line',desc:'Acknowledge the suffering without changing policy. The Fed controls rates, not housing supply.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠😠',c:'neg'},{t:'Principled',c:'info'}],
 fx:{cred:4},react:{banks:3,treasury:-2,congress:-6,people:-8},
+hl:'Chair Holds Firm as Cities Declare Housing Emergencies',
 outcome:'You said what was institutionally correct — the Fed\'s mandate is price stability and maximum employment, not housing affordability. You expressed compassion and stood firm. <b>To a family living in a car, the distinction between monetary policy and housing policy is academic.</b> The pressure climbed. But the bond market rallied on the signal that the Fed won\'t bend its mandate to political pressure, even sympathetic pressure.'}
 ]},
 {id:'regional-bank-stress',minMonth:10,prob:.10,alert:false,ico:'🏦',
@@ -588,9 +592,11 @@ effects:{stress:14,growthPush:-.08},
 responses:[
 {ico:'💵',t:'Provide targeted liquidity through the discount window',desc:'Backstop the stressed banks. Prevent a credit crunch from amplifying your rate stance.',stakes:[{t:'↓ stress',c:'pos'},{t:'Banks ❤️',c:'pos'},{t:'Moral hazard',c:'neg'}],
 fx:{stress:-10,reserves:100,cred:-2},react:{banks:8,treasury:2,congress:-3,people:-2},
+hl:'Fed Backstops Regional Banks as Housing Losses Mount',
 outcome:'You opened the discount window and provided targeted liquidity. The stressed banks stabilized, credit conditions eased, and the crisis didn\'t cascade. But you just rescued banks from losses <b>caused by your own rate policy</b> while telling homeowners to endure the same rates without relief. The asymmetry wasn\'t lost on anyone.'},
 {ico:'🔍',t:'Monitor closely — supervisory tools, not monetary tools',desc:'Use bank supervision, not liquidity. Let the system absorb the stress through normal channels.',stakes:[{t:'Credibility +',c:'pos'},{t:'Stress stays',c:'neg'},{t:'Principled',c:'info'}],
 fx:{cred:3},react:{banks:-5,treasury:0,congress:2,people:2},
+hl:'Fed Declines Emergency Lending — "Supervisors Are Watching"',
 outcome:'You drew the line between monetary policy and bank supervision. Supervisory teams increased scrutiny; no special facilities were opened. Stress remained elevated. Banks quietly tightened lending, which tightened credit conditions beyond your rate stance. <b>The economy got tighter than you intended — not through your decisions, but through the banking system\'s reaction to them.</b>'}
 ]}
 ],
@@ -602,9 +608,11 @@ effects:{infPush:.1},
 responses:[
 {ico:'📣',t:'Look through the lag — shelter will catch up to reality',desc:'The market has cooled. CPI is backward-looking. Don\'t overtighten based on stale data.',stakes:[{t:'Forward-looking',c:'pos'},{t:'Credibility risk',c:'neg'},{t:'Growth-protecting',c:'info'}],
 fx:{},react:{banks:-3,treasury:-2,congress:3,people:3},
+hl:'Chair Signals Shelter Data Is Stale — Doves Cheer',
 outcome:'You told the market you\'re looking through shelter\'s measurement lag — that the real housing market has already cooled and CPI will reflect it in 6-12 months. It\'s the smart read. It\'s probably right. <b>But "probably right in 12 months" is a long time to be wrong about inflation if you\'re wrong.</b> The hawks noticed you just gave yourself permission to cut.'},
 {ico:'📊',t:'Inflation is inflation — we respond to the data as it is',desc:'3.5% is 3.5%. The lag is real but you can\'t set policy on forecasts of where data will be.',stakes:[{t:'Disciplined',c:'info'},{t:'Credibility +',c:'pos'},{t:'Growth risk',c:'neg'}],
 fx:{cred:1},react:{banks:3,treasury:2,congress:-3,people:-4},
+hl:'Fed Holds to the Data — 3.5% Is 3.5%, Lag or Not',
 outcome:'You set policy on the number in front of you, not the number you hope is coming. Disciplined, credible, and potentially wrong — because <b>the number in front of you is measuring a housing market that no longer exists.</b> If shelter moderates as expected, you\'ll have held too tight for too long.'}
 ]},
 {id:'existing-sales-collapse',turn:[3,14],prob:.50,type:'data',
@@ -613,10 +621,12 @@ body:'3.2 million annual rate — the lowest since 1993. Not because nobody want
 effects:{growthPush:-.06},
 responses:[
 {ico:'📊',t:'This confirms the transmission mechanism is working — demand has cooled',desc:'Lower sales volume means rate hikes are reaching the housing market. The mechanism works.',stakes:[{t:'Technically correct',c:'info'},{t:'People 😠',c:'neg'}],
-fx:{},react:{banks:2,treasury:2,congress:-2,people:-5},
+fx:{cred:1},react:{banks:2,treasury:2,congress:-2,people:-5},
+hl:'Fed Calls Frozen Housing Market Proof That Policy Is Working',
 outcome:'You said rate hikes are working as intended — demand for housing has cooled. Technically true. But demand cooled by making transactions impossible, not by making housing affordable. <b>A market that\'s frozen isn\'t the same as a market that\'s balanced.</b> The public heard "mission accomplished" while staring at listings they can\'t afford.'},
 {ico:'🤝',t:'Acknowledge that the supply-side effect complicates the picture',desc:'Rate hikes cooled demand but also froze supply. The net effect on shelter inflation is ambiguous.',stakes:[{t:'Honest',c:'pos'},{t:'Balanced',c:'info'},{t:'Banks wonder',c:'neg'}],
 fx:{},react:{banks:-2,treasury:0,congress:2,people:4},
+hl:'Chair Concedes Rate Hikes Have "Two-Sided" Effect on Housing',
 outcome:'You admitted publicly that rate hikes have a dual effect on housing — cooling demand while freezing supply. <b>The net effect is unclear, and you said so.</b> It also opened the door to the argument that cutting might actually help shelter inflation by unlocking supply. That\'s a powerful argument — and a dangerous one if it becomes an excuse for premature easing.'}
 ]},
 {id:'rent-spike',turn:[4,16],prob:.50,type:'',
@@ -625,10 +635,12 @@ body:'With homeownership effectively locked for anyone without an existing low-r
 effects:{infPush:.08},
 responses:[
 {ico:'📊',t:'Rental markets will adjust — supply is coming online',desc:'New multifamily construction was strong two years ago. Those units will deliver soon.',stakes:[{t:'Forward-looking',c:'info'},{t:'People 😠',c:'neg'}],
-fx:{},react:{banks:2,treasury:0,congress:-2,people:-5},
+fx:{cred:1},react:{banks:2,treasury:0,congress:-2,people:-5},
+hl:'Fed Predicts Rent Relief "In the Pipeline" — Renters Unimpressed',
 outcome:'You pointed to the multifamily construction pipeline and predicted relief. The pipeline is real — units permitted two years ago are delivering now. But <b>telling renters that relief is "in the pipeline" while they\'re paying 34% of income on housing landed like every other "be patient" speech you\'ve given.</b>'},
 {ico:'🎤',t:'Acknowledge the squeeze — shelter is the inflation battleground',desc:'Name it plainly. Shelter costs are the reason inflation is still above target, and renters are bearing the brunt.',stakes:[{t:'People ❤️',c:'pos'},{t:'Honest',c:'info'},{t:'Hawks worry',c:'neg'}],
 fx:{},react:{banks:-2,treasury:0,congress:3,people:5},
+hl:'Chair Names Shelter Costs as Inflation\'s Last Battleground',
 outcome:'You validated what renters already knew — they\'re the pressure point in the inflation fight. It earned trust. <b>But it also implied that the Fed sees shelter as the problem, which the market reads as a signal that cuts are coming to fix it.</b> Empathy has consequences when markets are listening.'}
 ]},
 {id:'builder-pullback',turn:[6,20],prob:.50,type:'',requires:'mortgage-lock-in',
@@ -637,10 +649,12 @@ body:'New home construction has cratered. Builders say the combination of high f
 effects:{supplyShock:.2,growthPush:-.1},
 responses:[
 {ico:'⏸️',t:'Construction cycles are normal — starts will recover when conditions ease',desc:'Builders respond to conditions. When rates come down, they\'ll build again. Don\'t overreact.',stakes:[{t:'Patient',c:'info'},{t:'Growth risk',c:'neg'}],
-fx:{},react:{banks:2,treasury:0,congress:-2,people:-3},
+fx:{cred:2},react:{banks:2,treasury:0,congress:-2,people:-3},
+hl:'Fed Calls Builder Retreat Cyclical — "Starts Will Recover"',
 outcome:'You called it cyclical and you\'re probably right — builders will resume when financing costs drop. But every month of paused construction is <b>supply that doesn\'t exist 18 months from now.</b> The housing deficit deepens while you wait for the cycle to turn.'},
 {ico:'⚠️',t:'Flag the supply destruction as a concern for future inflation',desc:'Reduced construction today means tighter supply tomorrow. This feeds shelter inflation forward.',stakes:[{t:'Forward-looking',c:'info'},{t:'Credibility +',c:'pos'},{t:'Honest',c:'info'}],
-fx:{cred:2},react:{banks:-4,treasury:2,congress:2,people:3},
+fx:{cred:1},react:{banks:-4,treasury:2,congress:2,people:3},
+hl:'Chair Warns Construction Halt Will Feed Future Inflation',
 outcome:'You publicly connected reduced construction to future shelter inflation pressure. <b>You just made the case, on the record, that your own rate policy is contributing to future inflation through the supply channel.</b> Intellectually brave. Politically complex.'}
 ]},
 {id:'first-time-buyer-crisis',turn:[8,24],prob:.50,type:'',requires:'mortgage-lock-in',
@@ -650,9 +664,11 @@ effects:{},
 responses:[
 {ico:'📺',t:'Respond personally — acknowledge the real human impact',desc:'Address her testimony directly. Show the institution has a face and it\'s listening.',stakes:[{t:'People ❤️❤️',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Vulnerability',c:'info'}],
 fx:{cred:1},react:{banks:-3,treasury:0,congress:3,people:10},
+hl:'Chair Responds to Viral Housing Testimony — "Your Grievance Is Legitimate"',
 outcome:'You responded personally. You acknowledged that someone who saved for eight years and got priced out by rate hikes has a legitimate grievance with the institution you lead. <b>Markets briefly worried you\'d gone soft, then relaxed when policy didn\'t change.</b> But the public remembered. Trust is earned in moments like this.'},
 {ico:'🏛️',t:'Stay institutional — individual cases can\'t drive policy',desc:'Tragic, but anecdotal. You serve 330 million people, not one viral story.',stakes:[{t:'Disciplined',c:'info'},{t:'People 😠',c:'neg'},{t:'↑ pressure',c:'neg'}],
 fx:{cred:2},react:{banks:3,treasury:2,congress:-4,people:-7},
+hl:'Fed Silent on Viral Testimony as Public Anger Grows',
 outcome:'You stayed in the marble building. Correct — policy can\'t be made by viral testimony. <b>But the country doesn\'t see an institution protecting its independence. They see a powerful person ignoring a powerless one.</b> Pressure climbed.'}
 ]},
 {id:'generational-wealth-gap',turn:[10,26],prob:.45,type:'',requires:'first-time-buyer-crisis',
@@ -662,9 +678,11 @@ effects:{},
 responses:[
 {ico:'📊',t:'Wealth distribution is a fiscal issue, not a monetary one',desc:'The Fed doesn\'t have distributional tools. Tax policy, housing policy — those are Congress\'s levers.',stakes:[{t:'Correct',c:'info'},{t:'People 😠',c:'neg'},{t:'Principled',c:'info'}],
 fx:{cred:2},react:{banks:3,treasury:2,congress:-3,people:-5},
+hl:'Fed: Wealth Gap Is Congress\'s Problem, Not Ours',
 outcome:'You drew the boundary — the Fed controls the aggregate, not the distribution. Correct and important to say. <b>But the distributional consequence of your aggregate policy is staring at the country from every chart on social media.</b> "We don\'t have distributional tools" is true. It also sounds like "not my problem."'},
 {ico:'🤝',t:'Acknowledge the distributional impact — it\'s a legitimate concern',desc:'Don\'t claim tools you don\'t have, but don\'t pretend the effects don\'t exist.',stakes:[{t:'People ❤️',c:'pos'},{t:'Balanced',c:'info'},{t:'Hawks worry',c:'neg'}],
 fx:{},react:{banks:-2,treasury:0,congress:3,people:6},
+hl:'Chair Acknowledges Rate Policy Has Distributional Consequences',
 outcome:'You acknowledged what everyone could see — that rate policy has distributional consequences even when it isn\'t designed to. <b>It was honest and it helped.</b> Markets read it slightly dovish but didn\'t panic.'}
 ]},
 {id:'housing-bill',turn:[12,28],prob:.45,type:'fiscal',requires:'first-time-buyer-crisis',
@@ -674,9 +692,11 @@ effects:{debt:320,growthPush:.2,infPush:.06,reserves:-180,tga:180},
 responses:[
 {ico:'⚠️',t:'Support the supply-side provisions, warn on the demand subsidies',desc:'Builder incentives help long-term. Down payment subsidies bid up prices in a tight market. Say both.',stakes:[{t:'Balanced',c:'info'},{t:'Credibility +',c:'pos'},{t:'Congress 😠',c:'neg'}],
 fx:{cred:2},react:{banks:3,treasury:5,congress:-6,people:2},
+hl:'Fed Endorses Builder Credits, Warns Demand Subsidies Will Backfire',
 outcome:'You endorsed the builder incentives and publicly cautioned that demand-side subsidies would raise prices before supply catches up. <b>Congress heard you critique their biggest legislative achievement of the session.</b> Treasury appreciated the intellectual cover. The economics was right. The politics was brutal.'},
 {ico:'✅',t:'Welcome the package — housing needs a policy response',desc:'Don\'t fight Congress on housing right now. The political climate won\'t allow it.',stakes:[{t:'Congress ❤️',c:'pos'},{t:'People ❤️',c:'pos'},{t:'↑ inflation risk',c:'neg'}],
 fx:{growthPush:.1,cred:-3},react:{banks:-3,treasury:-5,congress:8,people:6},
+hl:'Fed Backs $320B Housing Package as Political Pressure Peaks',
 outcome:'You endorsed the package. Congress loves you. People feel heard. And you just blessed $320B in fiscal stimulus — much of it demand-side — into the most supply-constrained housing market in modern history. <b>Prices will rise before supply materializes.</b> You traded credibility for political peace.'}
 ]},
 {id:'rate-lock-study',turn:[14,30],prob:.45,type:'',requires:'mortgage-lock-in',
@@ -685,10 +705,12 @@ body:'Your own research staff published a paper estimating that the supply destr
 effects:{},
 responses:[
 {ico:'✅',t:'Embrace the research — the Fed learns and adapts',desc:'Institutional credibility comes from honest self-assessment, not from being infallible.',stakes:[{t:'Credibility +',c:'pos'},{t:'Intellectually brave',c:'info'},{t:'People ❤️',c:'pos'}],
-fx:{cred:3},react:{banks:-6,treasury:2,congress:2,people:5},
+fx:{cred:3},react:{banks:-6,treasury:2,congress:-2,people:2},
+hl:'Fed Cites Own Research Proving Rate Hikes Worsened Housing Shortage',
 outcome:'You publicly cited the paper and said the Fed\'s understanding of the housing transmission mechanism has evolved. It was an extraordinary act of institutional honesty — <b>admitting your own policy had unintended consequences, in real time, while still in the chair.</b> It also gave you intellectual cover to ease, which the hawks noticed immediately.'},
 {ico:'⏸️',t:'One paper isn\'t policy — the research is ongoing',desc:'Don\'t let one study drive the narrative. The full picture is more complex.',stakes:[{t:'Cautious',c:'info'},{t:'Banks ❤️',c:'pos'},{t:'People 😠',c:'neg'}],
-fx:{cred:-1},react:{banks:3,treasury:0,congress:-3,people:-4},
+fx:{cred:0},react:{banks:5,treasury:0,congress:-3,people:-4},
+hl:'Fed Distances Itself From Staff Paper on Housing Lock-In',
 outcome:'You distanced yourself from your own staff\'s work. Institutionally safe — one paper shouldn\'t drive policy. <b>But the paper is right, everyone knows it\'s right, and your refusal to engage with it reads as an institution protecting its ego over its mandate.</b>'}
 ]},
 {id:'housing-bifurcation',turn:[16,34],prob:.45,type:'',
@@ -697,10 +719,12 @@ body:'The housing market has split in two. Cash buyers — institutional investo
 effects:{infPush:.04},
 responses:[
 {ico:'📊',t:'Cash buyers are a small share — the broader market is adjusting',desc:'38% is notable but not dominant. The rate-sensitive majority is cooling.',stakes:[{t:'Data-driven',c:'info'},{t:'People 😠',c:'neg'}],
-fx:{},react:{banks:3,treasury:0,congress:-2,people:-4},
+fx:{cred:1},react:{banks:3,treasury:0,congress:-2,people:-4},
+hl:'Fed Downplays Cash Buyer Dominance — "Broader Market Adjusting"',
 outcome:'You\'re technically right — cash buyers are the minority and the rate-sensitive market IS cooling. <b>But cooling a market that only the wealthy can participate in isn\'t the accomplishment it sounds like.</b> The bluntness of monetary policy has never been more visible.'},
 {ico:'🤝',t:'Acknowledge that rate policy has differential effects across buyer types',desc:'Be honest that rate hikes affect borrowers, not cash buyers. The instrument is blunt.',stakes:[{t:'Honest',c:'pos'},{t:'People ❤️',c:'pos'},{t:'Banks 😠',c:'neg'}],
 fx:{},react:{banks:-2,treasury:0,congress:2,people:4},
+hl:'Chair: Rate Hikes Hit Borrowers, Not Cash Buyers — "The Tool Is Blunt"',
 outcome:'You stated what was obvious — rate hikes only affect people who need loans. Cash buyers are rate-insensitive. <b>It was the kind of honesty that makes central bankers uncomfortable because it exposes a fundamental limitation of the tool.</b> Trust earned.'}
 ]},
 {id:'homelessness-crisis',turn:[18,36],prob:.45,type:'',requires:'affordable-housing-emergency',
@@ -710,9 +734,11 @@ effects:{},
 responses:[
 {ico:'📺',t:'Address the nation — this is beyond policy debates',desc:'Some moments transcend the mandate. Speak to the human cost. Don\'t promise what you can\'t deliver.',stakes:[{t:'People ❤️❤️',c:'pos'},{t:'↓ pressure',c:'pos'},{t:'Moral authority',c:'info'}],
 fx:{cred:1},react:{banks:-3,treasury:0,congress:4,people:12},
+hl:'Chair Addresses Nation on Homelessness — "We See the Cost"',
 outcome:'You spoke to the country about homelessness. You didn\'t promise rate cuts or policy changes. You acknowledged that the inflation fight has human costs that are borne unequally, and that the institution you lead has a responsibility to see them even when it can\'t fix them. <b>It was the most important speech of your term. Not because it changed policy — but because it changed how the country sees the Fed.</b>'},
 {ico:'🏛️',t:'Stay focused — the best thing the Fed can do for families is price stability',desc:'Inflation hurts the poorest hardest. Getting it to 2% is the most pro-family policy you can run.',stakes:[{t:'Credibility +',c:'pos'},{t:'People 😠😠',c:'neg'},{t:'Long-term correct',c:'info'}],
 fx:{cred:3},react:{banks:4,treasury:3,congress:-5,people:-8},
+hl:'Fed Holds Line on Inflation as Homelessness Surges 65%',
 outcome:'You made the long-term argument — that stable prices protect the most vulnerable. <b>It\'s true. It\'s also the kind of true that sounds like a lecture to someone who can\'t find shelter.</b> The bond market loved it. The country did not. The pressure is now severe.'}
 ]},
 {id:'tariff-foreshadow',turn:[36,46],prob:.65,type:'',
@@ -722,9 +748,11 @@ effects:{infPush:.05},
 responses:[
 {ico:'📋',t:'Flag the trade risk in your final remarks',desc:'Leave a warning. Tariffs are supply shocks the Fed can\'t offset without causing recessions.',stakes:[{t:'Credibility +',c:'pos'},{t:'Forward-looking',c:'info'}],
 fx:{cred:1},react:{banks:0,treasury:2,congress:-1,people:0},
+hl:'Outgoing Chair Warns: Trade Tensions Could Trigger Supply-Side Inflation',
 outcome:'You noted the emerging trade risk in your final public remarks — a quiet warning that the next term\'s inflation may be driven by trade policy, not demand. <b>A supply shock you can\'t fix with rate hikes.</b> The next Chair will need a different playbook.'},
 {ico:'⏸️',t:'Not your problem anymore — focus on closing out the term',desc:'Trade policy is speculative. Don\'t create headlines about threats that haven\'t materialized.',stakes:[{t:'Discipline',c:'info'},{t:'No immediate cost',c:'info'}],
-fx:{},react:{banks:1,treasury:0,congress:0,people:0},
+fx:{},react:{banks:2,treasury:0,congress:0,people:0},
+hl:'Chair Exits Without Addressing Emerging Trade Risks',
 outcome:'You let the trade chatter pass without comment. The tariff proposals continued to build momentum, unremarked upon by the outgoing Chair. <b>The next person in this seat will face an economy where imports are getting more expensive and the Fed\'s tools can\'t make them cheaper.</b>'}
 ]}
 ]},
