@@ -68,6 +68,7 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .tb-month{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold)}
 .tb-term{font-family:var(--mono);font-size:8.5px;color:var(--dimmer);letter-spacing:1px}
 .tb-right{display:flex;align-items:center;gap:10px}
+.tb-streak{font-family:var(--mono);font-size:11px;font-weight:800;color:var(--gold);padding:2px 7px;border:1px solid rgba(232,185,48,.3);border-radius:6px;display:none;animation:sealPulse 3s ease-in-out infinite}
 .tb-cred{display:flex;align-items:center;gap:6px}
 .tb-cred-bar{width:56px;height:6px;border-radius:4px;background:#1a2030;overflow:hidden}
 .tb-cred-bar .fill{height:100%;border-radius:4px;background:var(--gold);transition:width .6s}
@@ -262,7 +263,7 @@ body.flash-good::after{content:"";position:fixed;inset:0;pointer-events:none;z-i
 <div class="screen" id="gameScreen">
   <div class="topbar">
     <div class="tb-left"><div class="tb-seal">₣</div><div class="tb-date"><span class="tb-month" id="tbMonth">Jan 2025</span><span class="tb-term" id="tbTerm">Term month 1 / 48</span></div></div>
-    <div class="tb-right"><button id="muteBtn" class="mute-btn">🔊</button><div class="tb-cred"><div class="tb-cred-bar"><div class="fill" id="credFill"></div></div><div class="tb-cred-num" id="credNum">50</div></div></div>
+    <div class="tb-right"><span class="tb-streak" id="tbStreak"></span><button id="muteBtn" class="mute-btn">🔊</button><div class="tb-cred"><div class="tb-cred-bar"><div class="fill" id="credFill"></div></div><div class="tb-cred-num" id="credNum">50</div></div></div>
   </div>
   <div class="fomc-pill" id="fomcPill"></div>
   <div class="equity-ticker" id="equityTicker"><div class="et-track" id="equityTrack"></div></div>
@@ -1526,6 +1527,49 @@ const PRESSURE_EVENTS={
   ]}
 };
 
+// ---- PRAISE CARDS (fire when conditions are met — the inverse of anger/pressure cards) ----
+const PRAISE_CARDS=[
+{id:'streak-6',headline:'The Mandate, Met',tag:'📈 MARKET CONFIDENCE',
+body:'Six consecutive months with inflation near target and unemployment stable. <b>The transmission chain is working.</b> Rate decisions are transmitting through growth, through employment, through prices — exactly the way the textbook says they should. Markets are noticing. Expectations are anchoring. The hardest part of this job is patience, and yours is paying off.',
+cred:3,react:{banks:3,treasury:2,congress:2,people:3}},
+{id:'streak-12',headline:'Historic Stability — A Full Year On Mandate',tag:'📈 HISTORIC ACHIEVEMENT',
+body:'Twelve consecutive months within the mandate band. <b>Almost no Fed Chair in history has achieved this.</b> Inflation anchored, employment stable, growth sustainable. The economy isn\'t just performing — it\'s performing because of decisions you made a year ago that are still transmitting correctly. This is what mastery looks like.',
+cred:4,react:{banks:4,treasury:3,congress:3,people:4}},
+{id:'cred-130',headline:'Bond Market Confidence — "The Fed Has This"',tag:'📈 CREDIBILITY MILESTONE',
+body:'Your credibility just crossed 130. The bond market is pricing in a Fed that <b>means what it says and delivers what it promises</b>. Long-term yields reflect anchored expectations. Credit spreads are calm. The financial system trusts the institution you lead. This trust was earned month by month, decision by decision. It\'s the most valuable thing you\'ve built.',
+cred:2,react:{banks:4,treasury:3,congress:1,people:1}},
+{id:'all-factions-55',headline:'Broad Consensus — "Everyone Can Live With This"',tag:'📈 POLITICAL ALIGNMENT',
+body:'All four stakeholder groups are above 55% approval — a rare alignment. Banks respect your stability. Treasury values your coordination. Congress tolerates your independence. The public trusts your judgment. <b>This doesn\'t mean everyone\'s happy. It means everyone believes you\'re doing the job competently.</b> In central banking, that\'s as close to universal approval as it gets.',
+cred:2,react:{banks:1,treasury:1,congress:1,people:1}},
+{id:'exp-anchored',headline:'Expectations Anchored — The Self-Fulfilling Virtue',tag:'📈 EXPECTATIONS',
+body:'Inflation expectations have settled firmly near 2.0%. <b>This is the single most important variable in the entire economy</b> — and you anchored it. When businesses set prices expecting 2% inflation, they create 2% inflation. When workers negotiate wages expecting 2% inflation, they get wages consistent with 2% inflation. The anchor holds because people believe it holds. <b>And they believe it because of you.</b>',
+cred:3,react:{banks:3,treasury:2,congress:1,people:2}}
+];
+
+function checkPraiseCards(){
+  if(S.streak>=6&&!S.praiseFired['streak-6']){S.praiseFired['streak-6']=true;showPraiseCard(PRAISE_CARDS[0]);return true;}
+  if(S.streak>=12&&!S.praiseFired['streak-12']){S.praiseFired['streak-12']=true;showPraiseCard(PRAISE_CARDS[1]);return true;}
+  if(S.cred>=130&&!S.praiseFired['cred-130']){S.praiseFired['cred-130']=true;showPraiseCard(PRAISE_CARDS[2]);return true;}
+  if(PK.every(k=>S.app[k]>=55)&&!S.praiseFired['all-factions-55']){S.praiseFired['all-factions-55']=true;showPraiseCard(PRAISE_CARDS[3]);return true;}
+  if(S.exp>=1.9&&S.exp<=2.1&&S.cred>=90&&!S.praiseFired['exp-anchored']){S.praiseFired['exp-anchored']=true;showPraiseCard(PRAISE_CARDS[4]);return true;}
+  return false;
+}
+
+function showPraiseCard(card){
+  S.cred=clamp(S.cred+card.cred,0,200);
+  applyApproval(card.react);
+  showMoods(card.react);
+  document.body.classList.remove('flash-good');void document.body.offsetWidth;document.body.classList.add('flash-good');
+  setTimeout(()=>document.body.classList.remove('flash-good'),600);
+  if(typeof Audio8!=='undefined')Audio8.sfx('win');
+  $('breakingSlot').innerHTML=`<div class="breaking positive"><div class="b-tag"><span class="live"></span>${card.tag}</div><div class="b-headline">${card.headline}</div><div class="b-body">${card.body}</div></div>`;
+  $('responseSlot').innerHTML=`<div class="responses"><button class="advance-btn inline-adv" style="display:block;margin:4px 0 0;width:100%">Continue →</button></div>`;
+  const ib=$('responseSlot').querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
+  $('consequence').classList.remove('show');$('advBtn').style.display='none';
+  const cn=$('credNum');cn.classList.remove('counter-pop');void cn.offsetWidth;cn.classList.add('counter-pop');
+  try{render();}catch(e){}try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+}
+
 let S;
 function eqComposite(){return S.lrg*0.6+S.mid*0.25+S.sml*0.15;}
 function freshState(deck){
@@ -1542,7 +1586,7 @@ function freshState(deck){
     bubbleMonths:0,bubbleIgnored:false,equityCrashCooldown:0,equityBubbleCooldown:0,
     pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
     lastStakeholderMonth:-99,emergencyThisMonth:false,
-    fired:{},gameover:false,pendingShocks:[]};
+    fired:{},praiseFired:{},gameover:false,pendingShocks:[]};
 }
 function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2*(x/25),0,150);S.growthPush+=0.03*(x/25);S.qeBoost+=x*0.04;}
 function macroTick(){
@@ -1620,6 +1664,7 @@ function render(){
   updateTension();
   $('tbMonth').textContent=monthName();$('tbTerm').textContent=`Term month ${S.termMonth} / 48`;
   $('credFill').style.width=(S.cred/200*100)+'%';$('credNum').textContent=Math.round(S.cred);
+  const strk=$('tbStreak');if(strk){if(S.streak>=3){strk.textContent='🔥'+S.streak;strk.style.display='inline';}else{strk.style.display='none';}}
   $('vInf').textContent=S.inf.toFixed(1);$('vUn').textContent=S.un.toFixed(1);$('vGr').textContent=S.gr.toFixed(1);$('vRt').textContent=S.rate.toFixed(2);$('vExp').textContent=S.exp.toFixed(1);
   const dd=(id,c,p,inv)=>{const d=c-p,el=$(id);if(Math.abs(d)<.05){el.textContent='';return;}el.textContent=(d>0?'▲':'▼')+Math.abs(d).toFixed(1);el.style.color=((d>0)===inv)?'var(--red)':'var(--green)';};
   dd('dInf',S.inf,S.prevInf,true);dd('dUn',S.un,S.prevUn,true);dd('dGr',S.gr,S.prevGr,false);dd('dRt',S.rate,S.prevRate,false);dd('dExp',S.exp,S.prevExp,true);
@@ -1663,15 +1708,19 @@ function makeDataPrint(){
   if(isCPI){
     const exp=+(S.exp*.5+S.prevInf*.5).toFixed(1),act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
     const sTag=sur>0.3?['dp-hot','HOTTER than expected 🔥']:sur<-0.3?['dp-cold','COOLER than expected ❄️']:['dp-inline','in line ✓'];
-    return{kind:'data',tag:'📊 CPI RELEASE',headline:'Consumer Price Index — monthly print',
+    const onMandate=S.streak>=3;
+    const warmCPI=onMandate&&sur<=0.3?(S.streak>=6?' <b>Month '+S.streak+' on mandate. This is what the target looks like in the data.</b>':' <b>Month '+S.streak+' on mandate.</b> Your policy is transmitting.'):'';
+    return{kind:'data',tone:onMandate&&sur<=0.3?'positive':'data',tag:'📊 CPI RELEASE',headline:'Consumer Price Index — monthly print',
       printNum:act.toFixed(1)+'%',printVs:`exp. ${exp.toFixed(1)}%`,printSurprise:sTag,
-      body:`Inflation crossed the wire at <b>${act.toFixed(1)}%</b>. ${sur>0.3?'Markets don\'t like it — hike bets rise.':sur<-0.3?'Markets cheer — cut hopes build.':'About where expected.'} Remember: a <b>noisy monthly sample</b> of an economy you can\'t see directly.`};
+      body:`Inflation crossed the wire at <b>${act.toFixed(1)}%</b>. ${sur>0.3?'Markets don\'t like it — hike bets rise.':sur<-0.3?'Markets cheer — cut hopes build.':'About where expected.'}${warmCPI} Remember: a <b>noisy monthly sample</b> of an economy you can\'t see directly.`};
   }else{
     const exp=150,jobs=Math.round((4.5-S.un)*80+150+(Math.random()-.5)*100),sur=jobs-exp;
     const sTag=sur>50?['dp-inline','STRONG 💪']:sur<-50?['dp-hot','WEAK ⚠️']:['dp-inline','in line ✓'];
-    return{kind:'data',tag:'📊 JOBS REPORT (NFP)',headline:'Nonfarm Payrolls — monthly print',
+    const onMandate=S.streak>=3;
+    const warmNFP=onMandate&&sur>=-50?(S.streak>=6?' <b>Month '+S.streak+' on mandate. The labor market is delivering.</b>':' <b>Month '+S.streak+' on mandate.</b> Employment is holding.'):'';
+    return{kind:'data',tone:onMandate&&sur>=-50?'positive':'data',tag:'📊 JOBS REPORT (NFP)',headline:'Nonfarm Payrolls — monthly print',
       printNum:`+${jobs}K`,printVs:`exp. +${exp}K`,printSurprise:sTag,
-      body:`The economy added <b>${jobs}K jobs</b>. ${sur>50?'Hot labor market — wage pressure builds.':sur<-50?'Weakening — recession whispers grow.':'A steady read.'} Unemployment at <b>${S.un.toFixed(1)}%</b>. One print is noise; the trend is signal.`};
+      body:`The economy added <b>${jobs}K jobs</b>. ${sur>50?'Hot labor market — wage pressure builds.':sur<-50?'Weakening — recession whispers grow.':'A steady read.'} Unemployment at <b>${S.un.toFixed(1)}%</b>.${warmNFP} One print is noise; the trend is signal.`};
   }
 }
 // ---- EQUITY MARKET EVENTS: crash (>20% off trailing peak) and bubble (sustained >140 for 6+ months) ----
@@ -1725,6 +1774,7 @@ function checkEquityEvents(){
 }
 function nextTurn(){
   if(checkEquityEvents())return;
+  if(checkPraiseCards())return;
   ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(sh.requires&&!S.fired[sh.requires])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
   const alertShock=S.pendingShocks.find(s=>s.alert);
   if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
@@ -1787,7 +1837,7 @@ function fireAlert(sh){
 }
 function showDataPrint(dp){
   applyPassive(dp.effects);
-  $('breakingSlot').innerHTML=`<div class="breaking data"><div class="b-tag"><span class="live"></span>${dp.tag}</div><div class="b-headline">${dp.headline}</div><div class="data-print"><span class="dp-num">${dp.printNum}</span><span class="dp-vs">${dp.printVs}</span><span class="dp-surprise ${dp.printSurprise[0]}">${dp.printSurprise[1]}</span></div><div class="b-body">${dp.body}</div></div>`;
+  $('breakingSlot').innerHTML=`<div class="breaking ${dp.tone||'data'}"><div class="b-tag"><span class="live"></span>${dp.tag}</div><div class="b-headline">${dp.headline}</div><div class="data-print"><span class="dp-num">${dp.printNum}</span><span class="dp-vs">${dp.printVs}</span><span class="dp-surprise ${dp.printSurprise[0]}">${dp.printSurprise[1]}</span></div><div class="b-body">${dp.body}</div></div>`;
   $('responseSlot').innerHTML=`<div class="responses"><div class="resp-label locked">📅 No meeting this month — rates locked. Note the data and move on.</div><button class="advance-btn inline-adv" style="display:block;margin:4px 0 0;width:100%">Note it &amp; Advance →</button></div>`;
   const ib=$('responseSlot').querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
   $('consequence').classList.remove('show');$('advBtn').style.display='none';
