@@ -42,7 +42,7 @@ Decks unlock sequentially by scoring 110+ credibility ("reappointment"). First d
 | 5 | The Debt Reckoning | ★★★★ | 4.50 (very restrictive) | Rate hikes widen the deficit — your tool fights itself |
 | 6 | Fiscal Dominance | ★★★★ | 5.25 (extremely restrictive) | Fiscal offset overwhelms monetary transmission |
 
-Each deck has 3 shocks and 11 news events (18 shocks, 66 news total). Events use a `requires` field for dependency chaining within a four-act narrative structure. Each deck ends with a foreshadow card seeding the next deck's theme.
+AI Disruption has 3 shocks and 24 news events (27 total, including 13 condition-gated late-game cards). The other five decks each have 3 shocks and 21 news events (24 total each, including 9-10 condition-gated late-game cards apiece — Tariff Shock's `tariff-normalization-debate` is deliberately unconditional). Across all six decks: 18 shocks + 129 news = **147 deck events total**, 62 of them condition-gated. Events use a `requires` field for dependency chaining within a four-act narrative structure. Each deck ends with a foreshadow card seeding the next deck's theme.
 
 Foreshadow chain: AI Disruption → Housing Trap → Tariff Shock → Geopolitical Fracture → Debt Reckoning → Fiscal Dominance (no foreshadow, endgame).
 
@@ -139,12 +139,27 @@ Base drain -1.5/month. On-mandate: inf ±0.5 of 2%, un ±0.8 of 4%. Streak bonus
 
 Four ending tiers: fail (<110), steady (110-125), good (125-150), master (150-200). Three random narratives per tier.
 
+## Condition system (late-game branching)
+
+Events can carry a `condition` field — an array of clauses evaluated by `checkCondition()`, checked *in addition to* `requires`/turn-window/`fired` gating. Each clause is `{var, op, val}`, or `{var, op, ref}` to compare two live state variables against each other instead of a fixed number. Clauses resolve through the `COND_VARS` accessor map: `inf`, `un`, `rate`, `growth`, `cred`, `equities`, `balance`, `people`, `congress`, `banks`, `treasury` — never raw `S.*` state directly. Multiple clauses in an array are ANDed; wrap alternatives in `{or:[...]}` for OR logic.
+
+Example: `condition:[{var:'inf',op:'>',val:3.5},{var:'rate',op:'<',ref:'inf'}]` — inflation above 3.5% AND the policy rate below inflation (behind the curve).
+
+`checkCondition()` is consulted everywhere an event is filtered for eligibility: the shock roll and both news-eligibility filters (the probabilistic domestic-news roll and the spacing-forced pick below).
+
+### Condition-gated card design
+
+Late-game cards (turn windows generally within `[26,46]`) use `condition` to branch the back half of every deck on how the player actually played the front half, not on a fixed script. A well-played game (anchored expectations, credibility 90+, inflation near target, low unemployment) unlocks "prosperity dilemma" cards — soft landings, neutral-rate debates, asset-price disconnects, debt-sustainability windows: decisions about how *not* to blow up a good position. A poorly-played game (elevated inflation, high rates, high unemployment, low credibility) unlocks "compounding crisis" cards — hysteresis, deflation scares, bond vigilantes, currency crises, monetization pressure: decisions about how to survive a bad one. This is the core cause-effect branching system: the same 48-month term produces a structurally different second act depending on player performance, with no explicit difficulty setting.
+
+63 new late-game cards were added across the six decks this way (13 AI Disruption + 10 each in the other five); 62 carry a `condition` field. The one exception — Tariff Shock's `tariff-normalization-debate` — is deliberately unconditional, firing on its turn window regardless of economic state, the same way an FOMC meeting does.
+
 ## Universal mechanics (fire on all decks)
 
 These are hardcoded in the engine, not in deck-specific arrays:
 
 - FOMC decisions: 8 per year (bimonthly: Jan, Mar, May, Jul, Sep, Nov), 5 options
-- Data prints: CPI and NFP alternate monthly, with surprise mechanics
+- Data prints: fallback when no shock/news/universal event claims the month. `makeDataPrint()` fires CPI when `termMonth%4===0`; every other data-print month is NFP. Not a fixed monthly alternation — FOMC, shocks, news, and stakeholder/pressure cards all compete for the same one-event-per-month slot, so realized counts vary by playthrough (observed ~4-7 CPI and ~5-7 NFP prints per 48-month term).
+- Spacing mechanism: `S.consecutiveUniversals` counts consecutive months resolved by a universal event (FOMC, data print, stakeholder anger, pressure escalation). Resets to 0 whenever a shock or news event fires. At ≥3, the *next* month bypasses the normal probability roll and forces an eligible deck news event (still respects `requires`/`condition`/turn-window/`fired` gating) — guarantees deck content isn't crowded out by a long universal-only stretch. Equity crash/bubble events and praise cards are neutral: they neither increment nor reset the counter.
 - Stakeholder anger cards: Fire when a faction drops below 28 approval, with cooldowns (4-month per faction, 3-month global spacing via `lastStakeholderMonth`)
 - Pressure tier escalation: Three tiers. Heat = `(cred<75 ? 1 : 0) + (cred<55 ? 1 : 0) + (congress or people < 32 ? 1 : 0)`. Escalates when heat > current tier.
 - Equity crash/bubble events: Crash fires on composite >20% below peak (6-month cooldown). Bubble fires on composite >140 sustained 6+ months (6-month cooldown).
@@ -171,6 +186,7 @@ Audio8 engine: sine/triangle wave synthesis at lower frequencies with soft attac
 - Scripted market crash events must move the equity ticker via `equitiesDelta` in `applyPassive`
 - Fallout card uses floating card style (blurred scrim); full-screen takeover reserved for crisis alert cards only
 - `requires` gating is a one-line check: `if(ev.requires && !S.fired[ev.requires]) return;`
+- `condition` gating is `checkCondition(ev.condition)` — see "Condition system" above for clause format and `COND_VARS`
 
 ---
 
@@ -186,7 +202,11 @@ Audio8 engine: sine/triangle wave synthesis at lower frequencies with soft attac
 
 **Phase 2A: ✅ COMPLETE.** Full audit pass across all six decks + positive feedback system. 22 dominant strategies fixed, 168 response headlines added. Zero economics violations, zero double-counting, zero broken requires chains. All code paths for praise cards, streak visibility, and warm data prints verified correct.
 
-**Next: Phase 2B (Capacitor wrapper) → Phase 2C (App Store submission).**
+**Engine upgrades: ✅ COMPLETE.** Condition system (`checkCondition`, `COND_VARS`), CPI/NFP data-print fix, spacing-forcing mechanism (`S.consecutiveUniversals`) — see "Condition system" and "Universal mechanics" above.
+
+**Late-game content: ✅ COMPLETE.** 63 new late-game cards added across all six decks (13 AI Disruption, 10 each in the other five); 62 are condition-gated. Deck totals now 147 events (18 shocks + 129 news), up from the original 84 (18 shocks + 66 news).
+
+**Next: Phase 2B (App Store Preparation).** See ROADMAP.md for the checklist.
 
 ---
 
