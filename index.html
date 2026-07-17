@@ -1712,6 +1712,26 @@ function showPraiseCard(card){
 
 let S;
 function eqComposite(){return S.lrg*0.6+S.mid*0.25+S.sml*0.15;}
+// ---- CONDITION SYSTEM: gates events on current state variables (separate from `requires`, which gates on prior events) ----
+const COND_VARS={
+  inf:()=>S.inf,un:()=>S.un,rate:()=>S.rate,growth:()=>S.gr,cred:()=>S.cred,
+  equities:()=>eqComposite(),balance:()=>S.reserves+S.tga,
+  people:()=>S.app.people,congress:()=>S.app.congress,banks:()=>S.app.banks,treasury:()=>S.app.treasury
+};
+function condOp(a,op,b){
+  switch(op){case'>':return a>b;case'<':return a<b;case'>=':return a>=b;case'<=':return a<=b;case'==':return a===b;case'!=':return a!==b;default:return true;}
+}
+function checkConditionOne(c){
+  if(c.or)return c.or.some(checkConditionOne);
+  const a=COND_VARS[c.var]();
+  const b=c.ref!==undefined?COND_VARS[c.ref]():c.val;
+  return condOp(a,c.op,b);
+}
+function checkCondition(cond){
+  if(cond===undefined||cond===null)return true;
+  if(Array.isArray(cond)){if(cond.length===0)return true;return cond.every(checkConditionOne);}
+  return checkConditionOne(cond);
+}
 function freshState(deck){
   const sc=deck.state;
   return{month:0,year:deck.yr||2026,termMonth:1,
@@ -1725,7 +1745,7 @@ function freshState(deck){
     lrg:100,mid:100,sml:100,prevLrg:100,prevMid:100,prevSml:100,equityPeak:100,qeBoost:0,
     bubbleMonths:0,bubbleIgnored:false,equityCrashCooldown:0,equityBubbleCooldown:0,
     pressureTier:0,factionCooldown:{banks:0,treasury:0,congress:0,people:0},
-    lastStakeholderMonth:-99,emergencyThisMonth:false,
+    lastStakeholderMonth:-99,emergencyThisMonth:false,consecutiveUniversals:0,
     fired:{},praiseFired:{},gameover:false,pendingShocks:[]};
 }
 function opQETap(x){S.reserves+=x;S.stress=clamp(S.stress-2*(x/25),0,150);S.growthPush+=0.03*(x/25);S.qeBoost+=x*0.04;}
@@ -1844,7 +1864,7 @@ function showMoods(react){
 }
 function applyApproval(r){PK.forEach(k=>{S.app[k]=clamp((S.app[k]||50)+(r[k]||0),0,100);});}
 function makeDataPrint(){
-  const isCPI=(S.month%2===0);
+  const isCPI=(S.termMonth%4===0);
   if(isCPI){
     const exp=+(S.exp*.5+S.prevInf*.5).toFixed(1),act=S.inf+(Math.random()-.5)*0.6,sur=act-exp;
     const sTag=sur>0.3?['dp-hot','HOTTER than expected 🔥']:sur<-0.3?['dp-cold','COOLER than expected ❄️']:['dp-inline','in line ✓'];
@@ -1915,17 +1935,17 @@ function checkEquityEvents(){
 function nextTurn(){
   if(checkEquityEvents())return;
   if(checkPraiseCards())return;
-  ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(sh.requires&&!S.fired[sh.requires])return;if(S.termMonth<sh.minMonth)return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
+  ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(sh.requires&&!S.fired[sh.requires])return;if(S.termMonth<sh.minMonth)return;if(!checkCondition(sh.condition))return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
   const alertShock=S.pendingShocks.find(s=>s.alert);
-  if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);fireAlert(alertShock);return;}
-  if(S.pendingShocks.length){showEvent(S.pendingShocks.shift());return;}
+  if(alertShock){S.pendingShocks=S.pendingShocks.filter(s=>s!==alertShock);S.consecutiveUniversals=0;fireAlert(alertShock);return;}
+  if(S.pendingShocks.length){S.consecutiveUniversals=0;showEvent(S.pendingShocks.shift());return;}
   // --- POLITICAL ESCALATION: fires off low credibility (folded-in pressure), not a separate meter ---
   const politicalAnger=['congress','people'].filter(k=>S.app[k]<32).length;
   const heat=(S.cred<75?1:0)+(S.cred<55?1:0)+(politicalAnger>=1?1:0); // 0-3 political-heat tiers
   if(heat>S.pressureTier&&heat>0){
     S.pressureTier=heat;
     const pe=PRESSURE_EVENTS[heat];
-    if(pe&&Math.random()<0.7){if(pe.alert){fireAlert(pe);}else{showEvent(pe);}return;}
+    if(pe&&Math.random()<0.7){S.consecutiveUniversals++;if(pe.alert){fireAlert(pe);}else{showEvent(pe);}return;}
   }
   if(heat<S.pressureTier)S.pressureTier=heat;
   // --- STAKEHOLDER-ANGER CARDS: gated by threshold + faction cooldown + global spacing ---
@@ -1933,16 +1953,21 @@ function nextTurn(){
     const angry=PK.filter(k=>S.app[k]<28&&S.factionCooldown[k]<=0);
     if(angry.length&&Math.random()<0.7){
       const k=pick(angry);S.factionCooldown[k]=4;S.lastStakeholderMonth=S.termMonth;
-      showEvent({...STAKEHOLDER_CARDS[k],_faction:k});return;
+      S.consecutiveUniversals++;showEvent({...STAKEHOLDER_CARDS[k],_faction:k});return;
     }
   }
-  if(isFomc()){showEvent(pickNewsOrFomc());return;}
-  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
-  if(domestic.length&&Math.random()<0.5){const ev=pick(domestic);S.fired[ev.id]=true;showEvent(ev);}
-  else{showDataPrint(makeDataPrint());}
+  // --- SPACING FORCING: after 3+ straight universal events, guarantee a deck news event if any is eligible ---
+  if(S.consecutiveUniversals>=3){
+    const forced=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&checkCondition(nv.condition)&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]);
+    if(forced.length){const ev=pick(forced);S.fired[ev.id]=true;S.consecutiveUniversals=0;showEvent(ev);return;}
+  }
+  if(isFomc()){const chosen=pickNewsOrFomc();if(chosen.kind==='fomc')S.consecutiveUniversals++;else S.consecutiveUniversals=0;showEvent(chosen);return;}
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&checkCondition(nv.condition)&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  if(domestic.length&&Math.random()<0.5){const ev=pick(domestic);S.fired[ev.id]=true;S.consecutiveUniversals=0;showEvent(ev);}
+  else{S.consecutiveUniversals++;showDataPrint(makeDataPrint());}
 }
 function pickNewsOrFomc(){
-  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
+  const domestic=ACTIVE_NEWS.filter(nv=>!S.fired[nv.id]&&(!nv.requires||S.fired[nv.requires])&&checkCondition(nv.condition)&&S.termMonth>=nv.turn[0]&&S.termMonth<=nv.turn[1]&&Math.random()<nv.prob);
   if(domestic.length&&Math.random()<0.55){const ev=pick(domestic);S.fired[ev.id]=true;return ev;}
   return{kind:'fomc',tag:'🔔 FOMC MEETING',headline:pick(['Rate decision day','The Committee convenes','All eyes on the Fed','Markets await your call']),
     body:`FOMC meeting. Inflation <b>${S.inf.toFixed(1)}%</b>, unemployment <b>${S.un.toFixed(1)}%</b>, growth <b>${S.gr.toFixed(1)}%</b>. One of your <b>6 chances a year</b> to move rates. Between meetings, your hands are tied. Choose.`,
