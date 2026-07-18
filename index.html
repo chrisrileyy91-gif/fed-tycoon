@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CHAIR">
@@ -26,10 +26,10 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{overscroll-behavior:none;touch-action:manipulation}
-body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520px;margin:0 auto;min-height:100vh;overflow-x:hidden;user-select:none}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520px;margin:0 auto;min-height:100vh;overflow-x:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .screen{display:none;min-height:100vh;position:relative}
 .screen.active{display:flex;flex-direction:column}
-#introScreen{background:linear-gradient(180deg,#0a0e13,#111a28 50%,#0f1620);align-items:center;justify-content:center;padding:30px 24px;text-align:center}
+#introScreen{background:linear-gradient(180deg,#0a0e13,#111a28 50%,#0f1620);align-items:center;justify-content:center;padding:30px 24px;padding:calc(30px + env(safe-area-inset-top, 0px)) 24px calc(30px + env(safe-area-inset-bottom, 0px));text-align:center}
 .intro-seal{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold),var(--gold-d));display:grid;place-items:center;font-family:var(--serif);font-size:42px;color:#3a2a02;box-shadow:0 0 50px var(--gold-glow),0 4px 14px rgba(0,0,0,.5);margin:0 auto 24px;border:3px solid rgba(255,255,255,.15);animation:sealPulse 3s ease-in-out infinite}
 @keyframes sealPulse{0%,100%{box-shadow:0 0 40px var(--gold-glow)}50%{box-shadow:0 0 70px var(--gold-glow)}}
 .intro-title{font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:-.5px;line-height:1.08;margin-bottom:6px}
@@ -60,8 +60,8 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .deck-back:active{color:var(--gold)}
 .deck-detail-title{font-family:var(--serif);font-size:28px;font-weight:900;margin-bottom:4px}
 .deck-detail-diff{font-size:14px;letter-spacing:1px;margin-bottom:20px;color:var(--dim)}
-#gameScreen{padding:0 0 40px}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+#gameScreen{padding:0 0 40px;padding:0 0 calc(40px + env(safe-area-inset-bottom, 0px))}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;padding:calc(12px + env(safe-area-inset-top, 0px)) 14px 8px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
 .tb-left{display:flex;align-items:center;gap:8px}
 .tb-seal{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold),var(--gold-d));display:grid;place-items:center;font-size:14px;color:#3a2a02;font-weight:800;border:1.5px solid rgba(255,255,255,.12)}
 .tb-date{display:flex;flex-direction:column;line-height:1.1}
@@ -2450,8 +2450,18 @@ let ACTIVE_SHOCKS=[];
 let ACTIVE_NEWS=[];
 
 const SAVE_KEY='chair_save_v1';
-function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.v===1)return s;}catch(e){}return{v:1,unlocked:['ai-disruption'],best:{}};}
-function writeSave(save){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
+const CapPrefs=window.Capacitor?.Plugins?.Preferences||null;
+const CapHaptics=window.Capacitor?.Plugins?.Haptics||null;
+let _saveCache=null;
+function freshSave(){return{v:1,unlocked:['ai-disruption'],best:{}};}
+async function initSave(){
+  if(CapPrefs){try{const{value}=await CapPrefs.get({key:SAVE_KEY});if(value){const s=JSON.parse(value);if(s&&s.v===1){_saveCache=s;return;}}}catch(e){}}
+  try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.v===1){_saveCache=s;return;}}catch(e){}
+  _saveCache=freshSave();
+}
+function loadSave(){return _saveCache||freshSave();}
+function writeSave(save){_saveCache=save;try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}if(CapPrefs)CapPrefs.set({key:SAVE_KEY,value:JSON.stringify(save)}).catch(()=>{});}
+function hapticTap(){if(CapHaptics)CapHaptics.impact({style:'LIGHT'}).catch(()=>{});}
 function unlockNext(deckId){const save=loadSave();const idx=DECK_ORDER.indexOf(deckId);if(idx>=0&&idx<DECK_ORDER.length-1){const next=DECK_ORDER[idx+1];if(!save.unlocked.includes(next)){save.unlocked.push(next);writeSave(save);}}return save;}
 function recordBest(deckId,cred){const save=loadSave();if(!save.best[deckId]||cred>save.best[deckId]){save.best[deckId]=Math.round(cred);writeSave(save);}return save;}
 
@@ -2960,7 +2970,7 @@ $('tapZone').addEventListener('click',function(e){
   $('tapLeft').textContent=`${S.qeTaps} taps remaining`;$('tapProg').style.width=((S.qeMax-S.qeTaps)/S.qeMax*100)+'%';
   const m=document.createElement('div');m.className='money-fly';m.textContent='💵';
   m.style.left=((e.clientX||r.left+r.width/2)-r.left)+'px';m.style.top=((e.clientY||r.top+r.height/2)-r.top)+'px';
-  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('stamp');scheduleRender();
+  this.appendChild(m);setTimeout(()=>m.remove(),1100);Audio8.sfx('stamp');hapticTap();scheduleRender();
   if(S.qeTaps<=0){S.qeActive=false;setTimeout(()=>{
     $('tapZone').classList.remove('show');
     const con=$('consequence');
@@ -3403,7 +3413,7 @@ function backToPicker(){
 }
 window.backToPicker=backToPicker;
 $('resetBtn').addEventListener('click',()=>{backToPicker();});
-function boot(){renderPicker();}
+async function boot(){await initSave();renderPicker();}
 boot();
 })();
 </script>
