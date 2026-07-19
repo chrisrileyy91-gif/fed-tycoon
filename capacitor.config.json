@@ -1,0 +1,8 @@
+{
+  "appId": "com.chrisriley.chair",
+  "appName": "CHAIR",
+  "webDir": "www",
+  "ios": {
+    "backgroundColor": "#0B0F14"
+  }
+}
