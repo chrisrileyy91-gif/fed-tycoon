@@ -2487,6 +2487,52 @@ function hapticTap(){if(CapHaptics)CapHaptics.impact({style:'LIGHT'}).catch(()=>
 function unlockNext(deckId){const save=loadSave();const idx=DECK_ORDER.indexOf(deckId);if(idx>=0&&idx<DECK_ORDER.length-1){const next=DECK_ORDER[idx+1];if(!save.unlocked.includes(next)){save.unlocked.push(next);writeSave(save);}}return save;}
 function recordBest(deckId,cred){const save=loadSave();if(!save.best[deckId]||cred>save.best[deckId]){save.best[deckId]=Math.round(cred);writeSave(save);}return save;}
 
+const ACTIVE_KEY='chair_active_v1';
+var _activeCache=null;
+function saveActiveGame(){
+  if(!S||!activeDeck)return;
+  var data=JSON.stringify({v:1,deckId:activeDeck.id,state:S});
+  _activeCache=JSON.parse(data);
+  try{localStorage.setItem(ACTIVE_KEY,data);}catch(e){}
+  if(CapPrefs)CapPrefs.set({key:ACTIVE_KEY,value:data}).catch(function(){});
+}
+function clearActiveGame(){
+  _activeCache=null;
+  try{localStorage.removeItem(ACTIVE_KEY);}catch(e){}
+  if(CapPrefs)CapPrefs.remove({key:ACTIVE_KEY}).catch(function(){});
+}
+function showResumePrompt(active){
+  var deck=null;
+  for(var i=0;i<DECKS.length;i++){if(DECKS[i].id===active.deckId){deck=DECKS[i];break;}}
+  if(!deck){clearActiveGame();renderPicker();return;}
+  $('deckPicker').style.display='flex';
+  $('deckDetail').style.display='none';
+  var list=$('deckList');list.innerHTML='';
+  var rCard=document.createElement('div');
+  rCard.className='deck-card';
+  rCard.style.borderColor='var(--gold)';
+  rCard.style.boxShadow='0 0 16px var(--gold-glow)';
+  rCard.innerHTML='<div class="dc-top"><span class="dc-title">Resume Term</span><span class="dc-badge">Month '+active.state.termMonth+'/48</span></div><div class="dc-sub">'+deck.title+' — Credibility '+Math.round(active.state.cred)+'</div>';
+  rCard.onclick=function(){
+    activeDeck=deck;
+    ACTIVE_SHOCKS=deck.shocks;
+    ACTIVE_NEWS=deck.news;
+    S=active.state;
+    S.qeActive=false;S.qeTaps=0;
+    Audio8.init();
+    $('introScreen').classList.remove('active');
+    $('gameScreen').classList.add('active');
+    render();
+    nextTurn();
+  };
+  list.appendChild(rCard);
+  var nCard=document.createElement('div');
+  nCard.className='deck-card';
+  nCard.innerHTML='<div class="dc-top"><span class="dc-title">Abandon Term</span><span class="dc-badge">—</span></div><div class="dc-sub">Start fresh from the deck picker</div>';
+  nCard.onclick=function(){clearActiveGame();renderPicker();};
+  list.appendChild(nCard);
+}
+
 // ---- STAKEHOLDER-ANGER CARDS (fire when a faction crosses into anger; each has its own weapon) ----
 const STAKEHOLDER_CARDS={
 banks:{tag:'🏦 BANKING SECTOR',headline:'Bank lobby launches campaign against the Fed',
@@ -2847,6 +2893,7 @@ function checkEquityEvents(){
   return false;
 }
 function nextTurn(){
+  saveActiveGame();
   if(checkEquityEvents())return;
   if(checkPraiseCards())return;
   ACTIVE_SHOCKS.forEach(sh=>{if(S.fired[sh.id])return;if(sh.requires&&!S.fired[sh.requires])return;if(S.termMonth<sh.minMonth)return;if(!checkCondition(sh.condition))return;if(Math.random()<sh.prob){S.pendingShocks.push(sh);S.fired[sh.id]=true;}});
@@ -3082,6 +3129,7 @@ const ENDINGS={
  ]
 };
 function endGame(win,reason){
+  clearActiveGame();
   S.gameover=true;
   if(activeDeck){recordBest(activeDeck.id,S.cred);if(S.cred>=110)unlockNext(activeDeck.id);}
   $('responseSlot').innerHTML='';$('tapZone').classList.remove('show');$('advBtn').style.display='none';$('consequence').classList.remove('show');
@@ -3415,6 +3463,7 @@ $('deckBack').addEventListener('click',()=>{
 });
 $('startBtn').addEventListener('click',()=>{
   if(!activeDeck)return;
+  clearActiveGame();
   Audio8.init();
   ACTIVE_SHOCKS=activeDeck.shocks;
   ACTIVE_NEWS=activeDeck.news;
@@ -3424,6 +3473,7 @@ $('startBtn').addEventListener('click',()=>{
   nextTurn();
 });
 function backToPicker(){
+  clearActiveGame();
   $('gameScreen').classList.remove('active');
   $('introScreen').classList.add('active');
   $('deckDetail').style.display='none';
@@ -3436,7 +3486,14 @@ function backToPicker(){
 }
 window.backToPicker=backToPicker;
 $('resetBtn').addEventListener('click',()=>{backToPicker();});
-async function boot(){await initSave();renderPicker();}
+async function boot(){
+  await initSave();
+  var activeRaw=null;
+  if(CapPrefs){try{var r=await CapPrefs.get({key:ACTIVE_KEY});if(r.value)activeRaw=r.value;}catch(e){}}
+  if(!activeRaw){try{activeRaw=localStorage.getItem(ACTIVE_KEY);}catch(e){}}
+  if(activeRaw){try{var active=JSON.parse(activeRaw);if(active&&active.v===1){showResumePrompt(active);return;}}catch(e){}}
+  renderPicker();
+}
 boot();
 })();
 </script>
