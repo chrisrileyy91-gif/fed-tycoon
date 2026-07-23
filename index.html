@@ -71,9 +71,10 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);max-width:520
 .deck-card .dc-title{font-family:var(--serif);font-size:17px;font-weight:800;color:var(--gold)}
 .deck-card.locked .dc-title{color:var(--dimmer)}
 .deck-card .dc-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--dimmer)}
-.deck-card .dc-badge.score{color:var(--green)}
 .deck-card .dc-sub{font-size:12.5px;color:var(--dim);line-height:1.4;margin-bottom:6px}
-.deck-card .dc-diff{font-size:12px;letter-spacing:1px}
+.deck-card .dc-diff{font-size:14px;letter-spacing:2px}
+.astar{color:#2a3548}
+.astar.earned{color:var(--gold)}
 .deck-card .dc-lock-msg{font-family:var(--mono);font-size:9.5px;color:var(--dimmer);letter-spacing:.5px;margin-top:4px}
 #deckDetail{display:none;flex-direction:column;align-items:center;padding:20px 24px 40px;text-align:center}
 #deckDetail.show{display:flex}
@@ -3383,18 +3384,19 @@ function animateNum(el,from,to,dur,fmtFn){
 }
 $('muteBtn')&&$('muteBtn').addEventListener('click',()=>{const m=Audio8.toggleMute();$('muteBtn').textContent=m?'🔇':'🔊';});
 
+function tierLabel(diff){return diff>=4?'Volcker Territory':diff>=3?'Dual Mandate':'Soft Landing';}
+function achieveStars(best){var n=best>=200?3:best>=150?2:best>=100?1:0;var h='';for(var i=0;i<3;i++)h+='<span class="astar'+(i<n?' earned':'')+'">'+( i<n?'★':'☆')+'</span>';return h;}
 function renderPicker(){
   const save=loadSave();
   const list=$('deckList');list.innerHTML='';
   DECKS.forEach((deck,i)=>{
     const unlocked=save.unlocked.includes(deck.id);
     const best=save.best[deck.id];
-    const stars='★'.repeat(deck.difficulty)+'☆'.repeat(4-deck.difficulty);
     const card=document.createElement('div');
     card.className='deck-card'+(unlocked?'':' locked');
     const prevDeck=i>0?DECKS[i-1]:null;
     const lockMsg=!unlocked&&prevDeck?`🔒 Complete ${prevDeck.title} to unlock`:'';
-    card.innerHTML=`<div class="dc-top"><span class="dc-title">${deck.title}</span><span class="dc-badge${best?' score':''}">${unlocked?(best?'★ '+best:'—'):'🔒'}</span></div><div class="dc-sub">${deck.subtitle}</div><div class="dc-diff">${stars}</div>${lockMsg?'<div class="dc-lock-msg">'+lockMsg+'</div>':''}`;
+    card.innerHTML=`<div class="dc-top"><span class="dc-title">${deck.title}</span><span class="dc-badge">${unlocked?tierLabel(deck.difficulty):'🔒'}</span></div><div class="dc-sub">${deck.subtitle}</div><div class="dc-diff">${achieveStars(best)}</div>${lockMsg?'<div class="dc-lock-msg">'+lockMsg+'</div>':''}`;
     if(unlocked)card.onclick=()=>showDeckDetail(deck);
     list.appendChild(card);
   });
@@ -3404,7 +3406,7 @@ function showDeckDetail(deck){
   $('deckPicker').style.display='none';
   $('deckDetail').style.display='flex';
   $('detailTitle').textContent=deck.title;
-  $('detailDiff').textContent='★'.repeat(deck.difficulty)+'☆'.repeat(4-deck.difficulty)+' · '+deck.yr;
+  var dsave=loadSave();var dbest=dsave.best[deck.id];$('detailDiff').innerHTML=tierLabel(deck.difficulty)+' · '+achieveStars(dbest)+' · '+deck.yr;
   $('introNarrative').innerHTML=deck.narrative;
 }
 $('deckBack').addEventListener('click',()=>{
