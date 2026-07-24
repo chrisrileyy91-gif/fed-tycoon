@@ -3287,7 +3287,7 @@ const Audio8={
   sfx(type){
     if(!this.ctx||this.muted)return;
     if(this.ctx.state==='suspended')this.ctx.resume();
-    if(type==='click'){this.tone([{freq:340,type:'sine',gain:0.14},{freq:680,type:'sine',gain:0.07}],{attack:0.02,decay:0.12});}
+    if(type==='click'){this.tone([{freq:260,type:'triangle',gain:0.16},{freq:520,type:'sine',gain:0.05}],{attack:0.005,decay:0.06});this.tone([{freq:390,type:'sine',gain:0.14}],{attack:0.005,decay:0.10,delay:0.04});this.noiseBurst(0.015,0.035,'bandpass',3200,3);}
     else if(type==='hike'){
       // ratchet tightening: 7 pawl clicks with widening spacing (rising tension), each a bright ~2.7kHz metallic tick + a mid-band body, ending with a "seat" thud when the bolt bottoms out.
       // Gains and frequencies are all sized for a phone speaker: bursts >=35ms so the (1-i/N)^2 buffer envelope leaves audible content, everything above 200Hz so nothing falls below the iPhone speaker roll-off, tick gain 0.45+ so it clearly reads over the preceding button click.
