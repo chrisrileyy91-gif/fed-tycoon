@@ -177,7 +177,22 @@ Note: `S.debt` is not read by macroTick. The fiscal offset (Debt Reckoning / Fis
 
 ## Audio
 
-Audio8 engine: sine/triangle wave synthesis at lower frequencies with soft attack envelopes. Crisis alarm targets EAS emergency broadcast frequencies. QE tap SFX kept under 150ms. Background music loop at gain 0.45. SFX types: win, bad, register, gavel, alarm.
+Audio8 engine: 100% synthesized oscillator audio — zero external assets, zero embedded files. Sine/triangle wave synthesis with layered `tone()` calls, filtered `noiseBurst()` for texture, tension-responsive background music loop at gain 0.45.
+
+SFX types (all synthesized):
+- **click** — rising two-note figure (C4 triangle → G4 sine, 40ms stagger + noise texture). Decision confirmation. Most-heard SFX.
+- **hike** — ratchet tightening: 7 metallic pawl clicks with widening spacing + seat thud
+- **cut** — scissor snip: two crossing blade swishes + snap + metal ring
+- **coin** — QE initiation chime
+- **stamp** — QE per-tap impact (fires up to 50× rapidly, self-cleaning oscillators)
+- **heart** — two quick ascending blips (C6→E6). Used for mid-game praise cards.
+- **bad** — low dissonant chord + noise. Faction anger reactions.
+- **alarm** — crisis wire: two ascending strikes (C5→E5) with bass + impact noise + trailing tension drone (~1.4s)
+- **win** — blooming C major chord: root+fifth → octave → major third confirms last (~1.8s). End-of-term tiers 1-2.
+- **lose** — E4→Eb4 half-step descent over beating 82/87Hz drone + low noise room tone. No resolution. (~2s). End-of-term tier 0.
+- **register** — grounded C major triad. Banks approval reaction.
+- **gavel** — single thud + crack. Congress anger reaction.
+- **fanfare** — blooming C major (same as win) + 65Hz sub-bass + E5/G5 shimmer + bandpass air (~2.5s). End-of-term tier 3 (master).
 
 ## Key architecture notes
 
@@ -200,13 +215,45 @@ Audio8 engine: sine/triangle wave synthesis at lower frequencies with soft attac
 
 **Phase 1C: ✅ COMPLETE.** All six decks built and content-audited (AI Disruption, Housing Trap, Tariff Shock, Geopolitical Fracture, Debt Reckoning, Fiscal Dominance). 18 shocks, 66 news events total. Positive feedback system (praise cards, streak visibility, warm data prints) added as final content layer.
 
-**Phase 2A: ✅ COMPLETE.** Full audit pass across all six decks + positive feedback system. 22 dominant strategies fixed, 168 response headlines added. Zero economics violations, zero double-counting, zero broken requires chains. All code paths for praise cards, streak visibility, and warm data prints verified correct.
+**Phase 2A: ✅ COMPLETE.** Full audit pass across all six decks + positive feedback system. 22 dominant strategies fixed, 168 response headlines added. Zero economics violations, zero double-counting, zero broken requires chains.
 
-**Engine upgrades: ✅ COMPLETE.** Condition system (`checkCondition`, `COND_VARS`), CPI/NFP data-print fix, spacing-forcing mechanism (`S.consecutiveUniversals`) — see "Condition system" and "Universal mechanics" above.
+**Engine upgrades: ✅ COMPLETE.** Condition system (`checkCondition`, `COND_VARS`), CPI/NFP data-print fix, spacing-forcing mechanism (`S.consecutiveUniversals`).
 
-**Late-game content: ✅ COMPLETE.** 63 new late-game cards added across all six decks (13 AI Disruption, 10 each in the other five); 62 are condition-gated. Deck totals now 147 events (18 shocks + 129 news), up from the original 84 (18 shocks + 66 news).
+**Late-game content: ✅ COMPLETE.** 63 condition-gated cards across all six decks. Deck totals now 147 events (18 shocks + 129 news).
 
-**Next: Phase 2B (App Store Preparation).** See ROADMAP.md for the checklist.
+**Phase 2B: ✅ COMPLETE.** App Store preparation — see "App Store prep" section below. All Capacitor code prep done on Windows. Edge-case audit passed (7/7 categories clean after fixes). Ready for Mac session.
+
+**Next: Mac session** — rent Mac, `npx cap sync ios`, Xcode build, wire StoreKit stubs to real IAP, TestFlight, screenshots, App Store submission.
+
+---
+
+## App Store prep (Phase 2B)
+
+**Capacitor:** appId `com.chrisriley.chair`, webDir `www/` (build.js copies index.html + fonts). `capacitor.config.json` in repo root. Packages: `@capacitor/core`, `@capacitor/cli`, `@capacitor/ios`, `@capacitor/preferences`, `@capacitor/haptics`.
+
+**Persistence:** Three-tier abstraction — Capacitor Preferences (primary in native), localStorage (fallback), in-memory cache (always). Reads from cache first, writes to all available layers.
+
+**Resume system:** `saveActiveGame()` fires at every `nextTurn()` call, serializing the full S object. Gold "Resume Term" card on boot via `showResumePrompt()`. Cleared on endGame/backToPicker/new game start. QE state always reset on resume. IAP entitlement check gates resume for paid decks.
+
+**IAP gating:** AI Disruption free, all other decks behind purchase prompt ($3.99). `isPurchased()` returns true on web (no gate). `purchaseFullGame()` and `restorePurchases()` are stubs — real StoreKit wired during Mac session. Resume path includes entitlement check.
+
+**Achievement stars:** 3-star system replacing difficulty stars. 200 cred = ★★★ (Volcker Territory), 150+ = ★★ (Dual Mandate), 100+ = ★ (Soft Landing).
+
+**Fonts:** Three Google Fonts variable WOFF2 files bundled in `fonts/` — zero network requests.
+
+**Safe area CSS:** Double-declaration fallback pattern (`padding-bottom: 20px; padding-bottom: env(safe-area-inset-bottom, 20px);`).
+
+**Haptics:** `hapticTap()` fires on QE taps, guarded behind `window.Capacitor?.Plugins?.Haptics`.
+
+**WebView hygiene:** `-webkit-user-select: none`, `-webkit-touch-callout: none`, `overscroll-behavior: none`.
+
+**Privacy policy:** Deployed at `/privacy.html` on GitHub Pages. Contact: chrisrileyy91@gmail.com.
+
+**App Store listing:** Name: CHAIR. Subtitle: Run the Federal Reserve. Category: Games → Strategy (primary), Education (secondary). Age rating: 4+.
+
+**Edge-case audit (pre-production):** 7 categories audited, all clean after fixes. NaN propagation ✅, state clamping ✅ (S.exp clamp and rateOverride clamp added), resume integrity ✅, IAP gating ✅ (resume entitlement check added), endGame sequencing ✅, Audio8 safety ✅, event array mutation ✅.
+
+**Defensive clamps added:** `S.exp=clamp(S.exp,-1,15)` after weighted-average update. `S.rate=clamp(f.rateOverride,0,20)` on rateOverride path.
 
 ---
 
