@@ -2705,7 +2705,7 @@ function showPraiseCard(card){
   showMoods(card.react);
   document.body.classList.remove('flash-good');void document.body.offsetWidth;document.body.classList.add('flash-good');
   setTimeout(()=>document.body.classList.remove('flash-good'),600);
-  if(typeof Audio8!=='undefined')Audio8.sfx('win');
+  if(typeof Audio8!=='undefined')Audio8.sfx('heart');
   $('breakingSlot').innerHTML=`<div class="breaking positive"><div class="b-tag"><span class="live"></span>${card.tag}</div><div class="b-headline">${card.headline}</div><div class="b-body">${card.body}</div></div>`;
   $('responseSlot').innerHTML=`<div class="responses"><button class="advance-btn inline-adv" style="display:block;margin:4px 0 0;width:100%">Continue →</button></div>`;
   const ib=$('responseSlot').querySelector('.inline-adv');if(ib)ib.onclick=doAdvance;
@@ -3334,61 +3334,13 @@ const Audio8={
         src.start(this.ctx.currentTime);
       }
     }
-    else if(type==='win'){
-      // coin-bag drop: bag body thud, cascading metallic pings (front-loaded), a few late settling clinks
-      const t0=this.ctx.currentTime, sfxOut=this.sfxGain||this.master;
-      this.tone([{freq:85,type:'sine',gain:0.32},{freq:120,type:'sine',gain:0.14}],{attack:0.001,decay:0.11,delay:0});
-      this.noiseBurst(0.09,0.16,'lowpass',260,0.9,0);
-      this.noiseBurst(0.06,0.05,'bandpass',900,1.2,0.02);
-      const ping=(delay,fr,gain)=>{
-        const start=t0+delay;
-        [{t:'triangle',f:fr,g:gain*0.7},{t:'sine',f:fr*1.58,g:gain*0.5},{t:'sine',f:fr*2.14,g:gain*0.28}].forEach(p=>{
-          const o=this.ctx.createOscillator(),g=this.ctx.createGain();
-          o.type=p.t;o.frequency.value=p.f;
-          g.gain.setValueAtTime(0,start);
-          g.gain.linearRampToValueAtTime(p.g,start+0.002);
-          g.gain.exponentialRampToValueAtTime(0.0001,start+0.07);
-          o.connect(g);g.connect(sfxOut);
-          o.start(start);o.stop(start+0.09);
-        });
-        this.noiseBurst(0.008,gain*0.35,'bandpass',fr*1.8,4,delay);
-      };
-      const n=22;
-      for(let i=0;i<n;i++){
-        const u=i/(n-1);
-        const t=0.08+Math.pow(u,1.6)*0.78+Math.random()*0.04;
-        ping(t,1600+Math.random()*2200,0.16+Math.random()*0.12);
-      }
-      ping(0.98,1400+Math.random()*400,0.10);
-      ping(1.08,1900+Math.random()*400,0.08);
-      ping(1.20,2400+Math.random()*300,0.06);
-    }
-    else if(type==='lose'){
-      // slow descending minor arpeggio (A4→G4→E4→C4) over a low A2 drone — end-of-term loss
-      const seq=[440.00,392.00,329.63,261.63];
-      seq.forEach((fr,i)=>{
-        this.tone([
-          {freq:fr,type:'triangle',gain:0.14},
-          {freq:fr*2,type:'sine',gain:0.05},
-          {freq:fr/2,type:'sine',gain:0.06}
-        ],{attack:0.05,hold:0.22,decay:0.45,delay:i*0.38});
-      });
-      this.tone([{freq:110,type:'sine',gain:0.08},{freq:110,type:'triangle',gain:0.04,detune:6}],{attack:0.15,hold:1.2,decay:0.6,delay:0});
-    }
+    else if(type==='win'){this.tone([{freq:262,type:'triangle',gain:0.13},{freq:131,type:'sine',gain:0.09}],{attack:0.04,hold:0.6,decay:1.0});this.tone([{freq:392,type:'sine',gain:0.11}],{attack:0.04,hold:0.5,decay:0.9,delay:0.12});this.tone([{freq:523,type:'sine',gain:0.07}],{attack:0.06,hold:0.4,decay:0.8,delay:0.28});this.tone([{freq:330,type:'triangle',gain:0.10}],{attack:0.08,hold:0.5,decay:0.9,delay:0.42});} // reappointment: blooming C major, third confirms last
+    else if(type==='lose'){this.tone([{freq:330,type:'sine',gain:0.13}],{attack:0.12,hold:0.4,decay:0.8});this.tone([{freq:311,type:'sine',gain:0.11}],{attack:0.1,hold:0.3,decay:1.0,delay:0.5});this.tone([{freq:82,type:'sine',gain:0.07},{freq:87,type:'sine',gain:0.05}],{attack:0.2,hold:0.5,decay:1.2,delay:0.3});this.noiseBurst(1.0,0.025,'lowpass',300,0.5,0.2);} // not reappointed: E→Eb half-step descent, uneasy beating drone
     // ---- faction reactions ----
     else if(type==='register'){this.tone([{freq:262,type:'sine',gain:0.12},{freq:330,type:'sine',gain:0.10},{freq:392,type:'sine',gain:0.10}],{attack:0.02,decay:0.3});} // banks approve: grounded low triad
     else if(type==='gavel'){this.tone([{freq:150,type:'sine',gain:0.2}],{attack:0.005,decay:0.2});this.noiseBurst(0.08,0.08,'bandpass',800,2);} // congress angry: single thud + crack
     // ---- master-tier fanfare ----
-    else if(type==='fanfare'){
-      const seq=[523,659,784,1046,1318,1046,1318,1568];
-      seq.forEach((fr,i)=>{
-        const delay=i*0.16;
-        this.tone([{freq:fr,type:'sine',gain:0.18},{freq:fr*2,type:'triangle',gain:0.09},{freq:fr*1.5,type:'sine',gain:0.06}],{attack:0.025,hold:0.28,decay:0.18,delay});
-        if(i>=seq.length-2){
-          this.tone([{freq:fr,type:'sine',gain:0.045},{freq:fr*2,type:'triangle',gain:0.0225}],{attack:0.025,hold:0.1,decay:0.08,delay:delay+0.08});
-        }
-      });
-    }
+    else if(type==='fanfare'){this.tone([{freq:65,type:'sine',gain:0.08}],{attack:0.2,hold:1.0,decay:1.2});this.tone([{freq:262,type:'triangle',gain:0.14},{freq:131,type:'sine',gain:0.10}],{attack:0.04,hold:0.8,decay:1.2});this.tone([{freq:392,type:'sine',gain:0.12}],{attack:0.04,hold:0.7,decay:1.1,delay:0.12});this.tone([{freq:523,type:'sine',gain:0.08}],{attack:0.06,hold:0.6,decay:1.0,delay:0.28});this.tone([{freq:330,type:'triangle',gain:0.11}],{attack:0.08,hold:0.7,decay:1.1,delay:0.42});this.tone([{freq:660,type:'sine',gain:0.04}],{attack:0.15,hold:0.5,decay:0.9,delay:0.5});this.tone([{freq:784,type:'sine',gain:0.03}],{attack:0.15,hold:0.4,decay:0.8,delay:0.6});this.noiseBurst(0.8,0.02,'bandpass',4000,1,0.3);} // historic term: blooming chord + sub-bass + upper shimmer + air
   },
   // layered oscillator voice: attack (linear) -> optional hold plateau -> release (exp or linear) to silence
   tone(layers,opts){
