@@ -2557,6 +2557,7 @@ function showResumePrompt(active){
   rCard.style.boxShadow='0 0 16px var(--gold-glow)';
   rCard.innerHTML='<div class="dc-top"><span class="dc-title">Resume Term</span><span class="dc-badge">Month '+active.state.termMonth+'/48</span></div><div class="dc-sub">'+deck.title+' — Credibility '+Math.round(active.state.cred)+'</div>';
   rCard.onclick=function(){
+    if(deck.id!=='ai-disruption'&&!isPurchased()){clearActiveGame();renderPicker();return;}
     activeDeck=deck;
     ACTIVE_SHOCKS=deck.shocks;
     ACTIVE_NEWS=deck.news;
@@ -2761,6 +2762,7 @@ function macroTick(){
   // Inflation expectations: self-fulfilling anchor. High cred → anchored at 2%. Low cred → drift toward actual inflation.
   const anchorW=clamp((S.cred-15)/135,0.15,1);
   S.exp+=(2*anchorW+S.inf*(1-anchorW)-S.exp)*.04;
+  S.exp=clamp(S.exp,-1,15);
   // Equity indices: earnings channel (growth), discount-rate channel (rate stance), portfolio-balance channel (QE). Not a Fed target — a transmission/feedback channel.
   // SML is most rate-sensitive (small caps borrow at floating rates); LRG is most QE-sensitive (portfolio balance flows into liquid large caps first).
   const lrgTarget=100+(S.gr-2.5)*10-S.transmitted*6+S.qeBoost*1.5;
@@ -3041,7 +3043,7 @@ function chooseResponse(r,ev){
   if(S.gameover)return;const f=r.fx||{};
   if(f.rate>0)Audio8.sfx('hike');else if(f.rate<0)Audio8.sfx('cut');
   if(f.rate!==undefined)S.rate=clamp(S.rate+f.rate,0,20);
-  if(f.rateOverride!==undefined)S.rate=f.rateOverride;
+  if(f.rateOverride!==undefined)S.rate=clamp(f.rateOverride,0,20);
   if(f.infPush)S.infPush+=f.infPush;if(f.unempPush)S.unempPush+=f.unempPush;if(f.growthPush)S.growthPush+=f.growthPush;
   if(f.reserves)S.reserves=clamp(S.reserves+f.reserves,0,99999);if(f.tga)S.tga=clamp(S.tga+f.tga,0,99999);
   if(f.deposits)S.deposits=clamp(S.deposits+f.deposits,100,99999);if(f.debt)S.debt+=f.debt;if(f.stress)S.stress=clamp(S.stress+f.stress,0,150);
